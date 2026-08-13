@@ -24,6 +24,7 @@ const SESSION_SECRET = process.env.SESSION_SECRET || "archimuse-dev-secret-chang
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const IS_NETLIFY = Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
 const SELLER_ROLES = new Set(["seller", "admin", "curator"]);
+const USE_SECURE_COOKIE = IS_PRODUCTION || IS_NETLIFY;
 
 const uploadsDir = IS_NETLIFY
   ? path.join("/tmp", "archimuse-uploads")
@@ -63,24 +64,28 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-if (IS_PRODUCTION) {
+if (IS_PRODUCTION || IS_NETLIFY) {
   app.set("trust proxy", 1);
 }
 
 app.use(
   session({
+    name: "archimuse.sid",
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    proxy: true,
     store: MongoStore.create({
       mongoUrl: MONGO_URI,
       ttl: 60 * 60 * 24 * 7,
+      touchAfter: 60 * 60,
     }),
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 7,
       httpOnly: true,
       sameSite: "lax",
-      secure: IS_PRODUCTION,
+      secure: USE_SECURE_COOKIE,
+      path: "/",
     },
   })
 );
@@ -402,11 +407,24 @@ const migrateJsonIfEmpty = async () => {
 
 app.get("/api/health", async (_req, res) => {
   const dbState = require("mongoose").connection.readyState;
+  const mongoHost = (() => {
+    try {
+      return new URL(MONGO_URI.replace("mongodb+srv://", "https://").replace("mongodb://", "http://")).host;
+    } catch (_error) {
+      return "unknown";
+    }
+  })();
   res.json({
     ok: true,
     status: "online",
     database: dbState === 1 ? "connected" : "disconnected",
+    mongoHost,
+    netlify: IS_NETLIFY,
     environment: IS_PRODUCTION ? "production" : "development",
+    hint:
+      dbState === 1
+        ? null
+        : "Set MONGO_URI to your Atlas connection string in Netlify Environment variables, then redeploy.",
   });
 });
 

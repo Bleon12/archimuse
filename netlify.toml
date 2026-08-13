@@ -17,6 +17,7 @@
   ]
 
 [functions.api]
+  timeout = 26
   included_files = [
     "server.js",
     "database.js",
@@ -28,9 +29,10 @@
     "data/**"
   ]
 
+# Keep original /api/... path for the Express app
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
+  to = "/.netlify/functions/api"
   status = 200
   force = true
 

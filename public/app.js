@@ -164,6 +164,12 @@ const I18N = {
   },
 };
 
+const apiFetch = (input, init = {}) =>
+  fetch(input, {
+    credentials: "include",
+    ...init,
+  });
+
 const FALLBACK_DESIGNS = [
   {
     _id: "demo-1",
@@ -423,7 +429,7 @@ const initTheme = () => {
 
 const updateUserBadge = async () => {
   try {
-    const response = await fetch("/api/me");
+    const response = await apiFetch("/api/me");
     const data = await response.json();
     currentUser = data.user || null;
     if (userBadge) {
@@ -439,7 +445,7 @@ const updateUserBadge = async () => {
 
 const logoutUser = async () => {
   try {
-    await fetch("/api/logout", { method: "POST" });
+    await apiFetch("/api/logout", { method: "POST" });
   } catch (_error) {
     /* ignore */
   }
@@ -851,14 +857,24 @@ const setupAuthForm = () => {
 
     try {
       const endpoint = authMode === "register" ? "/api/register" : "/api/login";
-      const response = await fetch(endpoint, {
+      const response = await apiFetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
-      messageEl.textContent = data.message;
+      let data = null;
+      try {
+        data = await response.json();
+      } catch (_error) {
+        messageEl.textContent =
+          currentLang === "sq"
+            ? "Serveri nuk u përgjigj. Kontrollo MONGO_URI në Netlify."
+            : "Server did not respond. Check MONGO_URI on Netlify.";
+        messageEl.style.color = "#a02727";
+        return;
+      }
+      messageEl.textContent = data.message || (data.ok ? "OK" : "Login failed");
       messageEl.style.color = data.ok ? "#137b26" : "#a02727";
       if (data.ok) {
         await updateUserBadge();
@@ -1046,7 +1062,7 @@ const loadProjects = async ({ append = false } = {}) => {
     params.set("category", projectsState.category);
     params.set("page", String(projectsState.page));
     params.set("limit", String(projectsState.limit));
-    const response = await fetch(`/api/projects?${params}`);
+    const response = await apiFetch(`/api/projects?${params}`);
     if (!response.ok) throw new Error("api");
     const data = await response.json();
     let pins = data.pins || [];
@@ -1060,7 +1076,7 @@ const loadProjects = async ({ append = false } = {}) => {
     } else {
       if (projectsTotalEl) projectsTotalEl.textContent = String(data.total || pins.length);
       if (!append && featuredProjects) {
-        const featRes = await fetch("/api/projects?sort=most-viewed&limit=3");
+        const featRes = await apiFetch("/api/projects?sort=most-viewed&limit=3");
         const featData = await featRes.json();
         renderFeaturedProjects(featData.pins || pins);
       }
@@ -1118,7 +1134,7 @@ const loadPins = async ({ append = false, limit, category, sort } = {}) => {
     params.set("page", String(feedState.page));
     params.set("limit", String(limit || feedState.limit));
     const query = params.toString();
-    const response = await fetch(`/api/pins${query ? `?${query}` : ""}`);
+    const response = await apiFetch(`/api/pins${query ? `?${query}` : ""}`);
     if (!response.ok) throw new Error("api");
     const data = await response.json();
     let pins = data.pins || [];
@@ -1150,7 +1166,7 @@ const loadPins = async ({ append = false, limit, category, sort } = {}) => {
 const loadMyPins = async () => {
   if (!myPinsGrid && !profileMyGrid) return;
   try {
-    const response = await fetch("/api/my-pins");
+    const response = await apiFetch("/api/my-pins");
     const data = await response.json();
     if (!data.ok) {
       if (myPinsGrid) myPinsGrid.innerHTML = "<p class='empty-state'>Login to manage your designs.</p>";
@@ -1167,7 +1183,7 @@ const loadMyPins = async () => {
 const loadSavedPins = async () => {
   if (!savedPinsGrid && !profileSavedGrid) return;
   try {
-    const response = await fetch("/api/saved-pins");
+    const response = await apiFetch("/api/saved-pins");
     const data = await response.json();
     if (!data.ok) {
       if (savedPinsGrid) savedPinsGrid.innerHTML = "<p class='empty-state'>Login first to view saved designs.</p>";
@@ -1184,7 +1200,7 @@ const loadSavedPins = async () => {
 const loadLikedPins = async () => {
   if (!profileLikedGrid) return;
   try {
-    const response = await fetch("/api/liked-pins");
+    const response = await apiFetch("/api/liked-pins");
     const data = await response.json();
     if (!data.ok) {
       profileLikedGrid.innerHTML = "<p class='empty-state'>Login first to view liked designs.</p>";
@@ -1251,7 +1267,7 @@ const setupUploadForm = () => {
     formData.set("forSale", forSaleEl?.checked ? "true" : "false");
 
     try {
-      const response = await fetch("/api/pins", {
+      const response = await apiFetch("/api/pins", {
         method: "POST",
         body: formData,
       });
@@ -1296,7 +1312,7 @@ const setupPinterestImport = () => {
     };
 
     try {
-      const response = await fetch("/api/pins/from-pinterest", {
+      const response = await apiFetch("/api/pins/from-pinterest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -1499,8 +1515,8 @@ const openPinDetail = async (pinId) => {
 
   try {
     const [pinRes, commentsRes] = await Promise.all([
-      fetch(`/api/pins/${pinId}`),
-      fetch(`/api/pins/${pinId}/comments`),
+      apiFetch(`/api/pins/${pinId}`),
+      apiFetch(`/api/pins/${pinId}/comments`),
     ]);
     const data = await pinRes.json();
     const commentsData = await commentsRes.json();
@@ -1538,7 +1554,7 @@ const bindCommentForm = () => {
     const pinId = form.dataset.pinId;
     const text = new FormData(form).get("text");
     try {
-      const response = await fetch(`/api/pins/${pinId}/comments`, {
+      const response = await apiFetch(`/api/pins/${pinId}/comments`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
@@ -1632,7 +1648,7 @@ const setupOrderModal = () => {
     const messageEl = document.getElementById("orderMessage");
     const payload = Object.fromEntries(new FormData(form).entries());
     try {
-      const response = await fetch("/api/orders", {
+      const response = await apiFetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -1660,7 +1676,7 @@ const setupOrderModal = () => {
 
 const shareDesign = async (pinId) => {
   try {
-    const response = await fetch(`/api/pins/${pinId}/share`, { method: "POST" });
+    const response = await apiFetch(`/api/pins/${pinId}/share`, { method: "POST" });
     const data = await response.json();
     if (!data.ok) {
       alert(data.message || "Share dështoi.");
@@ -1718,7 +1734,7 @@ const loadMyOrders = async () => {
     return;
   }
   try {
-    const response = await fetch("/api/orders/mine");
+    const response = await apiFetch("/api/orders/mine");
     const data = await response.json();
     const orders = data.orders || [];
     if (!orders.length) {
@@ -1738,7 +1754,7 @@ const loadSellerOrders = async () => {
     return;
   }
   try {
-    const response = await fetch("/api/seller/orders");
+    const response = await apiFetch("/api/seller/orders");
     const data = await response.json();
     const orders = data.orders || [];
     if (!orders.length) {
@@ -1748,7 +1764,7 @@ const loadSellerOrders = async () => {
     sellerOrdersList.innerHTML = orders.map((o) => orderCardMarkup(o, { seller: true })).join("");
     sellerOrdersList.querySelectorAll("[data-order-status]").forEach((select) => {
       select.addEventListener("change", async () => {
-        const response = await fetch(`/api/orders/${select.dataset.orderStatus}/status`, {
+        const response = await apiFetch(`/api/orders/${select.dataset.orderStatus}/status`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status: select.value }),
@@ -1779,7 +1795,7 @@ const setupEditModal = () => {
   editPinForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch(`/api/pins/${editPinId.value}`, {
+      const response = await apiFetch(`/api/pins/${editPinId.value}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1861,7 +1877,7 @@ const setupPinActions = () => {
         }
 
         if (action === "like" || action === "save") {
-          const response = await fetch(`/api/pins/${pinId}/${action}`, { method: "POST" });
+          const response = await apiFetch(`/api/pins/${pinId}/${action}`, { method: "POST" });
           const data = await response.json();
           if (!data.ok) {
             alert(data.message || "Please login first.");
@@ -1871,7 +1887,7 @@ const setupPinActions = () => {
 
         if (action === "delete") {
           if (!confirm("Delete this design?")) return;
-          const response = await fetch(`/api/pins/${pinId}`, { method: "DELETE" });
+          const response = await apiFetch(`/api/pins/${pinId}`, { method: "DELETE" });
           const data = await response.json();
           if (!data.ok) {
             alert(data.message || "Delete failed.");
@@ -1977,7 +1993,7 @@ const setupProfileBio = () => {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch("/api/profile", {
+      const response = await apiFetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -2082,7 +2098,7 @@ const loadAdminOrders = async () => {
   if (!list) return;
   const status = document.getElementById("adminOrderFilter")?.value || "all";
   try {
-    const response = await fetch(`/api/admin/orders?status=${encodeURIComponent(status)}`);
+    const response = await apiFetch(`/api/admin/orders?status=${encodeURIComponent(status)}`);
     const data = await response.json();
     if (!data.ok) {
       list.innerHTML = `<p class="empty-state">${escapeHtml(data.message || t("admin.gate"))}</p>`;
@@ -2096,7 +2112,7 @@ const loadAdminOrders = async () => {
     list.innerHTML = orders.map((o) => orderCardMarkup(o, { seller: true })).join("");
     list.querySelectorAll("[data-order-status]").forEach((select) => {
       select.addEventListener("change", async () => {
-        const res = await fetch(`/api/orders/${select.dataset.orderStatus}/status`, {
+        const res = await apiFetch(`/api/orders/${select.dataset.orderStatus}/status`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ status: select.value }),
@@ -2115,7 +2131,7 @@ const loadAdminDesigns = async () => {
   const wrap = document.getElementById("adminDesignsList");
   if (!wrap) return;
   try {
-    const response = await fetch("/api/admin/designs");
+    const response = await apiFetch("/api/admin/designs");
     const data = await response.json();
     const pins = data.pins || [];
     if (!pins.length) {
@@ -2166,7 +2182,7 @@ const loadAdminDesigns = async () => {
     wrap.querySelectorAll('button[data-action="delete"]').forEach((btn) => {
       btn.addEventListener("click", async () => {
         if (!confirm(currentLang === "sq" ? "Fshi këtë dizajn?" : "Delete this design?")) return;
-        const res = await fetch(`/api/pins/${btn.dataset.id}`, { method: "DELETE" });
+        const res = await apiFetch(`/api/pins/${btn.dataset.id}`, { method: "DELETE" });
         const payload = await res.json();
         alert(payload.message || (payload.ok ? "Deleted" : "Failed"));
         if (payload.ok) loadAdminDesigns();
