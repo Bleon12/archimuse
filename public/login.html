@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ArchiMuse | Login</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">ArchiMuse</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore</a>
+        <a href="projects.html">Projects</a>
+        <a href="upload.html">Upload</a>
+        <a href="saved.html">Saved</a>
+        <a href="profile.html">Profile</a>
+        <a href="login.html" class="active">Login</a>
+      </nav>
+      <div class="topbar-right">
+        <div class="mode-switch">
+          <button class="mode-btn" data-theme="light">Light</button>
+          <button class="mode-btn" data-theme="cream">Cream</button>
+          <button class="mode-btn" data-theme="dark">Dark</button>
+        </div>
+        <span id="userBadge" class="user-badge"></span>
+      </div>
+    </header>
+
+    <main class="login-wrap">
+      <section class="login-card reveal">
+        <h1>Account Access</h1>
+        <p>Create an account or login to upload architecture pins.</p>
+        <div class="auth-tabs">
+          <button id="loginTab" class="tab-btn active" type="button">Login</button>
+          <button id="registerTab" class="tab-btn" type="button">Register</button>
+        </div>
+        <form id="loginForm">
+          <div id="nameFieldWrap" class="hidden">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" placeholder="Your name" />
+          </div>
+
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required />
+
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" placeholder="********" required />
+
+          <button id="authSubmitBtn" type="submit" class="btn">Login</button>
+          <p id="loginMessage" class="message"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

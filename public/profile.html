@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="sq">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ArchiMuse | Profili</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">ArchiMuse</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="explore.html">Katalogu</a>
+        <a href="projects.html">Koleksioni</a>
+        <a href="upload.html">Ngarko</a>
+        <a href="saved.html">Saved</a>
+        <a href="profile.html" class="active">Profili</a>
+        <a href="login.html">Login</a>
+      </nav>
+      <div class="topbar-right">
+        <div class="mode-switch">
+          <button class="mode-btn" data-theme="light">Light</button>
+          <button class="mode-btn" data-theme="cream">Cream</button>
+          <button class="mode-btn" data-theme="dark">Dark</button>
+        </div>
+        <span id="userBadge" class="user-badge"></span>
+      </div>
+    </header>
+
+    <main class="profile-layout page-wrap">
+      <aside class="profile-sidebar reveal">
+        <div class="profile-sidebar-head">
+          <span id="profileAvatar" class="profile-avatar">U</span>
+          <div>
+            <h1>Profili im</h1>
+            <p id="profileStats" class="profile-stats">Duke ngarkuar…</p>
+          </div>
+        </div>
+
+        <nav class="profile-side-nav" aria-label="Seksionet e profilit">
+          <button class="profile-side-btn active" data-profile-tab="settings">Cilësimet</button>
+          <button class="profile-side-btn" data-profile-tab="orders">Porositë</button>
+          <button class="profile-side-btn" data-profile-tab="my">Dizajnet e mia</button>
+          <button class="profile-side-btn" data-profile-tab="saved">Të ruajtura</button>
+          <button class="profile-side-btn" data-profile-tab="liked">Të pëlqyera</button>
+          <button class="profile-side-btn seller-only hidden" data-profile-tab="seller-orders">Kërkesat e klientëve</button>
+        </nav>
+      </aside>
+
+      <div class="profile-main">
+        <section id="profileSettingsPanel" class="profile-bio-box reveal">
+          <h2>Cilësimet & bio</h2>
+          <p class="page-subtitle">Informacioni shfaqet në llogarinë tënde.</p>
+          <form id="profileBioForm">
+            <label for="profileName">Emri</label>
+            <input id="profileName" type="text" placeholder="Emri yt" required />
+            <label for="profileBio">Bio</label>
+            <textarea id="profileBio" rows="4" maxlength="280" placeholder="p.sh. Dizajner / klient i studios…"></textarea>
+            <button type="submit" class="btn">Ruaj profilin</button>
+            <p id="profileMessage" class="message"></p>
+          </form>
+        </section>
+
+        <section id="profileOrdersPanel" class="orders-panel hidden">
+          <h2>Porositë / kërkesat e mia</h2>
+          <p class="page-subtitle">Statusi: në pritje, e konfirmuar, e përfunduar ose e anuluar.</p>
+          <div id="profileOrdersList" class="orders-list">
+            <p class="empty-state">Duke ngarkuar porositë…</p>
+          </div>
+        </section>
+
+        <section id="sellerOrdersPanel" class="orders-panel hidden">
+          <h2>Kërkesat e klientëve</h2>
+          <p class="page-subtitle">Ndrysho statusin e porosive që vijnë nga formulari i blerjes.</p>
+          <div id="sellerOrdersList" class="orders-list">
+            <p class="empty-state">Duke ngarkuar…</p>
+          </div>
+        </section>
+
+        <section id="profileMyGrid" class="pins-grid masonry-grid hidden"></section>
+        <section id="profileSavedGrid" class="pins-grid masonry-grid hidden"></section>
+        <section id="profileLikedGrid" class="pins-grid masonry-grid hidden"></section>
+      </div>
+    </main>
+
+    <div id="editModal" class="modal hidden">
+      <div class="modal-card">
+        <h3>Ndrysho dizajnin</h3>
+        <form id="editPinForm">
+          <input type="hidden" id="editPinId" />
+          <label for="editTitle">Titulli</label>
+          <input id="editTitle" type="text" required />
+          <label for="editBio">Bio</label>
+          <textarea id="editBio" rows="3"></textarea>
+          <label for="editCategory">Kategoria</label>
+          <select id="editCategory" required>
+            <option value="modern">Modern</option>
+            <option value="minimal">Minimal</option>
+            <option value="brutalist">Brutalist</option>
+            <option value="interior">Interior</option>
+            <option value="landscape">Landscape</option>
+            <option value="futuristic">Futuristic</option>
+          </select>
+          <div class="modal-actions">
+            <button type="button" id="cancelEditBtn" class="small-btn">Anulo</button>
+            <button type="submit" class="btn">Ruaj</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="pinDetailModal" class="modal hidden">
+      <div class="modal-card detail-modal">
+        <button id="closeDetailBtn" class="close-btn" type="button" aria-label="Close">×</button>
+        <div id="pinDetailContent" class="detail-content"></div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

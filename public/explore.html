@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="sq">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ArchiMuse | Katalogu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">ArchiMuse</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="explore.html" class="active">Katalogu</a>
+        <a href="projects.html">Koleksioni</a>
+        <a href="upload.html">Ngarko</a>
+        <a href="saved.html">Saved</a>
+        <a href="profile.html">Profili</a>
+        <a href="login.html">Login</a>
+      </nav>
+      <div class="topbar-right">
+        <div class="mode-switch">
+          <button class="mode-btn" data-theme="light">Light</button>
+          <button class="mode-btn" data-theme="cream">Cream</button>
+          <button class="mode-btn" data-theme="dark">Dark</button>
+        </div>
+        <span id="userBadge" class="user-badge"></span>
+      </div>
+    </header>
+
+    <main class="page-wrap">
+      <h1>Katalogu i dizajneve</h1>
+      <p class="page-subtitle">Shiko, pëlqe, ruaj, ndaj dhe blej dizajnet e studios.</p>
+
+      <section class="search-panel reveal">
+        <form id="searchForm" class="search-form">
+          <input id="searchInput" name="search" type="text" placeholder="Kërko sipas titullit ose bio-s…" />
+          <select id="categoryFilter" name="category">
+            <option value="all">Të gjitha kategoritë</option>
+            <option value="modern">Modern</option>
+            <option value="minimal">Minimal</option>
+            <option value="brutalist">Brutalist</option>
+            <option value="interior">Interior</option>
+            <option value="landscape">Landscape</option>
+            <option value="futuristic">Futuristic</option>
+          </select>
+          <select id="sortFilter" name="sort">
+            <option value="latest">Më të rejat</option>
+            <option value="trending">Trending</option>
+            <option value="most-liked">Më të pëlqyerat</option>
+            <option value="most-saved">Më të ruajturat</option>
+            <option value="most-viewed">Më të shikuara</option>
+          </select>
+          <button class="btn" type="submit">Filtro</button>
+        </form>
+      </section>
+
+      <section id="pinsGrid" class="pins-grid masonry-grid">
+        <p class="empty-state">Duke ngarkuar…</p>
+      </section>
+      <section id="feedSkeleton" class="pins-grid masonry-grid skeleton-grid hidden"></section>
+    </main>
+
+    <div id="pinDetailModal" class="modal hidden">
+      <div class="modal-card detail-modal">
+        <button id="closeDetailBtn" class="close-btn" type="button" aria-label="Close">×</button>
+        <div id="pinDetailContent" class="detail-content"></div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

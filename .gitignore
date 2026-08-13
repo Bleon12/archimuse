@@ -1,0 +1,10 @@
+node_modules/
+public/uploads/*
+!public/uploads/.gitkeep
+data/sessions.json
+.env
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+*.code-workspace

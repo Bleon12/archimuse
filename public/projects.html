@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="sq">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ArchiMuse | Projects</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="projects-page">
+    <header class="topbar">
+      <div class="brand">ArchiMuse</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore</a>
+        <a href="projects.html" class="active">Projects</a>
+        <a href="upload.html">Upload</a>
+        <a href="saved.html">Saved</a>
+        <a href="profile.html">Profile</a>
+        <a href="login.html">Login</a>
+      </nav>
+      <div class="topbar-right">
+        <div class="mode-switch">
+          <button class="mode-btn" data-theme="light">Light</button>
+          <button class="mode-btn" data-theme="cream">Cream</button>
+          <button class="mode-btn" data-theme="dark">Dark</button>
+        </div>
+        <span id="userBadge" class="user-badge"></span>
+      </div>
+    </header>
+
+    <main class="projects-main">
+      <section class="projects-hero reveal">
+        <div class="projects-hero-glow"></div>
+        <p class="hero-eyebrow">Pinterest Architecture Feed</p>
+        <h1>Projekte që ndryshojnë çdo ditë</h1>
+        <p class="projects-hero-text">
+          Më të shikuarat shfaqen në krye. Renditja përditësohet automatikisht sipas
+          shikimeve, pëlqimeve dhe trendit — si një feed i vërtetë Pinterest.
+        </p>
+        <div class="projects-stats">
+          <div class="stat-pill"><span id="projectsTotal">—</span> projekte</div>
+          <div class="stat-pill live-pill"><span class="live-dot"></span> Live trending</div>
+        </div>
+      </section>
+
+      <section class="projects-toolbar reveal">
+        <div class="projects-filters">
+          <button class="filter-chip active" data-project-sort="trending" type="button">🔥 Trending</button>
+          <button class="filter-chip" data-project-sort="most-viewed" type="button">👁 Më të shikuara</button>
+          <button class="filter-chip" data-project-sort="most-liked" type="button">♥ Më të pëlqyera</button>
+          <button class="filter-chip" data-project-sort="latest" type="button">✦ Të rejat</button>
+        </div>
+        <select id="projectCategoryFilter" class="project-category-select">
+          <option value="all">Të gjitha kategoritë</option>
+          <option value="modern">Modern</option>
+          <option value="minimal">Minimal</option>
+          <option value="brutalist">Brutalist</option>
+          <option value="interior">Interior</option>
+          <option value="landscape">Landscape</option>
+          <option value="futuristic">Futuristic</option>
+        </select>
+      </section>
+
+      <section class="featured-projects-wrap">
+        <h2 class="section-label reveal">Më të shikuarat tani</h2>
+        <div id="featuredProjects" class="featured-projects"></div>
+      </section>
+
+      <section class="projects-grid-wrap">
+        <h2 class="section-label reveal">Eksploro projekte</h2>
+        <div id="projectsGrid" class="projects-masonry">
+          <p class="empty-state">Duke ngarkuar projekte…</p>
+        </div>
+        <section id="feedSkeleton" class="projects-masonry skeleton-grid hidden"></section>
+        <p id="projectsEndHint" class="projects-end-hint hidden">Scroll për më shumë projekte Pinterest ↓</p>
+      </section>
+    </main>
+
+    <div id="pinDetailModal" class="modal hidden">
+      <div class="modal-card detail-modal">
+        <button id="closeDetailBtn" class="close-btn" type="button" aria-label="Close">×</button>
+        <div id="pinDetailContent" class="detail-content"></div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

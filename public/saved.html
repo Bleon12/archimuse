@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ArchiMuse | Saved Pins</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">ArchiMuse</div>
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="explore.html">Explore</a>
+        <a href="projects.html">Projects</a>
+        <a href="upload.html">Upload</a>
+        <a href="saved.html" class="active">Saved</a>
+        <a href="profile.html">Profile</a>
+        <a href="login.html">Login</a>
+      </nav>
+      <div class="topbar-right">
+        <div class="mode-switch">
+          <button class="mode-btn" data-theme="light">Light</button>
+          <button class="mode-btn" data-theme="cream">Cream</button>
+          <button class="mode-btn" data-theme="dark">Dark</button>
+        </div>
+        <span id="userBadge" class="user-badge"></span>
+      </div>
+    </header>
+
+    <main class="page-wrap">
+      <h1>Saved Pins</h1>
+      <p>Your Pinterest-style personal collection.</p>
+      <section id="savedPinsGrid" class="pins-grid"></section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

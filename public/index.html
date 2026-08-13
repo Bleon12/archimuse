@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="sq">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ArchiMuse | Studio Dizajni</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">ArchiMuse</div>
+      <nav>
+        <a href="index.html" class="active">Home</a>
+        <a href="explore.html">Katalogu</a>
+        <a href="projects.html">Koleksioni</a>
+        <a href="upload.html">Ngarko</a>
+        <a href="saved.html">Saved</a>
+        <a href="profile.html">Profili</a>
+        <a href="login.html">Login</a>
+      </nav>
+      <div class="topbar-right">
+        <div class="mode-switch">
+          <button class="mode-btn" data-theme="light">Light</button>
+          <button class="mode-btn" data-theme="cream">Cream</button>
+          <button class="mode-btn" data-theme="dark">Dark</button>
+        </div>
+        <span id="userBadge" class="user-badge"></span>
+      </div>
+    </header>
+
+    <main class="hero-page">
+      <section class="hero hero--video">
+        <div class="hero-content reveal">
+        <p class="hero-eyebrow">Studio dizajni & shitje</p>
+        <h1>ArchiMuse</h1>
+        <p>
+          Shiko dizajnet tona, pëlqe, ruaj, ndaj dhe blej direkt nga katalogu.
+          Apliko për pagesë online ose cash — kërkesa kalon në statusin “në pritje”.
+        </p>
+        <div class="hero-actions">
+          <a class="btn" href="explore.html">Shiko katalogun</a>
+          <a class="btn btn-outline" href="projects.html">Koleksioni</a>
+          <a class="btn btn-ghost" href="profile.html#orders">Porositë e mia</a>
+        </div>
+        </div>
+      </section>
+
+      <section class="section-header">
+        <h2>Dizajne në shitje</h2>
+        <p>Hap çdo dizajn për like, koment, share dhe formular blerjeje.</p>
+      </section>
+
+      <section id="homeDecorGrid" class="pins-grid masonry-grid">
+        <p class="empty-state">Duke ngarkuar dizajnet…</p>
+      </section>
+      <section id="feedSkeleton" class="pins-grid masonry-grid skeleton-grid hidden"></section>
+    </main>
+
+    <div id="pinDetailModal" class="modal hidden">
+      <div class="modal-card detail-modal">
+        <button id="closeDetailBtn" class="close-btn" type="button" aria-label="Close">×</button>
+        <div id="pinDetailContent" class="detail-content"></div>
+      </div>
+    </div>
+
+    <div id="orderModal" class="modal hidden">
+      <div class="modal-card order-modal">
+        <button id="closeOrderBtn" class="close-btn" type="button" aria-label="Close">×</button>
+        <h3>Apliko për blerje</h3>
+        <p id="orderDesignLabel" class="page-subtitle"></p>
+        <form id="orderForm">
+          <input type="hidden" id="orderPinId" name="pinId" />
+          <label for="orderFullName">Emri i plotë</label>
+          <input id="orderFullName" name="fullName" type="text" required placeholder="Emri dhe mbiemri" />
+          <label for="orderEmail">Email</label>
+          <input id="orderEmail" name="email" type="email" required placeholder="email@example.com" />
+          <label for="orderPhone">Telefon</label>
+          <input id="orderPhone" name="phone" type="tel" required placeholder="+383 ..." />
+          <label for="orderCity">Qyteti</label>
+          <input id="orderCity" name="city" type="text" placeholder="Prishtinë" />
+          <label for="orderAddress">Adresa</label>
+          <textarea id="orderAddress" name="address" rows="2" required placeholder="Rruga, numri…"></textarea>
+          <label for="orderPayment">Mënyra e pagesës</label>
+          <select id="orderPayment" name="paymentMethod" required>
+            <option value="online">Online</option>
+            <option value="cash">Cash</option>
+          </select>
+          <label for="orderNotes">Shënim (opsional)</label>
+          <textarea id="orderNotes" name="notes" rows="2" placeholder="Detaje shtesë për porosinë…"></textarea>
+          <button type="submit" class="btn">Dërgo kërkesën</button>
+          <p id="orderMessage" class="message"></p>
+        </form>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
