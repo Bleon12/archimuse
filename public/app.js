@@ -69,6 +69,18 @@ const I18N = {
     "order.title": "Buy request",
     "order.submit": "Send request",
     "forSale": "For sale",
+    "admin.title": "Admin panel",
+    "admin.sub": "Add designs, manage catalog, and review buy requests from clients.",
+    "admin.tabOrders": "Buy requests",
+    "admin.tabDesigns": "All designs",
+    "admin.tabUpload": "Add design",
+    "admin.refresh": "Refresh",
+    "admin.gate": "Admin login required.",
+    "admin.noOrders": "No buy requests yet.",
+    "account.menu": "My account",
+    "account.data": "Your account data",
+    "account.orders": "My buy requests",
+    "buy.needLogin": "Please login to send a buy request to the admin.",
   },
   sq: {
     "nav.home": "Ballina",
@@ -137,6 +149,18 @@ const I18N = {
     "order.title": "Kërkesë blerjeje",
     "order.submit": "Dërgo kërkesën",
     "forSale": "Në shitje",
+    "admin.title": "Paneli admin",
+    "admin.sub": "Shto dizajne, menaxho katalogun dhe shiko kërkesat e blerjes.",
+    "admin.tabOrders": "Kërkesat e blerjes",
+    "admin.tabDesigns": "Të gjitha dizajnet",
+    "admin.tabUpload": "Shto dizajn",
+    "admin.refresh": "Rifresko",
+    "admin.gate": "Duhet login si admin.",
+    "admin.noOrders": "Nuk ka ende kërkesa blerjeje.",
+    "account.menu": "Llogaria ime",
+    "account.data": "Të dhënat e llogarisë",
+    "account.orders": "Kërkesat e mia",
+    "buy.needLogin": "Hyr në llogari për të dërguar kërkesën e blerjes te admini.",
   },
 };
 
@@ -424,18 +448,27 @@ const logoutUser = async () => {
 };
 
 const updateNavAuth = () => {
-  const loginLink = document.querySelector('nav a[href="login.html"], nav a[data-nav-auth]');
+  const loginLink = document.querySelector('nav a[href="login.html"], nav a[href="profile.html"][data-i18n="nav.login"], nav a[data-nav-auth]');
+  const nav = document.querySelector("nav.main-nav, nav[data-nav], nav");
+
+  if (nav && currentUser?.isAdmin && !nav.querySelector('a[href="admin.html"]')) {
+    const adminLink = document.createElement("a");
+    adminLink.href = "admin.html";
+    adminLink.textContent = "Admin";
+    nav.insertBefore(adminLink, nav.lastElementChild);
+  }
+
   if (loginLink) {
     if (currentUser) {
       loginLink.href = "profile.html";
       loginLink.textContent = t("nav.profile");
       loginLink.setAttribute("data-i18n", "nav.profile");
-      loginLink.classList.toggle("active", window.location.pathname.endsWith("profile.html"));
+      loginLink.classList.toggle("active", /profile\.html/.test(window.location.pathname));
     } else {
       loginLink.href = "login.html";
       loginLink.textContent = t("nav.login");
       loginLink.setAttribute("data-i18n", "nav.login");
-      loginLink.classList.toggle("active", window.location.pathname.endsWith("login.html"));
+      loginLink.classList.toggle("active", /login\.html/.test(window.location.pathname));
     }
   }
 
@@ -443,6 +476,8 @@ const updateNavAuth = () => {
     window.location.replace("profile.html");
     return;
   }
+
+  ensureAccountMenuButton();
 
   if (userBadge) {
     if (currentUser) {
@@ -456,11 +491,35 @@ const updateNavAuth = () => {
     }
   }
 
-  document.querySelectorAll(".seller-only").forEach((el) => {
-    el.classList.toggle("hidden", !(currentUser && currentUser.isSeller));
+  document.querySelectorAll(".seller-only, .admin-only").forEach((el) => {
+    el.classList.toggle("hidden", !(currentUser && currentUser.isAdmin));
   });
 
+  if (currentUser) {
+    updateAccountDrawerContent();
+    bindAccountDrawerEvents();
+  } else {
+    closeAccountDrawer();
+  }
+
   refreshProfileForm();
+  if (document.body.classList.contains("admin-page")) setupAdminPanel();
+};
+
+const ensureAccountMenuButton = () => {
+  const right = document.querySelector(".topbar-right");
+  if (!right) return;
+  let btn = document.getElementById("accountMenuBtn");
+  if (!btn) {
+    btn = document.createElement("button");
+    btn.id = "accountMenuBtn";
+    btn.type = "button";
+    btn.className = "account-menu-btn";
+    btn.setAttribute("aria-label", "Account menu");
+    btn.textContent = "☰";
+    right.insertBefore(btn, right.firstChild);
+  }
+  btn.classList.toggle("hidden", !currentUser);
 };
 
 let accountDrawerBound = false;
@@ -477,9 +536,10 @@ const closeAccountDrawer = () => {
 };
 
 const openAccountDrawer = () => {
+  ensureAccountDrawerExists();
   const drawer = document.getElementById("accountDrawer");
   const overlay = document.getElementById("accountOverlay");
-  const btn = document.getElementById("authBurgerBtn");
+  const btn = document.getElementById("accountMenuBtn");
   updateAccountDrawerContent();
   drawer?.classList.add("open");
   overlay?.classList.add("open");
@@ -488,15 +548,41 @@ const openAccountDrawer = () => {
   document.body.classList.add("account-drawer-open");
 };
 
+const ensureAccountDrawerExists = () => {
+  if (document.getElementById("accountDrawer")) return;
+  const overlay = document.createElement("div");
+  overlay.id = "accountOverlay";
+  overlay.className = "account-overlay";
+  const drawer = document.createElement("aside");
+  drawer.id = "accountDrawer";
+  drawer.className = "account-drawer";
+  drawer.setAttribute("aria-label", "Account menu");
+  document.body.appendChild(overlay);
+  document.body.appendChild(drawer);
+};
+
+const setupAccountDrawer = () => {
+  ensureAccountDrawerExists();
+  bindAccountDrawerEvents();
+};
+
 const updateAccountDrawerContent = () => {
   const drawer = document.getElementById("accountDrawer");
   if (!drawer || !currentUser) return;
 
-  const bioText = currentUser.bio?.trim() || "Shto bio-n tënde";
-  const pinCount = currentUser.pinCount ?? 0;
-  const savedCount = currentUser.savedCount ?? 0;
-  const likedCount = currentUser.likedCount ?? 0;
-  const activeTheme = localStorage.getItem(THEME_KEY) || "cream";
+  const roleLabel =
+    currentUser.role === "admin"
+      ? "Admin"
+      : currentUser.isSeller
+        ? currentLang === "sq"
+          ? "Shitës"
+          : "Seller"
+        : currentLang === "sq"
+          ? "Klient"
+          : "Client";
+  const joined = currentUser.createdAt
+    ? new Date(currentUser.createdAt).toLocaleDateString(currentLang === "sq" ? "sq-AL" : "en-US")
+    : "—";
 
   drawer.innerHTML = `
     <div class="account-drawer-header">
@@ -504,78 +590,45 @@ const updateAccountDrawerContent = () => {
         <span class="user-avatar user-avatar--lg">${escapeHtml(currentUser.initials || currentUser.name?.[0] || "U")}</span>
         <div>
           <strong>${escapeHtml(currentUser.name)}</strong>
-          <p>${escapeHtml(truncate(bioText, 72))}</p>
+          <p>${escapeHtml(roleLabel)}</p>
         </div>
       </div>
-      <button type="button" class="account-drawer-close" aria-label="Mbyll">×</button>
+      <button type="button" class="account-drawer-close" aria-label="Close">×</button>
     </div>
     <div class="account-drawer-body">
-      <div class="drawer-stats">
-        <a href="profile.html#my"><span>${pinCount}</span><small>Postime</small></a>
-        <a href="profile.html#saved"><span>${savedCount}</span><small>Të ruajtura</small></a>
-        <a href="profile.html#liked"><span>${likedCount}</span><small>Të pëlqyera</small></a>
-      </div>
-
       <section class="drawer-section">
-        <h4>Eksploro</h4>
-        <a href="index.html" class="drawer-link">🏠 Home</a>
-        <a href="explore.html" class="drawer-link">🔍 Explore</a>
-        <a href="projects.html" class="drawer-link">📐 Projects</a>
+        <h4>${escapeHtml(t("account.data"))}</h4>
+        <table class="account-data-table">
+          <tbody>
+            <tr><th>${currentLang === "sq" ? "Emri" : "Name"}</th><td>${escapeHtml(currentUser.name || "—")}</td></tr>
+            <tr><th>Email</th><td>${escapeHtml(currentUser.email || "—")}</td></tr>
+            <tr><th>Bio</th><td>${escapeHtml(currentUser.bio || "—")}</td></tr>
+            <tr><th>${currentLang === "sq" ? "Roli" : "Role"}</th><td>${escapeHtml(roleLabel)}</td></tr>
+            <tr><th>${currentLang === "sq" ? "Porosi" : "Orders"}</th><td>${currentUser.orderCount ?? 0}</td></tr>
+            <tr><th>${currentLang === "sq" ? "Të ruajtura" : "Saved"}</th><td>${currentUser.savedCount ?? 0}</td></tr>
+            <tr><th>${currentLang === "sq" ? "Të pëlqyera" : "Liked"}</th><td>${currentUser.likedCount ?? 0}</td></tr>
+            <tr><th>${currentLang === "sq" ? "Anëtar nga" : "Joined"}</th><td>${escapeHtml(joined)}</td></tr>
+          </tbody>
+        </table>
       </section>
 
       <section class="drawer-section">
-        <h4>Krijimi</h4>
-        <a href="upload.html" class="drawer-link drawer-link--primary">+ Ngarko dizajn</a>
-        <a href="upload.html#import" class="drawer-link">📌 Import Pinterest</a>
+        <h4>${currentLang === "sq" ? "Lidhje të shpejta" : "Quick links"}</h4>
+        <a href="profile.html#orders" class="drawer-link">${escapeHtml(t("account.orders"))}</a>
+        <a href="saved.html" class="drawer-link">${escapeHtml(t("nav.saved"))}</a>
+        <a href="profile.html#settings" class="drawer-link">${escapeHtml(t("profile.settings"))}</a>
+        ${currentUser.isAdmin ? '<a href="admin.html" class="drawer-link drawer-link--primary">Admin panel</a>' : ""}
+        ${currentUser.isAdmin ? `<a href="upload.html" class="drawer-link">${escapeHtml(t("profile.upload"))}</a>` : ""}
       </section>
 
-      <section class="drawer-section">
-        <h4>Llogaria & cilësimet</h4>
-        <a href="profile.html#settings" class="drawer-link">⚙️ Cilësimet & bio</a>
-        <a href="saved.html" class="drawer-link">💾 Të ruajtura (${savedCount})</a>
-        <a href="profile.html#liked" class="drawer-link">❤️ Të pëlqyera (${likedCount})</a>
-        <a href="profile.html#my" class="drawer-link">🖼️ Dizajnet e mia</a>
-      </section>
-
-      <section class="drawer-section">
-        <h4>Preferencat</h4>
-        <div class="drawer-theme-switch">
-          <button type="button" class="drawer-theme-btn ${activeTheme === "light" ? "active" : ""}" data-theme="light">Light</button>
-          <button type="button" class="drawer-theme-btn ${activeTheme === "cream" ? "active" : ""}" data-theme="cream">Cream</button>
-          <button type="button" class="drawer-theme-btn ${activeTheme === "dark" ? "active" : ""}" data-theme="dark">Dark</button>
-        </div>
-        <label class="drawer-toggle">
-          <input type="checkbox" id="drawerVideoBg" ${localStorage.getItem("archimuse-video-bg") !== "off" ? "checked" : ""} />
-          <span>Video background</span>
-        </label>
-        <label class="drawer-toggle">
-          <input type="checkbox" id="drawerAutoplay" ${localStorage.getItem("archimuse-autoplay") === "on" ? "checked" : ""} />
-          <span>Auto-play preview në modal</span>
-        </label>
-      </section>
-
-      <button type="button" id="drawerLogout" class="drawer-logout">Dil nga llogaria</button>
+      <button type="button" id="drawerLogout" class="drawer-logout">${escapeHtml(t("profile.logout"))}</button>
     </div>
   `;
 
   drawer.querySelector(".account-drawer-close")?.addEventListener("click", closeAccountDrawer);
   drawer.querySelector("#drawerLogout")?.addEventListener("click", logoutUser);
-  drawer.querySelectorAll(".drawer-link, .drawer-stats a").forEach((link) => {
+  drawer.querySelectorAll(".drawer-link").forEach((link) => {
     link.addEventListener("click", () => closeAccountDrawer());
-  });
-  drawer.querySelectorAll(".drawer-theme-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      localStorage.setItem(THEME_KEY, btn.dataset.theme);
-      applyTheme(btn.dataset.theme);
-      updateAccountDrawerContent();
-    });
-  });
-  drawer.querySelector("#drawerVideoBg")?.addEventListener("change", (e) => {
-    localStorage.setItem("archimuse-video-bg", e.target.checked ? "on" : "off");
-    toggleVideoBackground(e.target.checked);
-  });
-  drawer.querySelector("#drawerAutoplay")?.addEventListener("change", (e) => {
-    localStorage.setItem("archimuse-autoplay", e.target.checked ? "on" : "off");
   });
 };
 
@@ -586,32 +639,20 @@ const bindAccountDrawerEvents = () => {
   document.getElementById("accountOverlay")?.addEventListener("click", closeAccountDrawer);
 
   document.addEventListener("click", (event) => {
-    const btn = event.target.closest("#authBurgerBtn");
+    const btn = event.target.closest("#accountMenuBtn, #authBurgerBtn");
     if (!btn) return;
-    if (btn.classList.contains("open")) closeAccountDrawer();
+    if (!currentUser) {
+      window.location.href = "login.html";
+      return;
+    }
+    const drawer = document.getElementById("accountDrawer");
+    if (drawer?.classList.contains("open")) closeAccountDrawer();
     else openAccountDrawer();
   });
 
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape") closeAccountDrawer();
   });
-};
-
-const setupAccountDrawer = () => {
-  if (document.getElementById("accountDrawer")) return;
-
-  const overlay = document.createElement("div");
-  overlay.id = "accountOverlay";
-  overlay.className = "account-overlay";
-
-  const drawer = document.createElement("aside");
-  drawer.id = "accountDrawer";
-  drawer.className = "account-drawer";
-  drawer.setAttribute("aria-label", "Menyja e llogarisë");
-
-  document.body.appendChild(overlay);
-  document.body.appendChild(drawer);
-  bindAccountDrawerEvents();
 };
 
 const toggleVideoBackground = (enabled) => {
@@ -1389,6 +1430,55 @@ const closeEditModal = () => {
   editModal.classList.add("hidden");
 };
 
+const renderIgPostDetail = (pin, commentsMarkup) => {
+  pinDetailContent.innerHTML = `
+    <div class="ig-post">
+      <div class="ig-post-media">
+        <img src="${pin.imageUrl}" alt="${escapeHtml(pin.title)}" />
+      </div>
+      <div class="ig-post-side">
+        <header class="ig-post-header">
+          <span class="user-avatar">${escapeHtml((pin.user?.name || "S")[0])}</span>
+          <div>
+            <strong>${escapeHtml(pin.user?.name || "ArchiMuse Studio")}</strong>
+            <small>${escapeHtml(categoryLabel(pin.category))} · ${escapeHtml(pin.priceLabel || "")}</small>
+          </div>
+        </header>
+        <div class="ig-post-caption">
+          <p><strong>${escapeHtml(pin.title)}</strong></p>
+          <p>${escapeHtml(pin.bio || t("detail.noBio"))}</p>
+        </div>
+        <div class="ig-post-actions pin-actions">
+          <button class="small-btn ${pin.isLiked ? "active" : ""}" data-action="like" data-id="${pin._id}">♥ ${pin.likeCount || 0}</button>
+          <button class="small-btn ${pin.isSaved ? "active" : ""}" data-action="save" data-id="${pin._id}">★ ${pin.saveCount || 0}</button>
+          <button class="small-btn" data-action="share" data-id="${pin._id}">↗ ${escapeHtml(t("card.share"))}</button>
+          ${
+            pin.forSale !== false
+              ? `<button class="btn buy-btn" data-action="buy" data-id="${pin._id}" data-title="${encodeURIComponent(pin.title)}" data-price="${escapeHtml(pin.priceLabel || "")}">${escapeHtml(t("detail.buyNow"))}</button>`
+              : ""
+          }
+        </div>
+        <p class="ig-post-meta">👁 ${formatViews(pin.viewCount)} · ↗ ${pin.shareCount || 0}</p>
+        <div class="ig-comments comments-box">
+          <h3>${escapeHtml(t("detail.comments"))}</h3>
+          <div id="commentsList" class="ig-comments-list">${commentsMarkup}</div>
+          ${
+            String(pin._id).startsWith("demo-")
+              ? ""
+              : `<form id="commentForm" class="comment-form ig-comment-form" data-pin-id="${pin._id}">
+                  <textarea name="text" rows="2" maxlength="800" placeholder="${currentUser ? t("detail.commentPh") : t("detail.loginComment")}" ${currentUser ? "required" : "disabled"}></textarea>
+                  <button class="small-btn" type="submit" ${currentUser ? "" : "disabled"}>${escapeHtml(t("detail.send"))}</button>
+                </form>`
+          }
+        </div>
+      </div>
+    </div>
+  `;
+  pinDetailModal.classList.remove("hidden");
+  pinDetailModal.querySelector(".modal-card")?.classList.add("ig-modal");
+  bindCommentForm();
+};
+
 const openPinDetail = async (pinId) => {
   if (!pinDetailModal || !pinDetailContent) return;
 
@@ -1396,26 +1486,14 @@ const openPinDetail = async (pinId) => {
   if (demoPin || String(pinId).startsWith("demo-")) {
     const pin = demoPin || FALLBACK_DESIGNS[0];
     activeDetailPin = pin;
-    pinDetailContent.innerHTML = `
-      <img class="detail-image" src="${pin.imageUrl}" alt="${escapeHtml(pin.title)}" />
-      <div class="detail-body">
-        <div class="pin-meta-top">${sourceBadge(pin)}<span class="pin-category">${escapeHtml(categoryLabel(pin.category))}</span>${priceBadge(pin)}</div>
-        <h2>${escapeHtml(pin.title)}</h2>
-        <p class="detail-bio">${escapeHtml(pin.bio || t("detail.noBio"))}</p>
-        <p class="pin-author">By ${escapeHtml(pin.user?.name || "Studio")} · 👁 ${formatViews(pin.viewCount)}</p>
-        <div class="pin-actions">
-          <button class="small-btn" data-action="like" data-id="${pin._id}">♥ ${pin.likeCount || 0}</button>
-          <button class="small-btn" data-action="save" data-id="${pin._id}">★ ${pin.saveCount || 0}</button>
-          <button class="small-btn" data-action="share" data-id="${pin._id}">↗ ${escapeHtml(t("card.share"))}</button>
-          <button class="btn buy-btn" data-action="buy" data-id="${pin._id}" data-title="${encodeURIComponent(pin.title)}" data-price="${escapeHtml(pin.priceLabel || "")}">${escapeHtml(t("detail.buyNow"))}</button>
-        </div>
-        <div class="comments-box">
-          <h3>${escapeHtml(t("detail.comments"))}</h3>
-          <p class="empty-state">${currentLang === "sq" ? "Komentet aktivizohen kur katalogu lidhet me serverin." : "Comments activate when the shop is connected to the server."}</p>
-        </div>
-      </div>
-    `;
-    pinDetailModal.classList.remove("hidden");
+    renderIgPostDetail(
+      pin,
+      `<p class="empty-state">${
+        currentLang === "sq"
+          ? "Komentet aktivizohen kur katalogu lidhet me serverin."
+          : "Comments activate when the shop is connected to the server."
+      }</p>`
+    );
     return;
   }
 
@@ -1430,45 +1508,19 @@ const openPinDetail = async (pinId) => {
     const pin = data.pin;
     activeDetailPin = pin;
     const comments = commentsData.comments || [];
-
     const commentsMarkup = comments.length
       ? comments
           .map(
             (c) => `
-        <article class="comment-item">
+        <article class="comment-item ig-comment">
           <strong>${escapeHtml(c.user?.name || "User")}</strong>
-          <p>${escapeHtml(c.text)}</p>
+          <span>${escapeHtml(c.text)}</span>
           <small>${new Date(c.createdAt).toLocaleString(currentLang === "sq" ? "sq-AL" : "en-US")}</small>
         </article>`
           )
           .join("")
-      : `<p class="empty-state">${currentLang === "sq" ? "Ende nuk ka komente." : "No comments yet."}</p>`;
-
-    pinDetailContent.innerHTML = `
-      <img class="detail-image" src="${pin.imageUrl}" alt="${escapeHtml(pin.title)}" />
-      <div class="detail-body">
-        <div class="pin-meta-top">${sourceBadge(pin)}<span class="pin-category">${escapeHtml(categoryLabel(pin.category))}</span>${priceBadge(pin)}</div>
-        <h2>${escapeHtml(pin.title)}</h2>
-        <p class="detail-bio">${escapeHtml(pin.bio || t("detail.noBio"))}</p>
-        <p class="pin-author">By ${escapeHtml(pin.user?.name || "Studio")} · 👁 ${formatViews(pin.viewCount)} · ↗ ${pin.shareCount || 0}</p>
-        <div class="pin-actions">
-          <button class="small-btn ${pin.isLiked ? "active" : ""}" data-action="like" data-id="${pin._id}">♥ ${pin.likeCount || 0}</button>
-          <button class="small-btn ${pin.isSaved ? "active" : ""}" data-action="save" data-id="${pin._id}">★ ${pin.saveCount || 0}</button>
-          <button class="small-btn" data-action="share" data-id="${pin._id}">↗ ${escapeHtml(t("card.share"))}</button>
-          ${pin.forSale !== false ? `<button class="btn buy-btn" data-action="buy" data-id="${pin._id}" data-title="${encodeURIComponent(pin.title)}" data-price="${escapeHtml(pin.priceLabel || "")}">${escapeHtml(t("detail.buyNow"))}</button>` : ""}
-        </div>
-        <div class="comments-box">
-          <h3>${escapeHtml(t("detail.comments"))}</h3>
-          <div id="commentsList">${commentsMarkup}</div>
-          <form id="commentForm" class="comment-form" data-pin-id="${pin._id}">
-            <textarea name="text" rows="2" maxlength="800" placeholder="${currentUser ? t("detail.commentPh") : t("detail.loginComment")}" ${currentUser ? "required" : "disabled"}></textarea>
-            <button class="small-btn" type="submit" ${currentUser ? "" : "disabled"}>${escapeHtml(t("detail.send"))}</button>
-          </form>
-        </div>
-      </div>
-    `;
-    pinDetailModal.classList.remove("hidden");
-    bindCommentForm();
+      : `<p class="empty-state">${currentLang === "sq" ? "Ende nuk ka komente. Ji i pari." : "No comments yet. Be the first."}</p>`;
+    renderIgPostDetail(pin, commentsMarkup);
   } catch (_error) {
     /* ignore */
   }
@@ -1541,6 +1593,11 @@ const ensureOrderModal = () => {
 };
 
 const openOrderModal = (pinId, title, priceLabel) => {
+  if (!currentUser) {
+    alert(t("buy.needLogin"));
+    window.location.href = "login.html";
+    return;
+  }
   ensureOrderModal();
   const modal = document.getElementById("orderModal");
   const pinInput = document.getElementById("orderPinId");
@@ -1551,10 +1608,8 @@ const openOrderModal = (pinId, title, priceLabel) => {
   if (pinInput) pinInput.value = pinId;
   if (label) label.textContent = `${decodeURIComponent(title || "")}${priceLabel ? ` · ${priceLabel}` : ""}`;
   if (message) message.textContent = "";
-  if (currentUser) {
-    if (fullName && !fullName.value) fullName.value = currentUser.name || "";
-    if (email && !email.value) email.value = currentUser.email || "";
-  }
+  if (fullName) fullName.value = currentUser.name || "";
+  if (email) email.value = currentUser.email || "";
   modal.classList.remove("hidden");
 };
 
@@ -1768,6 +1823,11 @@ const setupPinActions = () => {
 
       try {
         if (action === "buy") {
+          if (!currentUser) {
+            alert(t("buy.needLogin"));
+            window.location.href = "login.html";
+            return;
+          }
           if (String(pinId).startsWith("demo-")) {
             alert(
               currentLang === "sq"
@@ -1974,6 +2034,149 @@ const setupProfileTabs = () => {
   activateTab(allowed.includes(hash) ? hash : "settings");
 };
 
+let adminPanelReady = false;
+const setupAdminPanel = () => {
+  if (!document.body.classList.contains("admin-page")) return;
+  const gate = document.getElementById("adminGate");
+  const ordersList = document.getElementById("adminOrdersList");
+  const designsList = document.getElementById("adminDesignsList");
+
+  if (!currentUser?.isAdmin) {
+    if (gate) {
+      gate.classList.remove("hidden");
+      gate.textContent =
+        currentLang === "sq"
+          ? "Hyr si admin: admin@archimuse.app / admin123"
+          : "Login as admin: admin@archimuse.app / admin123";
+    }
+    if (ordersList) ordersList.innerHTML = `<p class="empty-state">${t("admin.gate")}</p>`;
+    return;
+  }
+  if (gate) gate.classList.add("hidden");
+
+  const showTab = (tab) => {
+    document.querySelectorAll("[data-admin-tab]").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.adminTab === tab);
+    });
+    document.getElementById("adminOrdersPanel")?.classList.toggle("hidden", tab !== "orders");
+    document.getElementById("adminDesignsPanel")?.classList.toggle("hidden", tab !== "designs");
+    document.getElementById("adminUploadPanel")?.classList.toggle("hidden", tab !== "upload");
+    if (tab === "orders") loadAdminOrders();
+    if (tab === "designs") loadAdminDesigns();
+  };
+
+  if (!adminPanelReady) {
+    adminPanelReady = true;
+    document.querySelectorAll("[data-admin-tab]").forEach((btn) => {
+      btn.addEventListener("click", () => showTab(btn.dataset.adminTab));
+    });
+    document.getElementById("refreshAdminOrders")?.addEventListener("click", loadAdminOrders);
+    document.getElementById("adminOrderFilter")?.addEventListener("change", loadAdminOrders);
+  }
+
+  showTab("orders");
+};
+
+const loadAdminOrders = async () => {
+  const list = document.getElementById("adminOrdersList");
+  if (!list) return;
+  const status = document.getElementById("adminOrderFilter")?.value || "all";
+  try {
+    const response = await fetch(`/api/admin/orders?status=${encodeURIComponent(status)}`);
+    const data = await response.json();
+    if (!data.ok) {
+      list.innerHTML = `<p class="empty-state">${escapeHtml(data.message || t("admin.gate"))}</p>`;
+      return;
+    }
+    const orders = data.orders || [];
+    if (!orders.length) {
+      list.innerHTML = `<p class="empty-state">${t("admin.noOrders")}</p>`;
+      return;
+    }
+    list.innerHTML = orders.map((o) => orderCardMarkup(o, { seller: true })).join("");
+    list.querySelectorAll("[data-order-status]").forEach((select) => {
+      select.addEventListener("change", async () => {
+        const res = await fetch(`/api/orders/${select.dataset.orderStatus}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: select.value }),
+        });
+        const payload = await res.json();
+        alert(payload.message || (payload.ok ? "Updated" : "Failed"));
+        if (payload.ok) loadAdminOrders();
+      });
+    });
+  } catch (_error) {
+    list.innerHTML = `<p class="empty-state">${t("admin.gate")}</p>`;
+  }
+};
+
+const loadAdminDesigns = async () => {
+  const wrap = document.getElementById("adminDesignsList");
+  if (!wrap) return;
+  try {
+    const response = await fetch("/api/admin/designs");
+    const data = await response.json();
+    const pins = data.pins || [];
+    if (!pins.length) {
+      wrap.innerHTML = `<p class="empty-state">${currentLang === "sq" ? "Nuk ka dizajne." : "No designs yet."}</p>`;
+      return;
+    }
+    wrap.innerHTML = `
+      <table class="admin-designs-table">
+        <thead>
+          <tr>
+            <th>Design</th>
+            <th>Price</th>
+            <th>Sale</th>
+            <th>Stats</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          ${pins
+            .map(
+              (pin) => `
+            <tr>
+              <td>
+                <div class="admin-design-cell">
+                  <img src="${escapeHtml(pin.imageUrl)}" alt="" />
+                  <div>
+                    <strong>${escapeHtml(pin.title)}</strong>
+                    <small>${escapeHtml(pin.category)}</small>
+                  </div>
+                </div>
+              </td>
+              <td>${escapeHtml(pin.priceLabel || "—")}</td>
+              <td>${pin.forSale !== false ? "Yes" : "No"}</td>
+              <td>♥ ${pin.likeCount || 0} · ★ ${pin.saveCount || 0}</td>
+              <td>
+                <button class="small-btn" data-action="open" data-id="${pin._id}">Open</button>
+                <button class="small-btn danger" data-action="delete" data-id="${pin._id}">Delete</button>
+              </td>
+            </tr>`
+            )
+            .join("")}
+        </tbody>
+      </table>
+    `;
+    wrap.querySelectorAll('button[data-action="open"]').forEach((btn) => {
+      btn.addEventListener("click", () => openPinDetail(btn.dataset.id));
+    });
+    wrap.querySelectorAll('button[data-action="delete"]').forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        if (!confirm(currentLang === "sq" ? "Fshi këtë dizajn?" : "Delete this design?")) return;
+        const res = await fetch(`/api/pins/${btn.dataset.id}`, { method: "DELETE" });
+        const payload = await res.json();
+        alert(payload.message || (payload.ok ? "Deleted" : "Failed"));
+        if (payload.ok) loadAdminDesigns();
+      });
+    });
+  } catch (_error) {
+    wrap.innerHTML = `<p class="empty-state">${t("admin.gate")}</p>`;
+  }
+};
+
 initTheme();
 setupLanguage();
 setupVideoBackground();
@@ -2002,7 +2205,7 @@ updateUserBadge().then(async () => {
     projectsState.page = 1;
     projectsState.hasMore = true;
     await loadProjects({ append: false });
-  } else {
+  } else if (!document.body.classList.contains("admin-page")) {
     feedState.page = 1;
     feedState.hasMore = true;
     feedState.limit = 24;

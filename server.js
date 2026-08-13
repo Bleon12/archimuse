@@ -114,12 +114,14 @@ const serializeUser = (user, extra = {}) => ({
   bio: user.bio || "",
   role: user.role || "user",
   isSeller: SELLER_ROLES.has(user.role || "user"),
+  isAdmin: user.role === "admin" || user.role === "seller" || user.role === "curator",
   initials: (user.name || "U")
     .split(" ")
     .map((part) => part[0])
     .join("")
     .slice(0, 2)
     .toUpperCase(),
+  createdAt: user.createdAt || null,
   ...extra,
 });
 
@@ -292,10 +294,26 @@ const seedCuratedPins = async () => {
       name: "Design Seller",
       email: "seller@archimuse.app",
       passwordHash,
-      bio: "Shitës zyrtar i dizajneve. Ngarko dhe shes projektet e tua.",
+      bio: "Shitës zyrtar i dizajneve.",
       role: "seller",
     });
     console.log("Seller account ready: seller@archimuse.app / seller123");
+  }
+
+  let admin = await User.findOne({ email: "admin@archimuse.app" });
+  if (!admin) {
+    const passwordHash = await bcrypt.hash("admin123", 12);
+    admin = await User.create({
+      name: "ArchiMuse Admin",
+      email: "admin@archimuse.app",
+      passwordHash,
+      bio: "Admin panel — menaxho dizajnet dhe kërkesat e blerjes.",
+      role: "admin",
+    });
+    console.log("Admin account ready: admin@archimuse.app / admin123");
+  } else if (admin.role !== "admin") {
+    admin.role = "admin";
+    await admin.save();
   }
 
   const catalog = [...CURATED_PINS, ...PINTEREST_PINS].map((pin) => ({
@@ -463,7 +481,7 @@ app.post("/api/logout", (req, res) => {
 
 app.get("/api/me", async (req, res) => {
   if (!req.session.userId) return res.json({ ok: true, user: null });
-  const user = await User.findById(req.session.userId).select("name email bio role");
+  const user = await User.findById(req.session.userId).select("name email bio role createdAt");
   if (!user) return res.json({ ok: true, user: null });
   const stats = await getUserStats(user._id);
   return res.json({ ok: true, user: serializeUser(user, stats) });
@@ -794,11 +812,12 @@ app.delete("/api/comments/:id", requireAuth, async (req, res) => {
   }
 });
 
-app.post("/api/orders", async (req, res) => {
+app.post("/api/orders", requireAuth, async (req, res) => {
   try {
     const pinId = (req.body.pinId || "").trim();
-    const fullName = (req.body.fullName || "").trim();
-    const email = (req.body.email || "").trim().toLowerCase();
+    const user = await User.findById(req.session.userId).select("name email");
+    const fullName = (req.body.fullName || user?.name || "").trim();
+    const email = (req.body.email || user?.email || "").trim().toLowerCase();
     const phone = (req.body.phone || "").trim();
     const address = (req.body.address || "").trim();
     const city = (req.body.city || "").trim();
@@ -823,7 +842,7 @@ app.post("/api/orders", async (req, res) => {
 
     const order = await Order.create({
       pin: pin._id,
-      buyer: req.session.userId || null,
+      buyer: req.session.userId,
       fullName,
       email,
       phone,
@@ -841,11 +860,41 @@ app.post("/api/orders", async (req, res) => {
     return res.status(201).json({
       ok: true,
       message:
-        "Kërkesa u dërgua me sukses. Statusi: Në pritje. Do të kontaktoheni për konfirmim.",
+        "Kërkesa u dërgua te admini. Statusi: Në pritje. Do të kontaktoheni për konfirmim.",
       order: serializeOrder(populated),
     });
   } catch (_error) {
     return res.status(500).json({ ok: false, message: "Dështoi dërgimi i kërkesës së blerjes." });
+  }
+});
+
+app.get("/api/admin/designs", requireSeller, async (req, res) => {
+  try {
+    const pins = await Pin.find({})
+      .populate("user", "name email")
+      .sort({ createdAt: -1 })
+      .limit(300);
+    return res.json({
+      ok: true,
+      pins: pins.map((pin) => serializePin(pin, req.session.userId)),
+    });
+  } catch (_error) {
+    return res.status(500).json({ ok: false, message: "Failed to load designs." });
+  }
+});
+
+app.get("/api/admin/orders", requireSeller, async (req, res) => {
+  try {
+    const status = String(req.query.status || "").trim();
+    const match = status && status !== "all" ? { status } : {};
+    const orders = await Order.find(match)
+      .populate("pin", "title imageUrl")
+      .populate("buyer", "name email")
+      .sort({ createdAt: -1 })
+      .limit(300);
+    return res.json({ ok: true, orders: orders.map(serializeOrder) });
+  } catch (_error) {
+    return res.status(500).json({ ok: false, message: "Failed to load admin orders." });
   }
 });
 

@@ -2703,6 +2703,183 @@ a.brand {
   white-space: nowrap;
 }
 
+.account-menu-btn {
+  border: 1px solid #d8ceb9;
+  background: #fffdf8;
+  border-radius: 10px;
+  width: 2.4rem;
+  height: 2.4rem;
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.account-menu-btn.hidden {
+  display: none;
+}
+
+.account-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.account-data-table th,
+.account-data-table td {
+  text-align: left;
+  padding: 0.45rem 0.35rem;
+  border-bottom: 1px solid #efe6d6;
+  vertical-align: top;
+}
+
+.account-data-table th {
+  width: 38%;
+  color: #7a7164;
+  font-weight: 500;
+}
+
+.ig-modal {
+  width: min(980px, 96vw) !important;
+  max-height: 92vh;
+  overflow: hidden;
+}
+
+.ig-post {
+  display: grid;
+  grid-template-columns: 1.15fr 0.95fr;
+  min-height: 420px;
+  max-height: 92vh;
+}
+
+.ig-post-media {
+  background: #111;
+  min-height: 420px;
+}
+
+.ig-post-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ig-post-side {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.1rem 1.2rem;
+  overflow: auto;
+}
+
+.ig-post-header {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #efe6d6;
+}
+
+.ig-post-header small {
+  display: block;
+  color: #8a8072;
+}
+
+.ig-post-caption {
+  padding: 0.85rem 0;
+}
+
+.ig-post-caption p {
+  margin: 0 0 0.4rem;
+  line-height: 1.5;
+}
+
+.ig-post-meta {
+  margin: 0.35rem 0 0.75rem;
+  color: #8a8072;
+  font-size: 0.82rem;
+}
+
+.ig-comments-list {
+  max-height: 220px;
+  overflow: auto;
+  margin-bottom: 0.6rem;
+}
+
+.ig-comment {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #f1e8d8;
+}
+
+.ig-comment strong {
+  font-size: 0.86rem;
+}
+
+.ig-comment span {
+  color: var(--muted);
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 1rem 0 1.2rem;
+}
+
+.admin-toolbar {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.admin-designs-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-designs-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--panel);
+}
+
+.admin-designs-table th,
+.admin-designs-table td {
+  padding: 0.7rem;
+  border-bottom: 1px solid #e8dfcf;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.admin-design-cell {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+}
+
+.admin-design-cell img {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.admin-design-cell small {
+  display: block;
+  color: #8a8072;
+}
+
+@media (max-width: 860px) {
+  .ig-post {
+    grid-template-columns: 1fr;
+    max-height: none;
+  }
+
+  .ig-post-media {
+    min-height: 260px;
+    max-height: 340px;
+  }
+}
+
 .lang-switch {
   display: inline-flex;
   border: 1px solid #d8ceb9;
