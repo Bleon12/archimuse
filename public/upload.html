@@ -1,55 +1,44 @@
 <!DOCTYPE html>
-<html lang="sq">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ArchiMuse | Ngarko Dizajn</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <title>ArchiMuse | Upload</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="topbar">
-      <div class="brand">ArchiMuse</div>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="explore.html">Katalogu</a>
-        <a href="projects.html">Koleksioni</a>
-        <a href="upload.html" class="active">Ngarko</a>
-        <a href="saved.html">Saved</a>
-        <a href="profile.html">Profili</a>
-        <a href="login.html">Login</a>
+      <a class="brand" href="index.html">ArchiMuse</a>
+      <nav class="main-nav" data-nav>
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="explore.html" data-i18n="nav.shop">Shop</a>
+        <a href="projects.html" data-i18n="nav.gallery">Gallery</a>
+        <a href="saved.html" data-i18n="nav.saved">Saved</a>
+        <a href="login.html" data-i18n="nav.login">Login</a>
       </nav>
       <div class="topbar-right">
-        <div class="mode-switch">
-          <button class="mode-btn" data-theme="light">Light</button>
-          <button class="mode-btn" data-theme="cream">Cream</button>
-          <button class="mode-btn" data-theme="dark">Dark</button>
+        <div class="lang-switch" aria-label="Language">
+          <button type="button" class="lang-btn active" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="sq">SQ</button>
         </div>
-        <span id="userBadge" class="user-badge"></span>
+        <a href="profile.html" id="userBadge" class="user-badge">Guest</a>
       </div>
     </header>
 
     <main class="page-wrap">
-      <h1>Ngarko dizajn për shitje</h1>
-      <p class="page-subtitle">Vetëm llogaria e shitësit mund të vendosë dizajne në katalog me çmim.</p>
+      <h1 data-i18n="upload.title">Upload design for sale</h1>
+      <p class="page-subtitle" data-i18n="upload.sub">Seller account only. Set a price and publish to the shop.</p>
       <p id="sellerGateMessage" class="message seller-gate hidden"></p>
-
-      <div class="upload-tabs">
-        <button class="tab-btn active" data-upload-tab="upload" type="button">Upload imazh</button>
-        <button class="tab-btn" data-upload-tab="pinterest" type="button">Import nga Pinterest</button>
-      </div>
 
       <section class="upload-box reveal" data-upload-panel="upload">
         <form id="uploadForm">
-          <label for="pinTitle">Titulli i dizajnit</label>
-          <input id="pinTitle" name="title" type="text" placeholder="p.sh. Minimal Atrium House" required />
+          <label for="pinTitle" data-i18n="upload.designTitle">Design title</label>
+          <input id="pinTitle" name="title" type="text" required />
 
-          <label for="pinBio">Bio / përshkrimi</label>
-          <textarea id="pinBio" name="bio" rows="4" placeholder="Shkruaj një përshkrim të shkurtër për këtë dizajn…"></textarea>
+          <label for="pinBio" data-i18n="upload.bio">Description</label>
+          <textarea id="pinBio" name="bio" rows="4"></textarea>
 
-          <label for="pinCategory">Kategoria</label>
+          <label for="pinCategory" data-i18n="upload.category">Category</label>
           <select id="pinCategory" name="category" required>
             <option value="modern">Modern</option>
             <option value="minimal">Minimal</option>
@@ -61,11 +50,11 @@
 
           <div class="price-row">
             <div>
-              <label for="pinPrice">Çmimi</label>
+              <label for="pinPrice" data-i18n="upload.price">Price</label>
               <input id="pinPrice" name="price" type="number" min="0" step="1" value="120" required />
             </div>
             <div>
-              <label for="pinCurrency">Monedha</label>
+              <label for="pinCurrency" data-i18n="upload.currency">Currency</label>
               <select id="pinCurrency" name="currency">
                 <option value="EUR">EUR</option>
                 <option value="USD">USD</option>
@@ -76,80 +65,35 @@
 
           <label class="drawer-toggle">
             <input id="pinForSale" name="forSale" type="checkbox" checked />
-            <span>Në shitje (për blerje nga klientët)</span>
+            <span data-i18n="upload.forSale">For sale</span>
           </label>
 
-          <label for="pinSourceUrl">Link burimi (opsional)</label>
-          <input id="pinSourceUrl" name="sourceUrl" type="url" placeholder="https://..." />
-
-          <label>Imazhi</label>
+          <label data-i18n="upload.image">Image</label>
           <div id="uploadDropzone" class="upload-dropzone">
-            <p>Tërhiq & lësho imazhin këtu, ose kliko për të zgjedhur</p>
+            <p data-i18n="upload.drop">Drop image here or click to choose</p>
             <input id="pinImage" name="image" type="file" accept="image/*" required />
           </div>
           <div id="uploadPreview" class="upload-preview hidden"></div>
 
-          <button type="submit" class="btn">Ngarko dizajnin</button>
+          <button type="submit" class="btn" data-i18n="upload.submit">Upload design</button>
           <p id="uploadMessage" class="message"></p>
         </form>
       </section>
 
-      <section id="import" class="upload-box reveal hidden" data-upload-panel="pinterest">
-        <form id="pinterestForm">
-          <label for="pinterestUrl">Linku i Pinterest</label>
-          <input id="pinterestUrl" name="pinterestUrl" type="url" placeholder="https://www.pinterest.com/pin/..." required />
-
-          <label for="pinterestTitle">Titulli (opsional)</label>
-          <input id="pinterestTitle" name="title" type="text" placeholder="Lëre bosh për ta marrë automatikisht" />
-
-          <label for="pinterestBio">Bio (opsional)</label>
-          <textarea id="pinterestBio" name="bio" rows="3" placeholder="Shto ose modifiko përshkrimin e dizajnit…"></textarea>
-
-          <label for="pinterestCategory">Kategoria</label>
-          <select id="pinterestCategory" name="category">
-            <option value="modern">Modern</option>
-            <option value="minimal">Minimal</option>
-            <option value="brutalist">Brutalist</option>
-            <option value="interior">Interior</option>
-            <option value="landscape">Landscape</option>
-            <option value="futuristic">Futuristic</option>
-          </select>
-
-          <div class="price-row">
-            <div>
-              <label for="pinterestPrice">Çmimi</label>
-              <input id="pinterestPrice" name="price" type="number" min="0" step="1" value="120" />
-            </div>
-            <div>
-              <label for="pinterestCurrency">Monedha</label>
-              <select id="pinterestCurrency" name="currency">
-                <option value="EUR">EUR</option>
-                <option value="USD">USD</option>
-                <option value="ALL">ALL</option>
-              </select>
-            </div>
-          </div>
-
-          <button type="submit" class="btn">Importo nga Pinterest</button>
-          <p class="hint">Duhet llogari shitësi. Nëse importi dështon, përdor upload manual.</p>
-          <p id="pinterestMessage" class="message"></p>
-        </form>
-      </section>
-
-      <h2>Dizajnet e mia</h2>
-      <section id="myPinsGrid" class="pins-grid masonry-grid"></section>
+      <h2 data-i18n="profile.my">My designs</h2>
+      <section id="myPinsGrid" class="pins-grid shop-grid"></section>
     </main>
 
     <div id="editModal" class="modal hidden">
       <div class="modal-card">
-        <h3>Ndrysho dizajnin</h3>
+        <h3 data-i18n="upload.edit">Edit design</h3>
         <form id="editPinForm">
           <input type="hidden" id="editPinId" />
-          <label for="editTitle">Titulli</label>
+          <label for="editTitle" data-i18n="upload.designTitle">Design title</label>
           <input id="editTitle" type="text" required />
-          <label for="editBio">Bio</label>
+          <label for="editBio" data-i18n="upload.bio">Description</label>
           <textarea id="editBio" rows="3"></textarea>
-          <label for="editCategory">Kategoria</label>
+          <label for="editCategory" data-i18n="upload.category">Category</label>
           <select id="editCategory" required>
             <option value="modern">Modern</option>
             <option value="minimal">Minimal</option>
@@ -158,11 +102,11 @@
             <option value="landscape">Landscape</option>
             <option value="futuristic">Futuristic</option>
           </select>
-          <label for="editPrice">Çmimi</label>
+          <label for="editPrice" data-i18n="upload.price">Price</label>
           <input id="editPrice" type="number" min="0" step="1" />
           <div class="modal-actions">
-            <button type="button" id="cancelEditBtn" class="small-btn">Anulo</button>
-            <button type="submit" class="btn">Ruaj</button>
+            <button type="button" id="cancelEditBtn" class="small-btn" data-i18n="upload.cancel">Cancel</button>
+            <button type="submit" class="btn" data-i18n="profile.save">Save</button>
           </div>
         </form>
       </div>

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="sq">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ArchiMuse | Projects</title>
+    <title>ArchiMuse | Gallery</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -11,72 +11,56 @@
   </head>
   <body class="projects-page">
     <header class="topbar">
-      <div class="brand">ArchiMuse</div>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="explore.html">Explore</a>
-        <a href="projects.html" class="active">Projects</a>
-        <a href="upload.html">Upload</a>
-        <a href="saved.html">Saved</a>
-        <a href="profile.html">Profile</a>
-        <a href="login.html">Login</a>
+      <a class="brand" href="index.html">ArchiMuse</a>
+      <nav class="main-nav" data-nav>
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="explore.html" data-i18n="nav.shop">Shop</a>
+        <a href="projects.html" class="active" data-i18n="nav.gallery">Gallery</a>
+        <a href="saved.html" data-i18n="nav.saved">Saved</a>
+        <a href="login.html" data-i18n="nav.login">Login</a>
       </nav>
       <div class="topbar-right">
-        <div class="mode-switch">
-          <button class="mode-btn" data-theme="light">Light</button>
-          <button class="mode-btn" data-theme="cream">Cream</button>
-          <button class="mode-btn" data-theme="dark">Dark</button>
+        <div class="lang-switch" aria-label="Language">
+          <button type="button" class="lang-btn active" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="sq">SQ</button>
         </div>
-        <span id="userBadge" class="user-badge"></span>
+        <a href="profile.html" id="userBadge" class="user-badge">Guest</a>
       </div>
     </header>
 
     <main class="projects-main">
       <section class="projects-hero reveal">
         <div class="projects-hero-glow"></div>
-        <p class="hero-eyebrow">Pinterest Architecture Feed</p>
-        <h1>Projekte që ndryshojnë çdo ditë</h1>
-        <p class="projects-hero-text">
-          Më të shikuarat shfaqen në krye. Renditja përditësohet automatikisht sipas
-          shikimeve, pëlqimeve dhe trendit — si një feed i vërtetë Pinterest.
+        <p class="hero-eyebrow" data-i18n="gallery.eyebrow">Curated collection</p>
+        <h1 data-i18n="gallery.title">Architecture gallery</h1>
+        <p class="projects-hero-text" data-i18n="gallery.lead">
+          Featured studio designs ranked by views, likes and trend.
         </p>
         <div class="projects-stats">
-          <div class="stat-pill"><span id="projectsTotal">—</span> projekte</div>
-          <div class="stat-pill live-pill"><span class="live-dot"></span> Live trending</div>
+          <div class="stat-pill"><span id="projectsTotal">—</span> <span data-i18n="gallery.designs">designs</span></div>
         </div>
       </section>
 
       <section class="projects-toolbar reveal">
         <div class="projects-filters">
-          <button class="filter-chip active" data-project-sort="trending" type="button">🔥 Trending</button>
-          <button class="filter-chip" data-project-sort="most-viewed" type="button">👁 Më të shikuara</button>
-          <button class="filter-chip" data-project-sort="most-liked" type="button">♥ Më të pëlqyera</button>
-          <button class="filter-chip" data-project-sort="latest" type="button">✦ Të rejat</button>
+          <select id="projectCategoryFilter">
+            <option value="all">All</option>
+            <option value="modern">Modern</option>
+            <option value="minimal">Minimal</option>
+            <option value="brutalist">Brutalist</option>
+            <option value="interior">Interior</option>
+            <option value="landscape">Landscape</option>
+            <option value="futuristic">Futuristic</option>
+          </select>
         </div>
-        <select id="projectCategoryFilter" class="project-category-select">
-          <option value="all">Të gjitha kategoritë</option>
-          <option value="modern">Modern</option>
-          <option value="minimal">Minimal</option>
-          <option value="brutalist">Brutalist</option>
-          <option value="interior">Interior</option>
-          <option value="landscape">Landscape</option>
-          <option value="futuristic">Futuristic</option>
-        </select>
       </section>
 
-      <section class="featured-projects-wrap">
-        <h2 class="section-label reveal">Më të shikuarat tani</h2>
-        <div id="featuredProjects" class="featured-projects"></div>
+      <section id="featuredProjects" class="featured-row"></section>
+      <section id="projectsGrid" class="projects-grid">
+        <p class="empty-state" data-i18n="home.loading">Loading designs…</p>
       </section>
-
-      <section class="projects-grid-wrap">
-        <h2 class="section-label reveal">Eksploro projekte</h2>
-        <div id="projectsGrid" class="projects-masonry">
-          <p class="empty-state">Duke ngarkuar projekte…</p>
-        </div>
-        <section id="feedSkeleton" class="projects-masonry skeleton-grid hidden"></section>
-        <p id="projectsEndHint" class="projects-end-hint hidden">Scroll për më shumë projekte Pinterest ↓</p>
-      </section>
+      <p id="projectsEndHint" class="empty-state hidden" data-i18n="gallery.end">End of gallery</p>
+      <section id="feedSkeleton" class="pins-grid shop-grid skeleton-grid hidden"></section>
     </main>
 
     <div id="pinDetailModal" class="modal hidden">

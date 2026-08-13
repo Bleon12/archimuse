@@ -1,4 +1,328 @@
 const THEME_KEY = "archimuse-theme";
+const LANG_KEY = "archimuse-lang";
+
+const I18N = {
+  en: {
+    "nav.home": "Home",
+    "nav.shop": "Shop",
+    "nav.gallery": "Gallery",
+    "nav.saved": "Saved",
+    "nav.login": "Login",
+    "nav.profile": "Profile",
+    "home.eyebrow": "Design studio & sales",
+    "home.lead": "Browse our designs, like, save, share and buy. Apply for online or cash payment — requests start as pending.",
+    "home.ctaShop": "View shop",
+    "home.ctaGallery": "Gallery",
+    "home.saleTitle": "Designs for sale",
+    "home.saleSub": "Open any card to like, comment, share or buy.",
+    "home.loading": "Loading designs…",
+    "home.empty": "No designs yet. Showing demo catalog.",
+    "shop.title": "Design shop",
+    "shop.sub": "Browse, like, save, share and buy studio designs.",
+    "shop.search": "Search by title or bio…",
+    "shop.filter": "Filter",
+    "gallery.eyebrow": "Curated collection",
+    "gallery.title": "Architecture gallery",
+    "gallery.lead": "Featured studio designs ranked by views, likes and trend.",
+    "gallery.designs": "designs",
+    "gallery.end": "End of gallery",
+    "saved.title": "Saved designs",
+    "saved.sub": "Your bookmarked studio designs.",
+    "saved.empty": "No saved designs yet.",
+    "login.title": "Account",
+    "login.sub": "Login or register to save designs and place orders.",
+    "login.tabLogin": "Login",
+    "login.tabRegister": "Register",
+    "login.name": "Name",
+    "login.password": "Password",
+    "profile.title": "My profile",
+    "profile.settings": "Settings",
+    "profile.orders": "Orders",
+    "profile.ordersSub": "Status: pending, confirmed, completed or cancelled.",
+    "profile.my": "My designs",
+    "profile.liked": "Liked",
+    "profile.sellerOrders": "Customer requests",
+    "profile.upload": "Upload design",
+    "profile.logout": "Logout",
+    "profile.save": "Save profile",
+    "upload.title": "Upload design for sale",
+    "upload.sub": "Seller account only. Set a price and publish to the shop.",
+    "upload.designTitle": "Design title",
+    "upload.bio": "Description",
+    "upload.category": "Category",
+    "upload.price": "Price",
+    "upload.currency": "Currency",
+    "upload.forSale": "For sale",
+    "upload.image": "Image",
+    "upload.drop": "Drop image here or click to choose",
+    "upload.submit": "Upload design",
+    "upload.edit": "Edit design",
+    "upload.cancel": "Cancel",
+    "card.buy": "Buy",
+    "card.share": "Share",
+    "detail.comments": "Comments",
+    "detail.buyNow": "Buy now",
+    "detail.noBio": "No description for this design.",
+    "detail.commentPh": "Write a comment…",
+    "detail.loginComment": "Login to comment",
+    "detail.send": "Send",
+    "order.title": "Buy request",
+    "order.submit": "Send request",
+    "forSale": "For sale",
+  },
+  sq: {
+    "nav.home": "Ballina",
+    "nav.shop": "Dyqani",
+    "nav.gallery": "Galeria",
+    "nav.saved": "Të ruajtura",
+    "nav.login": "Hyr",
+    "nav.profile": "Profili",
+    "home.eyebrow": "Studio dizajni & shitje",
+    "home.lead": "Shiko dizajnet, pëlqe, ruaj, ndaj dhe blej. Apliko për pagesë online ose cash — kërkesa fillon si në pritje.",
+    "home.ctaShop": "Shiko dyqanin",
+    "home.ctaGallery": "Galeria",
+    "home.saleTitle": "Dizajne në shitje",
+    "home.saleSub": "Hap çdo kartë për like, koment, share ose blerje.",
+    "home.loading": "Duke ngarkuar dizajnet…",
+    "home.empty": "Ende nuk ka dizajne. Po shfaqet katalogu demo.",
+    "shop.title": "Dyqani i dizajneve",
+    "shop.sub": "Shiko, pëlqe, ruaj, ndaj dhe blej dizajnet e studios.",
+    "shop.search": "Kërko sipas titullit ose bio-s…",
+    "shop.filter": "Filtro",
+    "gallery.eyebrow": "Koleksion i kuruar",
+    "gallery.title": "Galeria e arkitekturës",
+    "gallery.lead": "Dizajnet e studios sipas shikimeve, pëlqimeve dhe trendit.",
+    "gallery.designs": "dizajne",
+    "gallery.end": "Fundi i galerisë",
+    "saved.title": "Dizajne të ruajtura",
+    "saved.sub": "Dizajnet që ke ruajtur.",
+    "saved.empty": "Nuk ke ende dizajne të ruajtura.",
+    "login.title": "Llogaria",
+    "login.sub": "Hyr ose regjistrohu për të ruajtur dhe porositur.",
+    "login.tabLogin": "Hyr",
+    "login.tabRegister": "Regjistrohu",
+    "login.name": "Emri",
+    "login.password": "Fjalëkalimi",
+    "profile.title": "Profili im",
+    "profile.settings": "Cilësimet",
+    "profile.orders": "Porositë",
+    "profile.ordersSub": "Statusi: në pritje, e konfirmuar, e përfunduar ose e anuluar.",
+    "profile.my": "Dizajnet e mia",
+    "profile.liked": "Të pëlqyera",
+    "profile.sellerOrders": "Kërkesat e klientëve",
+    "profile.upload": "Ngarko dizajn",
+    "profile.logout": "Dil",
+    "profile.save": "Ruaj profilin",
+    "upload.title": "Ngarko dizajn për shitje",
+    "upload.sub": "Vetëm llogaria e shitësit. Vendos çmim dhe publiko.",
+    "upload.designTitle": "Titulli i dizajnit",
+    "upload.bio": "Përshkrimi",
+    "upload.category": "Kategoria",
+    "upload.price": "Çmimi",
+    "upload.currency": "Monedha",
+    "upload.forSale": "Në shitje",
+    "upload.image": "Imazhi",
+    "upload.drop": "Lësho imazhin këtu ose kliko",
+    "upload.submit": "Ngarko dizajnin",
+    "upload.edit": "Ndrysho dizajnin",
+    "upload.cancel": "Anulo",
+    "card.buy": "Blej",
+    "card.share": "Ndaj",
+    "detail.comments": "Komente",
+    "detail.buyNow": "Blej tani",
+    "detail.noBio": "Nuk ka përshkrim për këtë dizajn.",
+    "detail.commentPh": "Shkruaj një koment…",
+    "detail.loginComment": "Hyr për të komentuar",
+    "detail.send": "Dërgo",
+    "order.title": "Kërkesë blerjeje",
+    "order.submit": "Dërgo kërkesën",
+    "forSale": "Në shitje",
+  },
+};
+
+const FALLBACK_DESIGNS = [
+  {
+    _id: "demo-1",
+    title: "Monolith House",
+    bio: "Minimal geometry with strong daylight and clean volumes.",
+    category: "minimal",
+    imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80",
+    forSale: true,
+    price: 180,
+    currency: "EUR",
+    priceLabel: "€180.00",
+    likeCount: 42,
+    saveCount: 18,
+    viewCount: 920,
+    shareCount: 6,
+    user: { name: "ArchiMuse Studio" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-2",
+    title: "Cliff Pavilion",
+    bio: "Glass and stone blend into the horizon.",
+    category: "landscape",
+    imageUrl: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80",
+    forSale: true,
+    price: 240,
+    currency: "EUR",
+    priceLabel: "€240.00",
+    likeCount: 67,
+    saveCount: 29,
+    viewCount: 1400,
+    shareCount: 11,
+    user: { name: "ArchiMuse Studio" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-3",
+    title: "Urban Void",
+    bio: "Dark steel aesthetics with floating light corridors.",
+    category: "brutalist",
+    imageUrl: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=900&q=80",
+    forSale: true,
+    price: 210,
+    currency: "EUR",
+    priceLabel: "€210.00",
+    likeCount: 55,
+    saveCount: 21,
+    viewCount: 1105,
+    shareCount: 8,
+    user: { name: "ArchiMuse Studio" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-4",
+    title: "Cream Atrium",
+    bio: "Elegant interior layers with sculpted natural light.",
+    category: "interior",
+    imageUrl: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=900&q=80",
+    forSale: true,
+    price: 160,
+    currency: "EUR",
+    priceLabel: "€160.00",
+    likeCount: 38,
+    saveCount: 14,
+    viewCount: 780,
+    shareCount: 4,
+    user: { name: "ArchiMuse Studio" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-5",
+    title: "Azure Villa",
+    bio: "Pool-centered villa with panoramic glass walls.",
+    category: "modern",
+    imageUrl: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=900&q=80",
+    forSale: true,
+    price: 320,
+    currency: "EUR",
+    priceLabel: "€320.00",
+    likeCount: 91,
+    saveCount: 44,
+    viewCount: 2100,
+    shareCount: 19,
+    user: { name: "ArchiMuse Studio" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-6",
+    title: "Glass Nest",
+    bio: "Transparent social spaces with a warm white palette.",
+    category: "modern",
+    imageUrl: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=900&q=80",
+    forSale: true,
+    price: 195,
+    currency: "EUR",
+    priceLabel: "€195.00",
+    likeCount: 48,
+    saveCount: 20,
+    viewCount: 990,
+    shareCount: 7,
+    user: { name: "ArchiMuse Studio" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-7",
+    title: "Forest Retreat",
+    bio: "Timber residence elevated among pine canopies.",
+    category: "landscape",
+    imageUrl: "https://images.unsplash.com/photo-1600047509807-ba8c97d814b1?auto=format&fit=crop&w=900&q=80",
+    forSale: true,
+    price: 275,
+    currency: "EUR",
+    priceLabel: "€275.00",
+    likeCount: 73,
+    saveCount: 31,
+    viewCount: 1560,
+    shareCount: 12,
+    user: { name: "ArchiMuse Studio" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-8",
+    title: "Skyline Penthouse",
+    bio: "Luxury penthouse with a city panorama terrace.",
+    category: "futuristic",
+    imageUrl: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=900&q=80",
+    forSale: true,
+    price: 410,
+    currency: "EUR",
+    priceLabel: "€410.00",
+    likeCount: 120,
+    saveCount: 58,
+    viewCount: 2800,
+    shareCount: 25,
+    user: { name: "ArchiMuse Studio" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+];
+
+let currentLang = localStorage.getItem(LANG_KEY) || "en";
+
+const t = (key) => I18N[currentLang]?.[key] || I18N.en[key] || key;
+
+const applyLanguage = (lang) => {
+  currentLang = lang === "sq" ? "sq" : "en";
+  localStorage.setItem(LANG_KEY, currentLang);
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.lang === currentLang);
+  });
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const key = el.getAttribute("data-i18n");
+    if (key) el.textContent = t(key);
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-placeholder");
+    if (key) el.setAttribute("placeholder", t(key));
+  });
+};
+
+const setupLanguage = () => {
+  applyLanguage(currentLang);
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.addEventListener("click", () => applyLanguage(btn.dataset.lang));
+  });
+};
+
 const modeButtons = document.querySelectorAll(".mode-btn");
 const userBadge = document.getElementById("userBadge");
 const pinsGrid = document.getElementById("pinsGrid");
@@ -35,6 +359,7 @@ const profileOrdersPanel = document.getElementById("profileOrdersPanel");
 const sellerOrdersPanel = document.getElementById("sellerOrdersPanel");
 let currentUser = null;
 let activeDetailPin = null;
+let usingFallbackCatalog = false;
 
 const feedState = {
   page: 1,
@@ -99,76 +424,43 @@ const logoutUser = async () => {
 };
 
 const updateNavAuth = () => {
-  const topbar = document.querySelector(".topbar");
-  const loginLink = document.querySelector('nav a[href="login.html"]');
-  let authBar = document.getElementById("authNavBar");
-  const guestBurger = document.getElementById("burgerBtn");
-
-  if (!topbar) return;
-
-  if (currentUser) {
-    topbar.classList.add("topbar--auth");
-    document.body.classList.add("user-logged-in");
-    loginLink?.classList.add("hidden");
-    guestBurger?.classList.add("hidden");
-
-    if (window.location.pathname.endsWith("login.html")) {
-      window.location.replace("profile.html");
-      return;
-    }
-
-    const nav = topbar.querySelector("nav.main-nav, nav");
-    if (nav) nav.classList.add("hidden");
-
-    if (!authBar) {
-      authBar = document.createElement("div");
-      authBar.id = "authNavBar";
-      authBar.className = "auth-nav-bar";
-      topbar.insertBefore(authBar, topbar.querySelector(".topbar-right"));
-    }
-
-    const pinLabel = currentUser.pinCount != null ? currentUser.pinCount : 0;
-    const roleHint = currentUser.isSeller ? "Shitës" : "Klient";
-
-    authBar.innerHTML = `
-      <a href="profile.html" class="user-chip user-chip--compact">
-        <span class="user-avatar">${escapeHtml(currentUser.initials || currentUser.name?.[0] || "U")}</span>
-        <span class="user-chip-text">
-          <strong>${escapeHtml(currentUser.name)}</strong>
-          <small>${escapeHtml(roleHint)} · ${escapeHtml(pinLabel)} dizajne</small>
-        </span>
-      </a>
-      ${currentUser.isSeller ? '<a href="upload.html" class="auth-upload-btn">+ Ngarko</a>' : '<a href="profile.html#orders" class="auth-upload-btn">Porositë</a>'}
-      <button type="button" id="authBurgerBtn" class="auth-burger-btn" aria-label="Hap menunë e llogarisë" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-    `;
-
-    authBar.classList.remove("hidden");
-    updateAccountDrawerContent();
-    bindAccountDrawerEvents();
-
-    if (userBadge) {
-      userBadge.textContent = currentUser.name;
-      userBadge.classList.add("user-badge--auth");
-    }
-    refreshProfileForm();
-  } else {
-    topbar.classList.remove("topbar--auth");
-    document.body.classList.remove("user-logged-in");
-    loginLink?.classList.remove("hidden");
-    authBar?.classList.add("hidden");
-    guestBurger?.classList.remove("hidden");
-    closeAccountDrawer();
-
-    const nav = topbar.querySelector("nav.main-nav, nav");
-    if (nav) nav.classList.remove("hidden");
-
-    if (userBadge) {
-      userBadge.textContent = "Guest";
-      userBadge.classList.remove("user-badge--auth");
+  const loginLink = document.querySelector('nav a[href="login.html"], nav a[data-nav-auth]');
+  if (loginLink) {
+    if (currentUser) {
+      loginLink.href = "profile.html";
+      loginLink.textContent = t("nav.profile");
+      loginLink.setAttribute("data-i18n", "nav.profile");
+      loginLink.classList.toggle("active", window.location.pathname.endsWith("profile.html"));
+    } else {
+      loginLink.href = "login.html";
+      loginLink.textContent = t("nav.login");
+      loginLink.setAttribute("data-i18n", "nav.login");
+      loginLink.classList.toggle("active", window.location.pathname.endsWith("login.html"));
     }
   }
+
+  if (window.location.pathname.endsWith("login.html") && currentUser) {
+    window.location.replace("profile.html");
+    return;
+  }
+
+  if (userBadge) {
+    if (currentUser) {
+      userBadge.textContent = currentUser.name;
+      userBadge.classList.add("user-badge--auth");
+      userBadge.href = "profile.html";
+    } else {
+      userBadge.textContent = "Guest";
+      userBadge.classList.remove("user-badge--auth");
+      userBadge.href = "login.html";
+    }
+  }
+
+  document.querySelectorAll(".seller-only").forEach((el) => {
+    el.classList.toggle("hidden", !(currentUser && currentUser.isSeller));
+  });
+
+  refreshProfileForm();
 };
 
 let accountDrawerBound = false;
@@ -413,20 +705,7 @@ const setupBurgerMenu = () => {
 };
 
 const setupPageDecor = () => {
-  if (document.querySelector(".page-decor")) return;
-
-  const decor = document.createElement("div");
-  decor.className = "page-decor";
-  decor.setAttribute("aria-hidden", "true");
-  decor.innerHTML = `
-    <img class="decor-float decor-a" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=70" alt="" loading="lazy" />
-    <img class="decor-float decor-b" src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=400&q=70" alt="" loading="lazy" />
-    <img class="decor-float decor-c" src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&q=70" alt="" loading="lazy" />
-  `;
-  document.body.prepend(decor);
-
-  const main = document.querySelector("main");
-  if (main) main.classList.add("page-enter");
+  // Keep pages clean — no floating decorative overlays.
 };
 
 const escapeHtml = (value) =>
@@ -457,10 +736,8 @@ const categoryLabel = (category) => {
 };
 
 const sourceBadge = (pin) => {
-  if (pin.forSale) return `<span class="pin-badge curated">Në shitje</span>`;
-  if (pin.source === "pinterest") return `<span class="pin-badge pinterest">Pinterest</span>`;
-  if (pin.source === "curated") return `<span class="pin-badge curated">Studio</span>`;
-  return `<span class="pin-badge upload">Upload</span>`;
+  if (pin.forSale !== false) return `<span class="pin-badge curated">${escapeHtml(t("forSale"))}</span>`;
+  return `<span class="pin-badge upload">Studio</span>`;
 };
 
 const priceBadge = (pin) => {
@@ -564,9 +841,6 @@ const pinCardMarkup = (pin, options = {}) => {
     ? `<button class="small-btn danger" data-action="delete" data-id="${pin._id}">Delete</button>`
     : "";
   const bioPreview = pin.bio ? `<p class="pin-bio">${escapeHtml(truncate(pin.bio, 100))}</p>` : "";
-  const pinterestLink = pin.sourceUrl
-    ? `<a class="pin-source-link" href="${escapeHtml(pin.sourceUrl)}" target="_blank" rel="noopener">View source</a>`
-    : "";
 
   return `
     <article class="${layout}" data-pin-id="${pin._id}" tabindex="0" role="button" aria-label="Open ${escapeHtml(pin.title)}">
@@ -594,8 +868,8 @@ const pinCardMarkup = (pin, options = {}) => {
           <button class="small-btn ${pin.isSaved ? "active" : ""}" data-action="save" data-id="${pin._id}">
             ★ ${pin.saveCount || 0}
           </button>
-          <button class="small-btn" data-action="share" data-id="${pin._id}">↗ Share</button>
-          ${pin.forSale ? `<button class="small-btn buy-btn" data-action="buy" data-id="${pin._id}" data-title="${encodeURIComponent(pin.title)}" data-price="${escapeHtml(pin.priceLabel || "")}">Blej</button>` : ""}
+          <button class="small-btn" data-action="share" data-id="${pin._id}">↗ ${escapeHtml(t("card.share"))}</button>
+          ${pin.forSale !== false ? `<button class="small-btn buy-btn" data-action="buy" data-id="${pin._id}" data-title="${encodeURIComponent(pin.title)}" data-price="${escapeHtml(pin.priceLabel || "")}">${escapeHtml(t("card.buy"))}</button>` : ""}
           ${editable}
           ${deletable}
         </div>
@@ -732,22 +1006,36 @@ const loadProjects = async ({ append = false } = {}) => {
     params.set("page", String(projectsState.page));
     params.set("limit", String(projectsState.limit));
     const response = await fetch(`/api/projects?${params}`);
+    if (!response.ok) throw new Error("api");
     const data = await response.json();
-    const pins = data.pins || [];
+    let pins = data.pins || [];
 
-    if (projectsTotalEl) projectsTotalEl.textContent = String(data.total || pins.length);
-    if (!append && featuredProjects) {
-      const featRes = await fetch("/api/projects?sort=most-viewed&limit=3");
-      const featData = await featRes.json();
-      renderFeaturedProjects(featData.pins || pins);
+    if (!pins.length && !append) {
+      pins = FALLBACK_DESIGNS;
+      if (projectsTotalEl) projectsTotalEl.textContent = String(pins.length);
+      renderFeaturedProjects(pins);
+      renderProjects(pins, false);
+      projectsState.hasMore = false;
+    } else {
+      if (projectsTotalEl) projectsTotalEl.textContent = String(data.total || pins.length);
+      if (!append && featuredProjects) {
+        const featRes = await fetch("/api/projects?sort=most-viewed&limit=3");
+        const featData = await featRes.json();
+        renderFeaturedProjects(featData.pins || pins);
+      }
+      renderProjects(pins, append);
+      projectsState.hasMore = Boolean(data.hasMore);
     }
-    renderProjects(pins, append);
-    projectsState.hasMore = Boolean(data.hasMore);
     if (projectsEndHint) {
       projectsEndHint.classList.toggle("hidden", !projectsState.hasMore);
     }
   } catch (_error) {
-    if (!append) projectsGrid.innerHTML = "<p class='empty-state'>Nuk u ngarkuan projekte.</p>";
+    if (!append) {
+      if (projectsTotalEl) projectsTotalEl.textContent = String(FALLBACK_DESIGNS.length);
+      renderFeaturedProjects(FALLBACK_DESIGNS);
+      renderProjects(FALLBACK_DESIGNS, false);
+      projectsState.hasMore = false;
+    }
   } finally {
     hideSkeleton();
     projectsState.loading = false;
@@ -790,16 +1078,27 @@ const loadPins = async ({ append = false, limit, category, sort } = {}) => {
     params.set("limit", String(limit || feedState.limit));
     const query = params.toString();
     const response = await fetch(`/api/pins${query ? `?${query}` : ""}`);
+    if (!response.ok) throw new Error("api");
     const data = await response.json();
-    const pins = data.pins || [];
+    let pins = data.pins || [];
+
+    if (!pins.length && !append) {
+      usingFallbackCatalog = true;
+      pins = FALLBACK_DESIGNS;
+      feedState.hasMore = false;
+    } else {
+      usingFallbackCatalog = false;
+      feedState.hasMore = Boolean(data.hasMore);
+    }
 
     if (pinsGrid) renderPins(pins, append);
     else if (homeDecorGrid) renderHomeDecor(pins, append);
-
-    feedState.hasMore = Boolean(data.hasMore);
   } catch (_error) {
+    usingFallbackCatalog = true;
+    feedState.hasMore = false;
     if (!append && activeGrid) {
-      activeGrid.innerHTML = "<p class='empty-state'>Unable to load designs right now.</p>";
+      if (pinsGrid) renderPins(FALLBACK_DESIGNS, false);
+      else if (homeDecorGrid) renderHomeDecor(FALLBACK_DESIGNS, false);
     }
   } finally {
     hideSkeleton();
@@ -1092,6 +1391,34 @@ const closeEditModal = () => {
 
 const openPinDetail = async (pinId) => {
   if (!pinDetailModal || !pinDetailContent) return;
+
+  const demoPin = FALLBACK_DESIGNS.find((p) => p._id === pinId);
+  if (demoPin || String(pinId).startsWith("demo-")) {
+    const pin = demoPin || FALLBACK_DESIGNS[0];
+    activeDetailPin = pin;
+    pinDetailContent.innerHTML = `
+      <img class="detail-image" src="${pin.imageUrl}" alt="${escapeHtml(pin.title)}" />
+      <div class="detail-body">
+        <div class="pin-meta-top">${sourceBadge(pin)}<span class="pin-category">${escapeHtml(categoryLabel(pin.category))}</span>${priceBadge(pin)}</div>
+        <h2>${escapeHtml(pin.title)}</h2>
+        <p class="detail-bio">${escapeHtml(pin.bio || t("detail.noBio"))}</p>
+        <p class="pin-author">By ${escapeHtml(pin.user?.name || "Studio")} · 👁 ${formatViews(pin.viewCount)}</p>
+        <div class="pin-actions">
+          <button class="small-btn" data-action="like" data-id="${pin._id}">♥ ${pin.likeCount || 0}</button>
+          <button class="small-btn" data-action="save" data-id="${pin._id}">★ ${pin.saveCount || 0}</button>
+          <button class="small-btn" data-action="share" data-id="${pin._id}">↗ ${escapeHtml(t("card.share"))}</button>
+          <button class="btn buy-btn" data-action="buy" data-id="${pin._id}" data-title="${encodeURIComponent(pin.title)}" data-price="${escapeHtml(pin.priceLabel || "")}">${escapeHtml(t("detail.buyNow"))}</button>
+        </div>
+        <div class="comments-box">
+          <h3>${escapeHtml(t("detail.comments"))}</h3>
+          <p class="empty-state">${currentLang === "sq" ? "Komentet aktivizohen kur katalogu lidhet me serverin." : "Comments activate when the shop is connected to the server."}</p>
+        </div>
+      </div>
+    `;
+    pinDetailModal.classList.remove("hidden");
+    return;
+  }
+
   try {
     const [pinRes, commentsRes] = await Promise.all([
       fetch(`/api/pins/${pinId}`),
@@ -1111,31 +1438,31 @@ const openPinDetail = async (pinId) => {
         <article class="comment-item">
           <strong>${escapeHtml(c.user?.name || "User")}</strong>
           <p>${escapeHtml(c.text)}</p>
-          <small>${new Date(c.createdAt).toLocaleString("sq-AL")}</small>
+          <small>${new Date(c.createdAt).toLocaleString(currentLang === "sq" ? "sq-AL" : "en-US")}</small>
         </article>`
           )
           .join("")
-      : `<p class="empty-state">Ende nuk ka komente. Ji i pari.</p>`;
+      : `<p class="empty-state">${currentLang === "sq" ? "Ende nuk ka komente." : "No comments yet."}</p>`;
 
     pinDetailContent.innerHTML = `
       <img class="detail-image" src="${pin.imageUrl}" alt="${escapeHtml(pin.title)}" />
       <div class="detail-body">
         <div class="pin-meta-top">${sourceBadge(pin)}<span class="pin-category">${escapeHtml(categoryLabel(pin.category))}</span>${priceBadge(pin)}</div>
         <h2>${escapeHtml(pin.title)}</h2>
-        <p class="detail-bio">${escapeHtml(pin.bio || "Nuk ka përshkrim për këtë dizajn.")}</p>
+        <p class="detail-bio">${escapeHtml(pin.bio || t("detail.noBio"))}</p>
         <p class="pin-author">By ${escapeHtml(pin.user?.name || "Studio")} · 👁 ${formatViews(pin.viewCount)} · ↗ ${pin.shareCount || 0}</p>
         <div class="pin-actions">
           <button class="small-btn ${pin.isLiked ? "active" : ""}" data-action="like" data-id="${pin._id}">♥ ${pin.likeCount || 0}</button>
           <button class="small-btn ${pin.isSaved ? "active" : ""}" data-action="save" data-id="${pin._id}">★ ${pin.saveCount || 0}</button>
-          <button class="small-btn" data-action="share" data-id="${pin._id}">↗ Share</button>
-          ${pin.forSale ? `<button class="btn buy-btn" data-action="buy" data-id="${pin._id}" data-title="${encodeURIComponent(pin.title)}" data-price="${escapeHtml(pin.priceLabel || "")}">Blej tani</button>` : ""}
+          <button class="small-btn" data-action="share" data-id="${pin._id}">↗ ${escapeHtml(t("card.share"))}</button>
+          ${pin.forSale !== false ? `<button class="btn buy-btn" data-action="buy" data-id="${pin._id}" data-title="${encodeURIComponent(pin.title)}" data-price="${escapeHtml(pin.priceLabel || "")}">${escapeHtml(t("detail.buyNow"))}</button>` : ""}
         </div>
         <div class="comments-box">
-          <h3>Komente</h3>
+          <h3>${escapeHtml(t("detail.comments"))}</h3>
           <div id="commentsList">${commentsMarkup}</div>
           <form id="commentForm" class="comment-form" data-pin-id="${pin._id}">
-            <textarea name="text" rows="2" maxlength="800" placeholder="${currentUser ? "Shkruaj një koment…" : "Login për të komentuar"}" ${currentUser ? "required" : "disabled"}></textarea>
-            <button class="small-btn" type="submit" ${currentUser ? "" : "disabled"}>Dërgo</button>
+            <textarea name="text" rows="2" maxlength="800" placeholder="${currentUser ? t("detail.commentPh") : t("detail.loginComment")}" ${currentUser ? "required" : "disabled"}></textarea>
+            <button class="small-btn" type="submit" ${currentUser ? "" : "disabled"}>${escapeHtml(t("detail.send"))}</button>
           </form>
         </div>
       </div>
@@ -1441,12 +1768,35 @@ const setupPinActions = () => {
 
       try {
         if (action === "buy") {
+          if (String(pinId).startsWith("demo-")) {
+            alert(
+              currentLang === "sq"
+                ? "Ky është katalog demo. Lidh MongoDB / API për porosi reale."
+                : "This is a demo catalog item. Connect MongoDB/API for real orders."
+            );
+            return;
+          }
           openOrderModal(pinId, button.dataset.title || "", button.dataset.price || "");
           return;
         }
 
         if (action === "share") {
+          if (String(pinId).startsWith("demo-")) {
+            const url = `${window.location.origin}/explore.html`;
+            if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(url);
+            alert(currentLang === "sq" ? "Linku i dyqanit u kopjua." : "Shop link copied.");
+            return;
+          }
           await shareDesign(pinId);
+          return;
+        }
+
+        if ((action === "like" || action === "save") && String(pinId).startsWith("demo-")) {
+          alert(
+            currentLang === "sq"
+              ? "Like/Save aktivizohen kur katalogu lidhet me serverin."
+              : "Like/Save activate when the shop is connected to the server."
+          );
           return;
         }
 
@@ -1625,6 +1975,7 @@ const setupProfileTabs = () => {
 };
 
 initTheme();
+setupLanguage();
 setupVideoBackground();
 setupAccountDrawer();
 setupBurgerMenu();
@@ -1643,8 +1994,10 @@ setupUploadForm();
 setupPinterestImport();
 setupUploadTabs();
 setupUploadPreview();
+document.getElementById("profileLogoutBtn")?.addEventListener("click", logoutUser);
 updateUserBadge().then(async () => {
   refreshProfileForm();
+  applyLanguage(currentLang);
   if (isProjectsPage) {
     projectsState.page = 1;
     projectsState.hasMore = true;

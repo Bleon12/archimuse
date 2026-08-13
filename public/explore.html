@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="sq">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ArchiMuse | Katalogu</title>
+    <title>ArchiMuse | Shop</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -11,35 +11,32 @@
   </head>
   <body>
     <header class="topbar">
-      <div class="brand">ArchiMuse</div>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="explore.html" class="active">Katalogu</a>
-        <a href="projects.html">Koleksioni</a>
-        <a href="upload.html">Ngarko</a>
-        <a href="saved.html">Saved</a>
-        <a href="profile.html">Profili</a>
-        <a href="login.html">Login</a>
+      <a class="brand" href="index.html">ArchiMuse</a>
+      <nav class="main-nav" data-nav>
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="explore.html" class="active" data-i18n="nav.shop">Shop</a>
+        <a href="projects.html" data-i18n="nav.gallery">Gallery</a>
+        <a href="saved.html" data-i18n="nav.saved">Saved</a>
+        <a href="login.html" data-i18n="nav.login">Login</a>
       </nav>
       <div class="topbar-right">
-        <div class="mode-switch">
-          <button class="mode-btn" data-theme="light">Light</button>
-          <button class="mode-btn" data-theme="cream">Cream</button>
-          <button class="mode-btn" data-theme="dark">Dark</button>
+        <div class="lang-switch" aria-label="Language">
+          <button type="button" class="lang-btn active" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="sq">SQ</button>
         </div>
-        <span id="userBadge" class="user-badge"></span>
+        <a href="profile.html" id="userBadge" class="user-badge">Guest</a>
       </div>
     </header>
 
     <main class="page-wrap">
-      <h1>Katalogu i dizajneve</h1>
-      <p class="page-subtitle">Shiko, pëlqe, ruaj, ndaj dhe blej dizajnet e studios.</p>
+      <h1 data-i18n="shop.title">Design shop</h1>
+      <p class="page-subtitle" data-i18n="shop.sub">Browse, like, save, share and buy studio designs.</p>
 
       <section class="search-panel reveal">
         <form id="searchForm" class="search-form">
-          <input id="searchInput" name="search" type="text" placeholder="Kërko sipas titullit ose bio-s…" />
+          <input id="searchInput" name="search" type="text" data-i18n-placeholder="shop.search" placeholder="Search by title or bio…" />
           <select id="categoryFilter" name="category">
-            <option value="all">Të gjitha kategoritë</option>
+            <option value="all">All</option>
             <option value="modern">Modern</option>
             <option value="minimal">Minimal</option>
             <option value="brutalist">Brutalist</option>
@@ -48,20 +45,20 @@
             <option value="futuristic">Futuristic</option>
           </select>
           <select id="sortFilter" name="sort">
-            <option value="latest">Më të rejat</option>
+            <option value="latest">Latest</option>
             <option value="trending">Trending</option>
-            <option value="most-liked">Më të pëlqyerat</option>
-            <option value="most-saved">Më të ruajturat</option>
-            <option value="most-viewed">Më të shikuara</option>
+            <option value="most-liked">Most liked</option>
+            <option value="most-saved">Most saved</option>
+            <option value="most-viewed">Most viewed</option>
           </select>
-          <button class="btn" type="submit">Filtro</button>
+          <button class="btn" type="submit" data-i18n="shop.filter">Filter</button>
         </form>
       </section>
 
-      <section id="pinsGrid" class="pins-grid masonry-grid">
-        <p class="empty-state">Duke ngarkuar…</p>
+      <section id="pinsGrid" class="pins-grid shop-grid">
+        <p class="empty-state" data-i18n="home.loading">Loading designs…</p>
       </section>
-      <section id="feedSkeleton" class="pins-grid masonry-grid skeleton-grid hidden"></section>
+      <section id="feedSkeleton" class="pins-grid shop-grid skeleton-grid hidden"></section>
     </main>
 
     <div id="pinDetailModal" class="modal hidden">

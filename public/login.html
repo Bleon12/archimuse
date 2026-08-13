@@ -8,47 +8,41 @@
   </head>
   <body>
     <header class="topbar">
-      <div class="brand">ArchiMuse</div>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="explore.html">Explore</a>
-        <a href="projects.html">Projects</a>
-        <a href="upload.html">Upload</a>
-        <a href="saved.html">Saved</a>
-        <a href="profile.html">Profile</a>
-        <a href="login.html" class="active">Login</a>
+      <a class="brand" href="index.html">ArchiMuse</a>
+      <nav class="main-nav" data-nav>
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="explore.html" data-i18n="nav.shop">Shop</a>
+        <a href="projects.html" data-i18n="nav.gallery">Gallery</a>
+        <a href="saved.html" data-i18n="nav.saved">Saved</a>
+        <a href="login.html" class="active" data-i18n="nav.login">Login</a>
       </nav>
       <div class="topbar-right">
-        <div class="mode-switch">
-          <button class="mode-btn" data-theme="light">Light</button>
-          <button class="mode-btn" data-theme="cream">Cream</button>
-          <button class="mode-btn" data-theme="dark">Dark</button>
+        <div class="lang-switch" aria-label="Language">
+          <button type="button" class="lang-btn active" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="sq">SQ</button>
         </div>
-        <span id="userBadge" class="user-badge"></span>
+        <a href="profile.html" id="userBadge" class="user-badge">Guest</a>
       </div>
     </header>
 
     <main class="login-wrap">
       <section class="login-card reveal">
-        <h1>Account Access</h1>
-        <p>Create an account or login to upload architecture pins.</p>
+        <h1 data-i18n="login.title">Account</h1>
+        <p data-i18n="login.sub">Login or register to save designs and place orders.</p>
         <div class="auth-tabs">
-          <button id="loginTab" class="tab-btn active" type="button">Login</button>
-          <button id="registerTab" class="tab-btn" type="button">Register</button>
+          <button id="loginTab" class="tab-btn active" type="button" data-i18n="login.tabLogin">Login</button>
+          <button id="registerTab" class="tab-btn" type="button" data-i18n="login.tabRegister">Register</button>
         </div>
         <form id="loginForm">
           <div id="nameFieldWrap" class="hidden">
-            <label for="name">Name</label>
+            <label for="name" data-i18n="login.name">Name</label>
             <input id="name" name="name" type="text" placeholder="Your name" />
           </div>
-
           <label for="email">Email</label>
           <input id="email" name="email" type="email" placeholder="you@example.com" required />
-
-          <label for="password">Password</label>
+          <label for="password" data-i18n="login.password">Password</label>
           <input id="password" name="password" type="password" placeholder="********" required />
-
-          <button id="authSubmitBtn" type="submit" class="btn">Login</button>
+          <button id="authSubmitBtn" type="submit" class="btn" data-i18n="login.tabLogin">Login</button>
           <p id="loginMessage" class="message"></p>
         </form>
       </section>

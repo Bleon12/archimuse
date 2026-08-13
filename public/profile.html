@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="sq">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ArchiMuse | Profili</title>
+    <title>ArchiMuse | Profile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -11,23 +11,20 @@
   </head>
   <body>
     <header class="topbar">
-      <div class="brand">ArchiMuse</div>
-      <nav>
-        <a href="index.html">Home</a>
-        <a href="explore.html">Katalogu</a>
-        <a href="projects.html">Koleksioni</a>
-        <a href="upload.html">Ngarko</a>
-        <a href="saved.html">Saved</a>
-        <a href="profile.html" class="active">Profili</a>
-        <a href="login.html">Login</a>
+      <a class="brand" href="index.html">ArchiMuse</a>
+      <nav class="main-nav" data-nav>
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="explore.html" data-i18n="nav.shop">Shop</a>
+        <a href="projects.html" data-i18n="nav.gallery">Gallery</a>
+        <a href="saved.html" data-i18n="nav.saved">Saved</a>
+        <a href="login.html" data-i18n="nav.login">Login</a>
       </nav>
       <div class="topbar-right">
-        <div class="mode-switch">
-          <button class="mode-btn" data-theme="light">Light</button>
-          <button class="mode-btn" data-theme="cream">Cream</button>
-          <button class="mode-btn" data-theme="dark">Dark</button>
+        <div class="lang-switch" aria-label="Language">
+          <button type="button" class="lang-btn active" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="sq">SQ</button>
         </div>
-        <span id="userBadge" class="user-badge"></span>
+        <a href="profile.html" id="userBadge" class="user-badge active">Guest</a>
       </div>
     </header>
 
@@ -36,82 +33,53 @@
         <div class="profile-sidebar-head">
           <span id="profileAvatar" class="profile-avatar">U</span>
           <div>
-            <h1>Profili im</h1>
-            <p id="profileStats" class="profile-stats">Duke ngarkuar…</p>
+            <h1 data-i18n="profile.title">My profile</h1>
+            <p id="profileStats" class="profile-stats">…</p>
           </div>
         </div>
-
-        <nav class="profile-side-nav" aria-label="Seksionet e profilit">
-          <button class="profile-side-btn active" data-profile-tab="settings">Cilësimet</button>
-          <button class="profile-side-btn" data-profile-tab="orders">Porositë</button>
-          <button class="profile-side-btn" data-profile-tab="my">Dizajnet e mia</button>
-          <button class="profile-side-btn" data-profile-tab="saved">Të ruajtura</button>
-          <button class="profile-side-btn" data-profile-tab="liked">Të pëlqyera</button>
-          <button class="profile-side-btn seller-only hidden" data-profile-tab="seller-orders">Kërkesat e klientëve</button>
+        <nav class="profile-side-nav">
+          <button class="profile-side-btn active" data-profile-tab="settings" data-i18n="profile.settings">Settings</button>
+          <button class="profile-side-btn" data-profile-tab="orders" data-i18n="profile.orders">Orders</button>
+          <button class="profile-side-btn" data-profile-tab="my" data-i18n="profile.my">My designs</button>
+          <button class="profile-side-btn" data-profile-tab="saved" data-i18n="nav.saved">Saved</button>
+          <button class="profile-side-btn" data-profile-tab="liked" data-i18n="profile.liked">Liked</button>
+          <button class="profile-side-btn seller-only hidden" data-profile-tab="seller-orders" data-i18n="profile.sellerOrders">Customer requests</button>
+          <a class="profile-side-btn seller-only hidden" href="upload.html" data-i18n="profile.upload">Upload design</a>
+          <button class="profile-side-btn" type="button" id="profileLogoutBtn" data-i18n="profile.logout">Logout</button>
         </nav>
       </aside>
 
       <div class="profile-main">
         <section id="profileSettingsPanel" class="profile-bio-box reveal">
-          <h2>Cilësimet & bio</h2>
-          <p class="page-subtitle">Informacioni shfaqet në llogarinë tënde.</p>
+          <h2 data-i18n="profile.settings">Settings</h2>
           <form id="profileBioForm">
-            <label for="profileName">Emri</label>
-            <input id="profileName" type="text" placeholder="Emri yt" required />
+            <label for="profileName" data-i18n="login.name">Name</label>
+            <input id="profileName" type="text" required />
             <label for="profileBio">Bio</label>
-            <textarea id="profileBio" rows="4" maxlength="280" placeholder="p.sh. Dizajner / klient i studios…"></textarea>
-            <button type="submit" class="btn">Ruaj profilin</button>
+            <textarea id="profileBio" rows="4" maxlength="280"></textarea>
+            <button type="submit" class="btn" data-i18n="profile.save">Save profile</button>
             <p id="profileMessage" class="message"></p>
           </form>
         </section>
 
         <section id="profileOrdersPanel" class="orders-panel hidden">
-          <h2>Porositë / kërkesat e mia</h2>
-          <p class="page-subtitle">Statusi: në pritje, e konfirmuar, e përfunduar ose e anuluar.</p>
+          <h2 data-i18n="profile.orders">Orders</h2>
+          <p class="page-subtitle" data-i18n="profile.ordersSub">Status: pending, confirmed, completed or cancelled.</p>
           <div id="profileOrdersList" class="orders-list">
-            <p class="empty-state">Duke ngarkuar porositë…</p>
+            <p class="empty-state">…</p>
           </div>
         </section>
 
         <section id="sellerOrdersPanel" class="orders-panel hidden">
-          <h2>Kërkesat e klientëve</h2>
-          <p class="page-subtitle">Ndrysho statusin e porosive që vijnë nga formulari i blerjes.</p>
-          <div id="sellerOrdersList" class="orders-list">
-            <p class="empty-state">Duke ngarkuar…</p>
-          </div>
+          <h2 data-i18n="profile.sellerOrders">Customer requests</h2>
+          <div id="sellerOrdersList" class="orders-list"><p class="empty-state">…</p></div>
         </section>
 
-        <section id="profileMyGrid" class="pins-grid masonry-grid hidden"></section>
-        <section id="profileSavedGrid" class="pins-grid masonry-grid hidden"></section>
-        <section id="profileLikedGrid" class="pins-grid masonry-grid hidden"></section>
+        <section id="profileMyGrid" class="pins-grid shop-grid hidden"></section>
+        <section id="profileSavedGrid" class="pins-grid shop-grid hidden"></section>
+        <section id="profileLikedGrid" class="pins-grid shop-grid hidden"></section>
       </div>
     </main>
-
-    <div id="editModal" class="modal hidden">
-      <div class="modal-card">
-        <h3>Ndrysho dizajnin</h3>
-        <form id="editPinForm">
-          <input type="hidden" id="editPinId" />
-          <label for="editTitle">Titulli</label>
-          <input id="editTitle" type="text" required />
-          <label for="editBio">Bio</label>
-          <textarea id="editBio" rows="3"></textarea>
-          <label for="editCategory">Kategoria</label>
-          <select id="editCategory" required>
-            <option value="modern">Modern</option>
-            <option value="minimal">Minimal</option>
-            <option value="brutalist">Brutalist</option>
-            <option value="interior">Interior</option>
-            <option value="landscape">Landscape</option>
-            <option value="futuristic">Futuristic</option>
-          </select>
-          <div class="modal-actions">
-            <button type="button" id="cancelEditBtn" class="small-btn">Anulo</button>
-            <button type="submit" class="btn">Ruaj</button>
-          </div>
-        </form>
-      </div>
-    </div>
 
     <div id="pinDetailModal" class="modal hidden">
       <div class="modal-card detail-modal">

@@ -357,16 +357,15 @@ body.theme-dark .detail-modal {
 .topbar {
   position: sticky;
   top: 0;
-  z-index: 30;
+  z-index: 50;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  padding: 1rem 2rem;
-  background: rgba(255, 253, 249, 0.78);
+  gap: 0.75rem;
+  padding: 0.8rem 1.25rem;
+  background: rgba(255, 253, 249, 0.9);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid #ece5d8;
-  z-index: 50;
 }
 
 .burger-btn {
@@ -1081,11 +1080,7 @@ body.theme-light .quick-link.primary {
 }
 
 .mode-switch {
-  display: flex;
-  gap: 0.35rem;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 999px;
-  padding: 0.25rem;
+  display: none;
 }
 
 .mode-btn {
@@ -2695,5 +2690,134 @@ textarea:focus {
 
   .price-row {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Clean shop UI overrides */
+a.brand {
+  text-decoration: none;
+  color: inherit;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.lang-switch {
+  display: inline-flex;
+  border: 1px solid #d8ceb9;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 252, 245, 0.9);
+}
+
+.lang-btn {
+  border: 0;
+  background: transparent;
+  padding: 0.28rem 0.55rem;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #6b6356;
+}
+
+.lang-btn.active {
+  background: #1a1a1a;
+  color: #fff;
+}
+
+a.user-badge {
+  text-decoration: none;
+  color: inherit;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hero--shop {
+  position: relative;
+  min-height: 68vh;
+  display: grid;
+  place-items: end start;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.hero--shop .hero-media {
+  position: absolute;
+  inset: 0;
+}
+
+.hero--shop .hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: brightness(0.7);
+}
+
+.hero--shop .hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 640px;
+  padding: 3.2rem 2rem 2.8rem;
+  color: #fff;
+}
+
+.hero--shop .hero-eyebrow {
+  color: #f0e2b8;
+}
+
+.hero--shop h1 {
+  color: #fff;
+  font-size: clamp(2.6rem, 7vw, 4.4rem);
+  margin: 0.15rem 0 0.65rem;
+}
+
+.hero--shop p {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.shop-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 1.1rem;
+  column-count: unset !important;
+  padding: 0 1.5rem 2.5rem;
+}
+
+.shop-grid .pin-card {
+  display: block !important;
+  width: 100%;
+  margin: 0 !important;
+}
+
+.shop-grid .pin-card img {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+}
+
+nav.main-nav {
+  display: flex;
+  gap: 0.2rem;
+  flex-wrap: nowrap;
+}
+
+nav.main-nav a {
+  font-size: 0.9rem;
+  padding: 0.35rem 0.65rem;
+}
+
+@media (max-width: 900px) {
+  .topbar-right .lang-switch {
+    order: 2;
+  }
+
+  a.user-badge {
+    display: none;
   }
 }
