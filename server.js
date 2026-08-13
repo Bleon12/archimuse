@@ -22,20 +22,25 @@ const PORT = process.env.PORT || 1212;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/archimuse";
 const SESSION_SECRET = process.env.SESSION_SECRET || "archimuse-dev-secret-change-in-production";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const IS_NETLIFY = Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
 const SELLER_ROLES = new Set(["seller", "admin", "curator"]);
 
-const uploadsDir = path.join(__dirname, "public", "uploads");
+const uploadsDir = IS_NETLIFY
+  ? path.join("/tmp", "archimuse-uploads")
+  : path.join(__dirname, "public", "uploads");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadsDir),
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname || ".jpg");
-    cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`);
-  },
-});
+const storage = IS_NETLIFY
+  ? multer.memoryStorage()
+  : multer.diskStorage({
+      destination: (_req, _file, cb) => cb(null, uploadsDir),
+      filename: (_req, file, cb) => {
+        const ext = path.extname(file.originalname || ".jpg");
+        cb(null, `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`);
+      },
+    });
 
 const upload = multer({
   storage,
@@ -45,6 +50,14 @@ const upload = multer({
     else cb(new Error("Only image files are allowed."));
   },
 });
+
+const toImageUrl = (file) => {
+  if (!file) return "";
+  if (file.buffer) {
+    return `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+  }
+  return `/uploads/${file.filename}`;
+};
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json({ limit: "2mb" }));
@@ -555,7 +568,7 @@ app.post("/api/pins", requireSeller, upload.single("image"), async (req, res) =>
       title,
       bio,
       category,
-      imageUrl: `/uploads/${req.file.filename}`,
+      imageUrl: toImageUrl(req.file),
       sourceUrl,
       source: sourceUrl.includes("pinterest") ? "pinterest" : "upload",
       user: req.session.userId,
@@ -912,11 +925,22 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+let readyPromise = null;
+
+const ensureReady = () => {
+  if (!readyPromise) {
+    readyPromise = (async () => {
+      await connectDatabase();
+      await migrateJsonIfEmpty();
+      await seedCuratedPins();
+    })();
+  }
+  return readyPromise;
+};
+
 const startServer = async () => {
   try {
-    await connectDatabase();
-    await migrateJsonIfEmpty();
-    await seedCuratedPins();
+    await ensureReady();
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`ArchiMuse is running on http://localhost:${PORT}`);
       console.log(`Environment: ${IS_PRODUCTION ? "production" : "development"}`);
@@ -930,4 +954,8 @@ const startServer = async () => {
   }
 };
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = { app, ensureReady };

@@ -1,0 +1,38 @@
+[build]
+  command = "npm install"
+  publish = "public"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = [
+    "express",
+    "mongoose",
+    "mongodb",
+    "bcryptjs",
+    "express-session",
+    "connect-mongo",
+    "multer",
+    "serverless-http"
+  ]
+
+[functions.api]
+  included_files = [
+    "server.js",
+    "database.js",
+    "env.js",
+    "models/**",
+    "services/**",
+    "curated-pins.js",
+    "pinterest-pins.js",
+    "data/**"
+  ]
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
+  force = true
+
+[build.environment]
+  NODE_VERSION = "20"
