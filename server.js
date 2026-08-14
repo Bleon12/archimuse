@@ -25,6 +25,14 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const IS_NETLIFY = Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
 const SELLER_ROLES = new Set(["seller", "admin", "curator"]);
 const USE_SECURE_COOKIE = IS_PRODUCTION || IS_NETLIFY;
+const MONGO_IS_LOCAL =
+  /127\.0\.0\.1|localhost/i.test(MONGO_URI) || MONGO_URI.startsWith("mongodb://127.");
+
+if (IS_NETLIFY && MONGO_IS_LOCAL) {
+  console.warn(
+    "WARNING: MONGO_URI points to localhost. On Netlify you must use MongoDB Atlas (mongodb+srv://...)."
+  );
+}
 
 const uploadsDir = IS_NETLIFY
   ? path.join("/tmp", "archimuse-uploads")
@@ -68,6 +76,25 @@ if (IS_PRODUCTION || IS_NETLIFY) {
   app.set("trust proxy", 1);
 }
 
+const buildSessionStore = () => {
+  // Localhost Mongo cannot work inside Netlify Functions
+  if (IS_NETLIFY && MONGO_IS_LOCAL) {
+    return new session.MemoryStore();
+  }
+  try {
+    return MongoStore.create({
+      mongoUrl: MONGO_URI,
+      ttl: 60 * 60 * 24 * 7,
+      touchAfter: 60 * 60,
+      autoRemove: "interval",
+      autoRemoveInterval: 10,
+    });
+  } catch (error) {
+    console.error("MongoStore failed, using MemoryStore:", error.message);
+    return new session.MemoryStore();
+  }
+};
+
 app.use(
   session({
     name: "archimuse.sid",
@@ -75,11 +102,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     proxy: true,
-    store: MongoStore.create({
-      mongoUrl: MONGO_URI,
-      ttl: 60 * 60 * 24 * 7,
-      touchAfter: 60 * 60,
-    }),
+    store: buildSessionStore(),
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 7,
       httpOnly: true,

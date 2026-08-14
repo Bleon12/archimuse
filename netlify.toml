@@ -4,14 +4,15 @@
   functions = "netlify/functions"
 
 [functions]
-  node_bundler = "esbuild"
+  node_bundler = "nft"
   external_node_modules = [
-    "express",
     "mongoose",
     "mongodb",
-    "bcryptjs",
+    "bson",
+    "express",
     "express-session",
     "connect-mongo",
+    "bcryptjs",
     "multer",
     "serverless-http"
   ]
@@ -29,7 +30,6 @@
     "data/**"
   ]
 
-# Keep original /api/... path for the Express app
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api"

@@ -1,58 +1,60 @@
-const serverless = require("serverless-http");
-const { app, ensureReady } = require("../../server");
+const path = require("path");
 
-const handler = serverless(app, {
-  binary: ["image/*", "application/octet-stream"],
-});
-
-const toApiPath = (event) => {
-  const candidates = [
-    event.path,
-    event.rawPath,
-    event.requestContext?.http?.path,
-    event.headers?.["x-forwarded-uri"],
-    event.headers?.["X-Forwarded-Uri"],
-  ]
-    .filter(Boolean)
-    .map(String);
-
-  let path = candidates[0] || "/";
-
-  // Strip function prefix if present
-  path = path.replace(/^\/\.netlify\/functions\/api/, "") || "/";
-
-  // Ensure Express sees /api/...
-  if (!path.startsWith("/api")) {
-    path = `/api${path.startsWith("/") ? path : `/${path}`}`;
-  }
-
-  // Avoid trailing function-only path
-  if (path === "/api/" || path === "/api") {
-    path = "/api/health";
-  }
-
-  return path;
-};
+// Load root deps from project root (not function folder)
+const root = path.join(__dirname, "../..");
+module.paths.unshift(path.join(root, "node_modules"));
 
 exports.handler = async (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
 
   try {
-    await ensureReady();
+    const serverless = require("serverless-http");
+    const { app, ensureReady } = require("../../server");
+
+    try {
+      await ensureReady();
+    } catch (error) {
+      return {
+        statusCode: 500,
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
+        body: JSON.stringify({
+          ok: false,
+          message:
+            "Database not connected. In Netlify set MONGO_URI to your MongoDB Atlas string (not localhost), then redeploy.",
+          error: String(error.message || error),
+        }),
+      };
+    }
+
+    const handler = serverless(app, {
+      binary: ["image/*", "application/octet-stream"],
+    });
+
+    let reqPath =
+      event.path ||
+      event.rawPath ||
+      event.requestContext?.http?.path ||
+      "/";
+
+    reqPath = String(reqPath).replace(/^\/\.netlify\/functions\/api/, "") || "/";
+    if (!reqPath.startsWith("/api")) {
+      reqPath = `/api${reqPath.startsWith("/") ? reqPath : `/${reqPath}`}`;
+    }
+
+    event.path = reqPath;
+    if (event.rawPath) event.rawPath = reqPath;
+
+    return await handler(event, context);
   } catch (error) {
+    console.error("Function crash:", error);
     return {
       statusCode: 500,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ok: false,
-        message: "Database not connected. Set MONGO_URI (Atlas) in Netlify env vars.",
-        error: error.message,
+        message: "API function failed to start.",
+        error: String(error.message || error),
       }),
     };
   }
-
-  event.path = toApiPath(event);
-  if (event.rawPath) event.rawPath = event.path;
-
-  return handler(event, context);
 };
