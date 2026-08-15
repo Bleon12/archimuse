@@ -869,8 +869,8 @@ const setupAuthForm = () => {
       } catch (_error) {
         messageEl.textContent =
           currentLang === "sq"
-            ? "Serveri nuk u përgjigj. Kontrollo MONGO_URI në Netlify."
-            : "Server did not respond. Check MONGO_URI on Netlify.";
+            ? "Serveri nuk u përgjigj. Kontrollo deploy-in/API në Netlify."
+            : "Server did not respond. Check your Netlify API deployment.";
         messageEl.style.color = "#a02727";
         return;
       }
@@ -1847,8 +1847,8 @@ const setupPinActions = () => {
           if (String(pinId).startsWith("demo-")) {
             alert(
               currentLang === "sq"
-                ? "Ky është katalog demo. Lidh MongoDB / API për porosi reale."
-                : "This is a demo catalog item. Connect MongoDB/API for real orders."
+                ? "Ky është katalog demo. Lidhe API-n me databazën për porosi reale."
+                : "This is a demo catalog item. Connect the API to your database for real orders."
             );
             return;
           }

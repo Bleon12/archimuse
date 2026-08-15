@@ -19,8 +19,7 @@ exports.handler = async (event, context) => {
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
         body: JSON.stringify({
           ok: false,
-          message:
-            "Database not connected. In Netlify set MONGO_URI to your MongoDB Atlas string (not localhost), then redeploy.",
+          message: "Database is not ready. Verify deployment files and redeploy.",
           error: String(error.message || error),
         }),
       };
