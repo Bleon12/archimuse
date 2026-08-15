@@ -2,11 +2,11 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 const session = require("express-session");
-const MongoStore = require("connect-mongo");
 const bcrypt = require("bcryptjs");
 const multer = require("multer");
 const { loadEnv } = require("./env");
 const { connectDatabase } = require("./database");
+const FileSessionStore = require("./sessionStore");
 const User = require("./models/User");
 const Pin = require("./models/Pin");
 const Comment = require("./models/Comment");
@@ -19,20 +19,11 @@ loadEnv();
 
 const app = express();
 const PORT = process.env.PORT || 1212;
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/archimuse";
 const SESSION_SECRET = process.env.SESSION_SECRET || "archimuse-dev-secret-change-in-production";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const IS_NETLIFY = Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
 const SELLER_ROLES = new Set(["seller", "admin", "curator"]);
 const USE_SECURE_COOKIE = IS_PRODUCTION || IS_NETLIFY;
-const MONGO_IS_LOCAL =
-  /127\.0\.0\.1|localhost/i.test(MONGO_URI) || MONGO_URI.startsWith("mongodb://127.");
-
-if (IS_NETLIFY && MONGO_IS_LOCAL) {
-  console.warn(
-    "WARNING: MONGO_URI points to localhost. On Netlify you must use MongoDB Atlas (mongodb+srv://...)."
-  );
-}
 
 const uploadsDir = IS_NETLIFY
   ? path.join("/tmp", "archimuse-uploads")
@@ -77,20 +68,10 @@ if (IS_PRODUCTION || IS_NETLIFY) {
 }
 
 const buildSessionStore = () => {
-  // Localhost Mongo cannot work inside Netlify Functions
-  if (IS_NETLIFY && MONGO_IS_LOCAL) {
-    return new session.MemoryStore();
-  }
   try {
-    return MongoStore.create({
-      mongoUrl: MONGO_URI,
-      ttl: 60 * 60 * 24 * 7,
-      touchAfter: 60 * 60,
-      autoRemove: "interval",
-      autoRemoveInterval: 10,
-    });
+    return new FileSessionStore();
   } catch (error) {
-    console.error("MongoStore failed, using MemoryStore:", error.message);
+    console.error("FileSessionStore failed, using MemoryStore:", error.message);
     return new session.MemoryStore();
   }
 };
@@ -376,78 +357,17 @@ const seedCuratedPins = async () => {
       views: Math.floor(Math.random() * 800) + 120,
     }))
   );
-  console.log(`Seeded ${toAdd.length} designs into MongoDB.`);
-};
-
-const migrateJsonIfEmpty = async () => {
-  const count = await Pin.countDocuments();
-  if (count > 0) return;
-
-  const jsonPath = path.join(__dirname, "data", "store.json");
-  if (!fs.existsSync(jsonPath)) return;
-
-  try {
-    const store = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
-    if (!store.users?.length && !store.pins?.length) return;
-
-    const userMap = new Map();
-    for (const u of store.users || []) {
-      const exists = await User.findOne({ email: u.email });
-      if (exists) {
-        userMap.set(u._id, exists._id);
-        continue;
-      }
-      const created = await User.create({
-        name: u.name,
-        email: u.email,
-        passwordHash: u.passwordHash,
-        bio: u.bio || "",
-      });
-      userMap.set(u._id, created._id);
-    }
-
-    for (const p of store.pins || []) {
-      const userId = userMap.get(p.user);
-      if (!userId) continue;
-      await Pin.create({
-        title: p.title,
-        bio: p.bio || "",
-        category: p.category || "general",
-        imageUrl: p.imageUrl,
-        sourceUrl: p.sourceUrl || "",
-        source: p.source || "upload",
-        user: userId,
-        likedBy: (p.likedBy || []).map((id) => userMap.get(id)).filter(Boolean),
-        savedBy: (p.savedBy || []).map((id) => userMap.get(id)).filter(Boolean),
-        views: p.views || 0,
-      });
-    }
-    console.log("Migrated existing JSON data into MongoDB.");
-  } catch (_error) {
-    console.warn("JSON migration skipped.");
-  }
+  console.log(`Seeded ${toAdd.length} designs into JSON database.`);
 };
 
 app.get("/api/health", async (_req, res) => {
-  const dbState = require("mongoose").connection.readyState;
-  const mongoHost = (() => {
-    try {
-      return new URL(MONGO_URI.replace("mongodb+srv://", "https://").replace("mongodb://", "http://")).host;
-    } catch (_error) {
-      return "unknown";
-    }
-  })();
   res.json({
     ok: true,
     status: "online",
-    database: dbState === 1 ? "connected" : "disconnected",
-    mongoHost,
+    database: "json-file",
     netlify: IS_NETLIFY,
     environment: IS_PRODUCTION ? "production" : "development",
-    hint:
-      dbState === 1
-        ? null
-        : "Set MONGO_URI to your Atlas connection string in Netlify Environment variables, then redeploy.",
+    hint: null,
   });
 });
 
@@ -1021,7 +941,6 @@ const ensureReady = () => {
   if (!readyPromise) {
     readyPromise = (async () => {
       await connectDatabase();
-      await migrateJsonIfEmpty();
       await seedCuratedPins();
     })();
   }
@@ -1034,11 +953,10 @@ const startServer = async () => {
     app.listen(PORT, "0.0.0.0", () => {
       console.log(`ArchiMuse is running on http://localhost:${PORT}`);
       console.log(`Environment: ${IS_PRODUCTION ? "production" : "development"}`);
-      console.log("Database: MongoDB");
+      console.log("Database: JSON file (data/store.json)");
     });
   } catch (error) {
-    console.error("Failed to start server. Is MongoDB running?");
-    console.error("Set MONGO_URI in .env (default: mongodb://127.0.0.1:27017/archimuse)");
+    console.error("Failed to start server.");
     console.error(error.message);
     process.exit(1);
   }

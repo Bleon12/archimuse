@@ -1,298 +1,672 @@
 const fs = require("fs");
 const path = require("path");
 
-const dataDir = path.join(__dirname, "data");
+const IS_SERVERLESS = Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const dataDir = IS_SERVERLESS ? path.join("/tmp", "archimuse-data") : path.join(__dirname, "data");
 const dbFile = path.join(dataDir, "store.json");
+const bundledDbFile = path.join(__dirname, "data", "store.json");
 
 const defaultStore = () => ({
   users: [],
   pins: [],
-  meta: { nextUserId: 1, nextPinId: 1 },
+  comments: [],
+  orders: [],
+  meta: {
+    nextUserId: 1,
+    nextPinId: 1,
+    nextCommentId: 1,
+    nextOrderId: 1,
+  },
 });
 
+const clone = (value) => JSON.parse(JSON.stringify(value));
+const nowIso = () => new Date().toISOString();
+
+const numericIdPart = (value) => {
+  const match = String(value || "").match(/(\d+)$/);
+  return match ? Number(match[1]) : 0;
+};
+
+const normalizeStore = (parsed) => {
+  const safe = parsed && typeof parsed === "object" ? parsed : {};
+  const users = Array.isArray(safe.users) ? safe.users : [];
+  const pins = Array.isArray(safe.pins) ? safe.pins : [];
+  const comments = Array.isArray(safe.comments) ? safe.comments : [];
+  const orders = Array.isArray(safe.orders) ? safe.orders : [];
+
+  const nextUserId = Math.max(
+    Number(safe.meta?.nextUserId) || 1,
+    users.reduce((max, item) => Math.max(max, numericIdPart(item?._id) + 1), 1)
+  );
+  const nextPinId = Math.max(
+    Number(safe.meta?.nextPinId) || 1,
+    pins.reduce((max, item) => Math.max(max, numericIdPart(item?._id) + 1), 1)
+  );
+  const nextCommentId = Math.max(
+    Number(safe.meta?.nextCommentId) || 1,
+    comments.reduce((max, item) => Math.max(max, numericIdPart(item?._id) + 1), 1)
+  );
+  const nextOrderId = Math.max(
+    Number(safe.meta?.nextOrderId) || 1,
+    orders.reduce((max, item) => Math.max(max, numericIdPart(item?._id) + 1), 1)
+  );
+
+  return {
+    users,
+    pins,
+    comments,
+    orders,
+    meta: { nextUserId, nextPinId, nextCommentId, nextOrderId },
+  };
+};
+
 const ensureStore = () => {
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
-  }
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
   if (!fs.existsSync(dbFile)) {
+    // On serverless providers (Netlify), the bundled project files are read-only.
+    // We bootstrap a writable DB under /tmp by copying the bundled seed once.
+    if (IS_SERVERLESS && fs.existsSync(bundledDbFile)) {
+      try {
+        const raw = fs.readFileSync(bundledDbFile, "utf8");
+        const parsed = normalizeStore(JSON.parse(raw));
+        fs.writeFileSync(dbFile, JSON.stringify(parsed, null, 2), "utf8");
+        return;
+      } catch (_error) {
+        // Fall back to an empty store if seed bootstrap fails.
+      }
+    }
     fs.writeFileSync(dbFile, JSON.stringify(defaultStore(), null, 2), "utf8");
+    return;
   }
+  const store = readStore();
+  writeStore(store);
 };
 
 const readStore = () => {
-  ensureStore();
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+  if (!fs.existsSync(dbFile)) return defaultStore();
   try {
-    const raw = fs.readFileSync(dbFile, "utf8");
-    const parsed = JSON.parse(raw);
-    return {
-      users: parsed.users || [],
-      pins: parsed.pins || [],
-      meta: parsed.meta || { nextUserId: 1, nextPinId: 1 },
-    };
+    const parsed = JSON.parse(fs.readFileSync(dbFile, "utf8"));
+    return normalizeStore(parsed);
   } catch (_error) {
     return defaultStore();
   }
 };
 
 const writeStore = (store) => {
-  ensureStore();
-  fs.writeFileSync(dbFile, JSON.stringify(store, null, 2), "utf8");
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+  fs.writeFileSync(dbFile, JSON.stringify(normalizeStore(store), null, 2), "utf8");
 };
 
-const newId = (prefix, counter) => `${prefix}${counter}`;
+const newId = (store, key, prefix) => {
+  const value = store.meta[key] || 1;
+  store.meta[key] = value + 1;
+  return `${prefix}${value}`;
+};
 
-const nowIso = () => new Date().toISOString();
+const refId = (value) => {
+  if (value && typeof value === "object") return value._id || null;
+  return value == null ? null : String(value);
+};
+
+const parseSelect = (select) => {
+  if (!select || typeof select !== "string") return null;
+  return select
+    .split(/\s+/)
+    .map((field) => field.trim())
+    .filter(Boolean)
+    .filter((field) => !field.startsWith("-"));
+};
+
+const applySelect = (doc, select) => {
+  if (!doc) return null;
+  const fields = parseSelect(select);
+  if (!fields?.length) return clone(doc);
+  const selected = { _id: doc._id };
+  fields.forEach((field) => {
+    if (field in doc) selected[field] = doc[field];
+  });
+  return selected;
+};
+
+const compareValues = (a, b, direction) => {
+  if (a == null && b == null) return 0;
+  if (a == null) return 1;
+  if (b == null) return -1;
+  if (a instanceof Date && b instanceof Date) return direction * (a - b);
+  const aDate = Date.parse(a);
+  const bDate = Date.parse(b);
+  if (!Number.isNaN(aDate) && !Number.isNaN(bDate)) return direction * (aDate - bDate);
+  if (typeof a === "number" && typeof b === "number") return direction * (a - b);
+  return direction * String(a).localeCompare(String(b));
+};
+
+const sortDocs = (docs, sortSpec = {}) => {
+  const entries = Object.entries(sortSpec);
+  if (!entries.length) return docs;
+  return [...docs].sort((left, right) => {
+    for (const [field, dirRaw] of entries) {
+      const direction = Number(dirRaw) === -1 ? -1 : 1;
+      const result = compareValues(left[field], right[field], direction);
+      if (result !== 0) return result;
+    }
+    return 0;
+  });
+};
+
+const hasValue = (fieldValue, target) => {
+  if (Array.isArray(fieldValue)) {
+    return fieldValue.some((item) => String(refId(item)) === String(refId(target)));
+  }
+  return String(refId(fieldValue)) === String(refId(target));
+};
+
+const matchesField = (fieldValue, condition) => {
+  if (condition && typeof condition === "object" && !Array.isArray(condition)) {
+    if ("$exists" in condition) {
+      const exists = fieldValue !== undefined;
+      return Boolean(condition.$exists) ? exists : !exists;
+    }
+    if ("$in" in condition && Array.isArray(condition.$in)) {
+      return condition.$in.some((item) => hasValue(fieldValue, item));
+    }
+    if ("$regex" in condition) {
+      const flags = condition.$options || "";
+      const regex = new RegExp(condition.$regex, flags);
+      return regex.test(String(fieldValue || ""));
+    }
+    return Object.entries(condition).every(([key, value]) => {
+      if (key === "$options") return true;
+      return matchesField(fieldValue?.[key], value);
+    });
+  }
+  return hasValue(fieldValue, condition);
+};
+
+const matchesFilter = (doc, filter = {}) => {
+  if (!filter || !Object.keys(filter).length) return true;
+  if (Array.isArray(filter.$or)) {
+    return filter.$or.some((entry) => matchesFilter(doc, entry));
+  }
+  return Object.entries(filter).every(([field, condition]) => {
+    if (field === "$or") return true;
+    return matchesField(doc[field], condition);
+  });
+};
+
+const toDoc = (collectionName, rawDoc, afterSave) => {
+  if (!rawDoc) return null;
+  const doc = clone(rawDoc);
+  const applyPopulate = (pathName, select) => {
+    if (collectionName === "pins") return populatePinField(doc, pathName, select);
+    if (collectionName === "comments") return populateCommentField(doc, pathName, select);
+    if (collectionName === "orders") return populateOrderField(doc, pathName, select);
+    return clone(doc);
+  };
+  Object.defineProperty(doc, "toObject", {
+    enumerable: false,
+    value() {
+      return clone(doc);
+    },
+  });
+  Object.defineProperty(doc, "save", {
+    enumerable: false,
+    async value() {
+      const store = readStore();
+      const collection = store[collectionName];
+      const index = collection.findIndex((item) => String(item._id) === String(doc._id));
+      if (index === -1) return null;
+      const normalized = afterSave ? afterSave(doc) : clone(doc);
+      normalized.updatedAt = nowIso();
+      collection[index] = normalized;
+      writeStore(store);
+      return toDoc(collectionName, normalized, afterSave);
+    },
+  });
+  Object.defineProperty(doc, "deleteOne", {
+    enumerable: false,
+    async value() {
+      const store = readStore();
+      const collection = store[collectionName];
+      const before = collection.length;
+      store[collectionName] = collection.filter((item) => String(item._id) !== String(doc._id));
+      if (collectionName === "pins") {
+        store.comments = store.comments.filter((item) => String(item.pin) !== String(doc._id));
+        store.orders = store.orders.filter((item) => String(item.pin) !== String(doc._id));
+      }
+      writeStore(store);
+      return { deletedCount: before - store[collectionName].length };
+    },
+  });
+  Object.defineProperty(doc, "populate", {
+    enumerable: false,
+    value(pathName, select) {
+      return Promise.resolve(toDoc(collectionName, applyPopulate(pathName, select), afterSave));
+    },
+  });
+  Object.defineProperty(doc, "select", {
+    enumerable: false,
+    value(select) {
+      return Promise.resolve(applySelect(doc, select));
+    },
+  });
+  return doc;
+};
+
+const populateUser = (userId, select) => {
+  const store = readStore();
+  const user = store.users.find((item) => String(item._id) === String(refId(userId)));
+  if (!user) return { _id: refId(userId), name: "User" };
+  return applySelect(user, select || "name");
+};
+
+const populatePin = (pinId, select) => {
+  const store = readStore();
+  const pin = store.pins.find((item) => String(item._id) === String(refId(pinId)));
+  if (!pin) return null;
+  return applySelect(pin, select || "title imageUrl");
+};
+
+const populateOrderField = (order, pathName, select) => {
+  const next = clone(order);
+  if (!next) return null;
+  if (pathName === "pin") next.pin = populatePin(next.pin, select);
+  if (pathName === "buyer") next.buyer = populateUser(next.buyer, select || "name email");
+  return next;
+};
+
+const populateCommentField = (comment, pathName, select) => {
+  const next = clone(comment);
+  if (!next) return null;
+  if (pathName === "user") next.user = populateUser(next.user, select || "name");
+  if (pathName === "pin") next.pin = populatePin(next.pin, select || "title imageUrl");
+  return next;
+};
+
+const populatePinField = (pin, pathName, select) => {
+  const next = clone(pin);
+  if (!next) return null;
+  if (pathName === "user") next.user = populateUser(next.user, select || "name");
+  return next;
+};
+
+const createManyQuery = (loader, options) => {
+  const state = { populates: [], sort: null, limit: null, select: null, lean: false };
+  const api = {
+    populate(pathName, select) {
+      state.populates.push({ pathName, select });
+      return api;
+    },
+    sort(spec) {
+      state.sort = spec;
+      return api;
+    },
+    limit(value) {
+      state.limit = Number(value);
+      return api;
+    },
+    select(select) {
+      state.select = select;
+      return api;
+    },
+    lean() {
+      state.lean = true;
+      return api;
+    },
+    exec() {
+      let docs = loader();
+      if (state.sort) docs = sortDocs(docs, state.sort);
+      if (Number.isFinite(state.limit) && state.limit >= 0) docs = docs.slice(0, state.limit);
+      state.populates.forEach(({ pathName, select }) => {
+        docs = docs.map((doc) => options.populate(doc, pathName, select));
+      });
+      if (state.select) docs = docs.map((doc) => applySelect(doc, state.select));
+      if (state.lean || state.select) return clone(docs);
+      return docs.map((doc) => options.wrap(doc));
+    },
+    then(resolve, reject) {
+      return Promise.resolve(api.exec()).then(resolve, reject);
+    },
+    catch(reject) {
+      return Promise.resolve(api.exec()).catch(reject);
+    },
+  };
+  return api;
+};
+
+const createOneQuery = (loader, options) => {
+  const state = { populates: [], select: null, lean: false };
+  const api = {
+    populate(pathName, select) {
+      state.populates.push({ pathName, select });
+      return api;
+    },
+    select(select) {
+      state.select = select;
+      return api;
+    },
+    lean() {
+      state.lean = true;
+      return api;
+    },
+    exec() {
+      let doc = loader();
+      if (!doc) return null;
+      state.populates.forEach(({ pathName, select }) => {
+        doc = options.populate(doc, pathName, select);
+      });
+      if (state.select) doc = applySelect(doc, state.select);
+      if (state.lean || state.select) return clone(doc);
+      return options.wrap(doc);
+    },
+    then(resolve, reject) {
+      return Promise.resolve(api.exec()).then(resolve, reject);
+    },
+    catch(reject) {
+      return Promise.resolve(api.exec()).catch(reject);
+    },
+  };
+  return api;
+};
+
+const normalizePinRefs = (pinDoc) => ({
+  ...clone(pinDoc),
+  user: refId(pinDoc.user),
+  likedBy: Array.isArray(pinDoc.likedBy) ? pinDoc.likedBy.map(refId).filter(Boolean) : [],
+  savedBy: Array.isArray(pinDoc.savedBy) ? pinDoc.savedBy.map(refId).filter(Boolean) : [],
+});
+
+const normalizeCommentRefs = (commentDoc) => ({
+  ...clone(commentDoc),
+  pin: refId(commentDoc.pin),
+  user: refId(commentDoc.user),
+});
+
+const normalizeOrderRefs = (orderDoc) => ({
+  ...clone(orderDoc),
+  pin: refId(orderDoc.pin),
+  buyer: refId(orderDoc.buyer),
+});
 
 const User = {
-  findOne(query) {
+  findOne(filter = {}) {
     const store = readStore();
-    if (query.email) {
-      return store.users.find((user) => user.email === query.email.toLowerCase().trim()) || null;
-    }
-    return null;
+    const user = store.users.find((item) => matchesFilter(item, filter));
+    return user ? toDoc("users", user) : null;
   },
-
   findById(id) {
-    const store = readStore();
-    const user = store.users.find((item) => String(item._id) === String(id));
-    if (!user) return null;
-    return { ...user };
+    return createOneQuery(
+      () => {
+        const store = readStore();
+        return store.users.find((item) => String(item._id) === String(id)) || null;
+      },
+      {
+        wrap: (doc) => toDoc("users", doc),
+        populate: (doc) => clone(doc),
+      }
+    );
   },
-
   async create(data) {
     const store = readStore();
-    const _id = newId("u", store.meta.nextUserId++);
-    const user = {
+    const _id = newId(store, "nextUserId", "u");
+    const doc = {
       _id,
-      name: data.name.trim(),
-      email: data.email.toLowerCase().trim(),
+      name: String(data.name || "").trim(),
+      email: String(data.email || "").toLowerCase().trim(),
       passwordHash: data.passwordHash,
+      bio: String(data.bio || "").trim().slice(0, 280),
+      role: data.role || "user",
       createdAt: nowIso(),
       updatedAt: nowIso(),
     };
-    store.users.push(user);
+    store.users.push(doc);
     writeStore(store);
-    return { ...user };
+    return toDoc("users", doc);
   },
-
-  countDocuments() {
-    return readStore().users.length;
+  countDocuments(filter = {}) {
+    const store = readStore();
+    return store.users.filter((item) => matchesFilter(item, filter)).length;
   },
-};
-
-const populateUser = (pin, store) => {
-  const user = store.users.find((item) => String(item._id) === String(pin.user));
-  if (!user) return { ...pin, user: { _id: pin.user, name: "Unknown" } };
-  return {
-    ...pin,
-    user: { _id: user._id, name: user.name },
-  };
-};
-
-const matchesSearch = (pin, search) => {
-  if (!search) return true;
-  const term = search.toLowerCase();
-  return pin.title.toLowerCase().includes(term) || (pin.bio || "").toLowerCase().includes(term);
 };
 
 const Pin = {
   countDocuments(filter = {}) {
-    return Pin.find(filter).length;
-  },
-
-  find(filter = {}) {
     const store = readStore();
-    let pins = [...store.pins];
-
-    if (filter.user) {
-      pins = pins.filter((pin) => String(pin.user) === String(filter.user));
-    }
-    if (filter.savedBy) {
-      pins = pins.filter((pin) => (pin.savedBy || []).some((id) => String(id) === String(filter.savedBy)));
-    }
-    if (filter.likedBy) {
-      pins = pins.filter((pin) => (pin.likedBy || []).some((id) => String(id) === String(filter.likedBy)));
-    }
-    if (filter.category) {
-      pins = pins.filter((pin) => pin.category === filter.category);
-    }
-
-    return pins.map((pin) => populateUser(pin, store));
+    return store.pins.filter((item) => matchesFilter(item, filter)).length;
   },
-
+  find(filter = {}, projection = null) {
+    const query = createManyQuery(
+      () => {
+        const store = readStore();
+        return store.pins.filter((item) => matchesFilter(item, filter)).map(clone);
+      },
+      {
+        wrap: (doc) => toDoc("pins", doc, normalizePinRefs),
+        populate: populatePinField,
+      }
+    );
+    if (projection) query.select(projection);
+    return query;
+  },
   findById(id) {
-    const store = readStore();
-    const pin = store.pins.find((item) => String(item._id) === String(id));
-    if (!pin) return null;
-    return populateUser(pin, store);
+    return createOneQuery(
+      () => {
+        const store = readStore();
+        const doc = store.pins.find((item) => String(item._id) === String(id));
+        return doc ? clone(doc) : null;
+      },
+      {
+        wrap: (doc) => toDoc("pins", doc, normalizePinRefs),
+        populate: populatePinField,
+      }
+    );
   },
-
   async create(data) {
     const store = readStore();
-    const _id = newId("p", store.meta.nextPinId++);
-    const pin = {
+    const _id = newId(store, "nextPinId", "p");
+    const doc = {
       _id,
-      title: data.title,
-      bio: data.bio || "",
-      category: data.category || "general",
-      imageUrl: data.imageUrl,
-      sourceUrl: data.sourceUrl || "",
+      title: String(data.title || "").trim(),
+      bio: String(data.bio || "").trim(),
+      category: String(data.category || "general").trim().toLowerCase(),
+      imageUrl: String(data.imageUrl || ""),
+      sourceUrl: String(data.sourceUrl || ""),
       source: data.source || "upload",
-      user: data.user,
-      likedBy: [],
-      savedBy: [],
-      views: data.views || 0,
+      user: refId(data.user),
+      likedBy: Array.isArray(data.likedBy) ? data.likedBy.map(refId).filter(Boolean) : [],
+      savedBy: Array.isArray(data.savedBy) ? data.savedBy.map(refId).filter(Boolean) : [],
+      views: Number(data.views) || 0,
+      shareCount: Number(data.shareCount) || 0,
+      price: Math.max(0, Number(data.price) || 0),
+      currency: String(data.currency || "EUR").toUpperCase(),
+      forSale: data.forSale !== false,
       createdAt: nowIso(),
       updatedAt: nowIso(),
     };
-    store.pins.push(pin);
+    store.pins.push(doc);
     writeStore(store);
-    return populateUser(pin, readStore());
+    return toDoc("pins", doc, normalizePinRefs);
   },
-
-  insertMany(items) {
+  async insertMany(items = []) {
     const store = readStore();
     const created = items.map((data) => {
-      const _id = newId("p", store.meta.nextPinId++);
-      const pin = {
+      const _id = newId(store, "nextPinId", "p");
+      const doc = {
         _id,
-        title: data.title,
-        bio: data.bio || "",
-        category: data.category || "general",
-        imageUrl: data.imageUrl,
-        sourceUrl: data.sourceUrl || "",
+        title: String(data.title || "").trim(),
+        bio: String(data.bio || "").trim(),
+        category: String(data.category || "general").trim().toLowerCase(),
+        imageUrl: String(data.imageUrl || ""),
+        sourceUrl: String(data.sourceUrl || ""),
         source: data.source || "upload",
-        user: data.user,
-        likedBy: [],
-        savedBy: [],
-        views: data.views || Math.floor(Math.random() * 800) + 120,
+        user: refId(data.user),
+        likedBy: Array.isArray(data.likedBy) ? data.likedBy.map(refId).filter(Boolean) : [],
+        savedBy: Array.isArray(data.savedBy) ? data.savedBy.map(refId).filter(Boolean) : [],
+        views: Number(data.views) || 0,
+        shareCount: Number(data.shareCount) || 0,
+        price: Math.max(0, Number(data.price) || 0),
+        currency: String(data.currency || "EUR").toUpperCase(),
+        forSale: data.forSale !== false,
         createdAt: nowIso(),
         updatedAt: nowIso(),
       };
-      store.pins.push(pin);
-      return pin;
+      store.pins.push(doc);
+      return doc;
     });
     writeStore(store);
-    return created;
+    return created.map((doc) => toDoc("pins", doc, normalizePinRefs));
   },
-
-  async save(pin) {
-    const store = readStore();
-    const index = store.pins.findIndex((item) => String(item._id) === String(pin._id));
-    if (index === -1) return null;
-    store.pins[index] = {
-      ...store.pins[index],
-      ...pin,
-      updatedAt: nowIso(),
-    };
-    writeStore(store);
-    return populateUser(store.pins[index], store);
-  },
-
-  async deleteOne(id) {
-    const store = readStore();
-    const before = store.pins.length;
-    store.pins = store.pins.filter((item) => String(item._id) !== String(id));
-    writeStore(store);
-    return { deletedCount: before - store.pins.length };
-  },
-
-  query({ search, category, sort, skip, limit }) {
-    const store = readStore();
-    let pins = store.pins.filter((pin) => matchesSearch(pin, search));
-
-    if (category && category !== "all") {
-      pins = pins.filter((pin) => pin.category === category);
-    }
-
-    pins = pins.map((pin) => ({
-      ...pin,
-      views: pin.views || 0,
-      likeCount: (pin.likedBy || []).length,
-      saveCount: (pin.savedBy || []).length,
-    }));
-
-    const trendingScore = (pin, jitter = 0) => {
-      const daysOld = (Date.now() - new Date(pin.createdAt).getTime()) / (1000 * 60 * 60 * 24);
-      const recency = Math.max(0, 20 - daysOld);
-      return (pin.views || 0) * 2 + pin.likeCount * 3 + pin.saveCount * 2 + recency + jitter;
-    };
-
-    if (sort === "most-viewed") {
-      pins.sort((a, b) => (b.views || 0) - (a.views || 0) || new Date(b.createdAt) - new Date(a.createdAt));
-    } else if (sort === "most-liked") {
-      pins.sort((a, b) => b.likeCount - a.likeCount || new Date(b.createdAt) - new Date(a.createdAt));
-    } else if (sort === "most-saved") {
-      pins.sort((a, b) => b.saveCount - a.saveCount || new Date(b.createdAt) - new Date(a.createdAt));
-    } else if (sort === "trending") {
-      pins.sort((a, b) => trendingScore(b, Math.random() * 4) - trendingScore(a, Math.random() * 4));
-    } else {
-      pins.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    }
-
-    const total = pins.length;
-    const slice = pins.slice(skip, skip + limit).map((pin) => populateUser(pin, store));
-    return { pins: slice, total };
-  },
-
-  incrementView(id) {
+  findByIdAndUpdate(id, update = {}, options = {}) {
     const store = readStore();
     const index = store.pins.findIndex((item) => String(item._id) === String(id));
     if (index === -1) return null;
-    store.pins[index].views = (store.pins[index].views || 0) + 1;
-    store.pins[index].updatedAt = nowIso();
+    const existing = store.pins[index];
+    const next = clone(existing);
+    if (update && typeof update === "object") {
+      Object.entries(update).forEach(([field, value]) => {
+        if (field === "$inc" && value && typeof value === "object") {
+          Object.entries(value).forEach(([incField, incValue]) => {
+            next[incField] = (Number(next[incField]) || 0) + (Number(incValue) || 0);
+          });
+          return;
+        }
+        next[field] = value;
+      });
+    }
+    next.updatedAt = nowIso();
+    store.pins[index] = normalizePinRefs(next);
     writeStore(store);
-    return populateUser(store.pins[index], store);
+    const selected = options.new ? store.pins[index] : existing;
+    return toDoc("pins", selected, normalizePinRefs);
   },
-
-  queryProjects({ category, sort, skip, limit }) {
+  async updateOne(filter = {}, update = {}) {
     const store = readStore();
-    let pins = store.pins.filter((pin) => pin.source === "pinterest" || pin.source === "curated");
-
-    if (category && category !== "all") {
-      pins = pins.filter((pin) => pin.category === category);
-    }
-
-    pins = pins.map((pin) => ({
-      ...pin,
-      views: pin.views || 0,
-      likeCount: (pin.likedBy || []).length,
-      saveCount: (pin.savedBy || []).length,
-    }));
-
-    const trendingScore = (pin) => {
-      const daysOld = (Date.now() - new Date(pin.createdAt).getTime()) / (1000 * 60 * 60 * 24);
-      const recency = Math.max(0, 20 - daysOld);
-      const jitter = Math.random() * 6;
-      return (pin.views || 0) * 2 + pin.likeCount * 3 + pin.saveCount * 2 + recency + jitter;
-    };
-
-    if (sort === "most-viewed") {
-      pins.sort((a, b) => (b.views || 0) - (a.views || 0));
-    } else if (sort === "most-liked") {
-      pins.sort((a, b) => b.likeCount - a.likeCount);
-    } else if (sort === "latest") {
-      pins.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const index = store.pins.findIndex((item) => matchesFilter(item, filter));
+    if (index === -1) return { matchedCount: 0, modifiedCount: 0 };
+    const next = clone(store.pins[index]);
+    if (update.$set && typeof update.$set === "object") {
+      Object.assign(next, update.$set);
     } else {
-      pins.sort((a, b) => trendingScore(b) - trendingScore(a));
+      Object.assign(next, update);
     }
-
-    const total = pins.length;
-    const slice = pins.slice(skip, skip + limit).map((pin) => populateUser(pin, store));
-    return { pins: slice, total };
+    next.updatedAt = nowIso();
+    store.pins[index] = normalizePinRefs(next);
+    writeStore(store);
+    return { matchedCount: 1, modifiedCount: 1 };
   },
 };
 
-const migratePinViews = () => {
-  const store = readStore();
-  let changed = false;
-  store.pins.forEach((pin) => {
-    if (pin.views == null) {
-      pin.views = Math.floor(Math.random() * 1200) + 80;
-      changed = true;
-    }
-  });
-  if (changed) writeStore(store);
+const Comment = {
+  find(filter = {}) {
+    return createManyQuery(
+      () => {
+        const store = readStore();
+        return store.comments.filter((item) => matchesFilter(item, filter)).map(clone);
+      },
+      {
+        wrap: (doc) => toDoc("comments", doc, normalizeCommentRefs),
+        populate: populateCommentField,
+      }
+    );
+  },
+  findById(id) {
+    return createOneQuery(
+      () => {
+        const store = readStore();
+        const doc = store.comments.find((item) => String(item._id) === String(id));
+        return doc ? clone(doc) : null;
+      },
+      {
+        wrap: (doc) => toDoc("comments", doc, normalizeCommentRefs),
+        populate: populateCommentField,
+      }
+    );
+  },
+  async create(data) {
+    const store = readStore();
+    const _id = newId(store, "nextCommentId", "c");
+    const doc = {
+      _id,
+      pin: refId(data.pin),
+      user: refId(data.user),
+      text: String(data.text || "").trim().slice(0, 800),
+      createdAt: nowIso(),
+      updatedAt: nowIso(),
+    };
+    store.comments.push(doc);
+    writeStore(store);
+    return toDoc("comments", doc, normalizeCommentRefs);
+  },
 };
 
-module.exports = { User, Pin, readStore, writeStore, migratePinViews };
+const Order = {
+  countDocuments(filter = {}) {
+    const store = readStore();
+    return store.orders.filter((item) => matchesFilter(item, filter)).length;
+  },
+  find(filter = {}) {
+    return createManyQuery(
+      () => {
+        const store = readStore();
+        return store.orders.filter((item) => matchesFilter(item, filter)).map(clone);
+      },
+      {
+        wrap: (doc) => toDoc("orders", doc, normalizeOrderRefs),
+        populate: populateOrderField,
+      }
+    );
+  },
+  findById(id) {
+    return createOneQuery(
+      () => {
+        const store = readStore();
+        const doc = store.orders.find((item) => String(item._id) === String(id));
+        return doc ? clone(doc) : null;
+      },
+      {
+        wrap: (doc) => toDoc("orders", doc, normalizeOrderRefs),
+        populate: populateOrderField,
+      }
+    );
+  },
+  async create(data) {
+    const store = readStore();
+    const _id = newId(store, "nextOrderId", "o");
+    const doc = {
+      _id,
+      pin: refId(data.pin),
+      buyer: refId(data.buyer),
+      fullName: String(data.fullName || "").trim(),
+      email: String(data.email || "").trim().toLowerCase(),
+      phone: String(data.phone || "").trim(),
+      address: String(data.address || "").trim(),
+      city: String(data.city || "").trim(),
+      notes: String(data.notes || "").trim().slice(0, 500),
+      paymentMethod: data.paymentMethod || "cash",
+      status: data.status || "pending",
+      price: Math.max(0, Number(data.price) || 0),
+      currency: String(data.currency || "EUR").toUpperCase(),
+      designTitle: String(data.designTitle || "").trim(),
+      createdAt: nowIso(),
+      updatedAt: nowIso(),
+    };
+    store.orders.push(doc);
+    writeStore(store);
+    return toDoc("orders", doc, normalizeOrderRefs);
+  },
+  findByIdAndUpdate(id, update = {}, options = {}) {
+    const store = readStore();
+    const index = store.orders.findIndex((item) => String(item._id) === String(id));
+    if (index === -1) return null;
+    const before = clone(store.orders[index]);
+    const next = { ...before, ...clone(update), updatedAt: nowIso() };
+    store.orders[index] = normalizeOrderRefs(next);
+    writeStore(store);
+    const selected = options.new ? store.orders[index] : before;
+    return toDoc("orders", selected, normalizeOrderRefs);
+  },
+};
+
+ensureStore();
+
+module.exports = { User, Pin, Comment, Order, readStore, writeStore };

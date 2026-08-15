@@ -6,12 +6,8 @@
 [functions]
   node_bundler = "nft"
   external_node_modules = [
-    "mongoose",
-    "mongodb",
-    "bson",
     "express",
     "express-session",
-    "connect-mongo",
     "bcryptjs",
     "multer",
     "serverless-http"
