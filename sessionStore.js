@@ -2,7 +2,9 @@ const fs = require("fs");
 const path = require("path");
 const session = require("express-session");
 
-const sessionsFile = path.join(__dirname, "data", "sessions.json");
+const IS_SERVERLESS = Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const sessionsDir = IS_SERVERLESS ? path.join("/tmp", "archimuse-sessions") : path.join(__dirname, "data");
+const sessionsFile = path.join(sessionsDir, "sessions.json");
 
 const ensureSessionsFile = () => {
   const dir = path.dirname(sessionsFile);
@@ -41,15 +43,19 @@ const pruneExpired = (sessions) => {
   return sessions;
 };
 
+const done = (callback, error, payload) => {
+  if (typeof callback === "function") callback(error, payload);
+};
+
 class FileSessionStore extends session.Store {
   get(sid, callback) {
     try {
       const sessions = pruneExpired(readSessions());
       const entry = sessions[sid];
-      if (!entry) return callback(null, null);
-      return callback(null, entry.data);
+      if (!entry) return done(callback, null, null);
+      return done(callback, null, entry.data);
     } catch (error) {
-      return callback(error);
+      return done(callback, error);
     }
   }
 
@@ -62,9 +68,9 @@ class FileSessionStore extends session.Store {
         expires: Date.now() + maxAge,
       };
       writeSessions(sessions);
-      return callback(null);
+      return done(callback, null);
     } catch (error) {
-      return callback(error);
+      return done(callback, error);
     }
   }
 
@@ -73,9 +79,9 @@ class FileSessionStore extends session.Store {
       const sessions = readSessions();
       delete sessions[sid];
       writeSessions(sessions);
-      return callback(null);
+      return done(callback, null);
     } catch (error) {
-      return callback(error);
+      return done(callback, error);
     }
   }
 }

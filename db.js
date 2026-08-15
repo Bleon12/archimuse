@@ -1,8 +1,10 @@
 const fs = require("fs");
 const path = require("path");
 
-const dataDir = path.join(__dirname, "data");
+const IS_SERVERLESS = Boolean(process.env.NETLIFY || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const dataDir = IS_SERVERLESS ? path.join("/tmp", "archimuse-data") : path.join(__dirname, "data");
 const dbFile = path.join(dataDir, "store.json");
+const bundledDbFile = path.join(__dirname, "data", "store.json");
 
 const defaultStore = () => ({
   users: [],
@@ -61,6 +63,18 @@ const normalizeStore = (parsed) => {
 const ensureStore = () => {
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
   if (!fs.existsSync(dbFile)) {
+    // On serverless providers (Netlify), the bundled project files are read-only.
+    // We bootstrap a writable DB under /tmp by copying the bundled seed once.
+    if (IS_SERVERLESS && fs.existsSync(bundledDbFile)) {
+      try {
+        const raw = fs.readFileSync(bundledDbFile, "utf8");
+        const parsed = normalizeStore(JSON.parse(raw));
+        fs.writeFileSync(dbFile, JSON.stringify(parsed, null, 2), "utf8");
+        return;
+      } catch (_error) {
+        // Fall back to an empty store if seed bootstrap fails.
+      }
+    }
     fs.writeFileSync(dbFile, JSON.stringify(defaultStore(), null, 2), "utf8");
     return;
   }
