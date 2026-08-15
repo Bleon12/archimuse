@@ -29,9 +29,18 @@
     </header>
 
     <main class="hero-page">
-      <section class="hero hero--shop">
-        <div class="hero-media" aria-hidden="true">
-          <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80" alt="" />
+      <section class="hero hero--lookbook">
+        <div class="hero-slideshow" id="heroSlideshow" aria-hidden="true">
+          <img class="is-active" src="designs/olive-lounge.webp" alt="" />
+          <img src="designs/jasmine-teak-chair.webp" alt="" />
+          <img src="designs/void-origami-chair.webp" alt="" />
+          <img src="designs/mobius-walnut.webp" alt="" />
+          <img src="designs/ms22-triplex.webp" alt="" />
+          <img src="designs/cream-walnut-lounge.webp" alt="" />
+          <img src="designs/stacking-chairs.webp" alt="" />
+          <img src="designs/void-cone.webp" alt="" />
+          <img src="designs/concept-sketches.webp" alt="" />
+          <img src="designs/chair-studies.webp" alt="" />
         </div>
         <div class="hero-content reveal">
           <p class="hero-eyebrow" data-i18n="home.eyebrow">Design studio & sales</p>
@@ -40,11 +49,47 @@
             Browse our designs, like, save, share and buy. Apply for online or cash payment — requests start as pending.
           </p>
           <div class="hero-actions">
-            <a class="btn" href="explore.html" data-i18n="home.ctaShop">View shop</a>
+            <a class="btn" href="#lookbookBento" data-i18n="home.ctaShop">View shop</a>
             <a class="btn btn-outline" href="projects.html" data-i18n="home.ctaGallery">Gallery</a>
           </div>
         </div>
       </section>
+
+      <div class="color-marquee" aria-hidden="true">
+        <div class="color-marquee-track">
+          <span class="chip-olive">Olive velvet</span>
+          <span class="chip-teak">Teak</span>
+          <span class="chip-mustard">Mustard</span>
+          <span class="chip-walnut">Walnut</span>
+          <span class="chip-coral">Coral</span>
+          <span class="chip-teal">Teal</span>
+          <span class="chip-gold">Gold</span>
+          <span class="chip-olive">Ulliri</span>
+          <span class="chip-teak">Tik</span>
+          <span class="chip-mustard">Mustard</span>
+          <span class="chip-walnut">Arrë</span>
+          <span class="chip-coral">Coral</span>
+          <span class="chip-teal">Teal</span>
+          <span class="chip-gold">Gold</span>
+        </div>
+      </div>
+
+      <section class="lookbook-intro">
+        <div>
+          <p class="hero-eyebrow" data-i18n="home.studioTitle">Studio collection</p>
+          <h2 data-i18n="home.lookbookTitle">Atelier lookbook</h2>
+          <p data-i18n="home.studioSub">Signature chairs and furniture studies from the studio.</p>
+        </div>
+        <div class="palette-dots" aria-hidden="true">
+          <i class="dot-olive"></i>
+          <i class="dot-terracotta"></i>
+          <i class="dot-mustard"></i>
+          <i class="dot-teal"></i>
+          <i class="dot-coral"></i>
+          <i class="dot-walnut"></i>
+        </div>
+      </section>
+      <section id="lookbookBento" class="lookbook-bento"></section>
 
       <section class="section-header">
         <h2 data-i18n="home.saleTitle">Designs for sale</h2>

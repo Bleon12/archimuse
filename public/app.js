@@ -15,6 +15,9 @@ const I18N = {
     "home.ctaGallery": "Gallery",
     "home.saleTitle": "Designs for sale",
     "home.saleSub": "Open any card to like, comment, share or buy.",
+    "home.studioTitle": "Studio collection",
+    "home.studioSub": "Signature chairs and furniture studies from the studio.",
+    "home.lookbookTitle": "Atelier lookbook",
     "home.loading": "Loading designs…",
     "home.empty": "No designs yet. Showing demo catalog.",
     "shop.title": "Design shop",
@@ -95,6 +98,9 @@ const I18N = {
     "home.ctaGallery": "Galeria",
     "home.saleTitle": "Dizajne në shitje",
     "home.saleSub": "Hap çdo kartë për like, koment, share ose blerje.",
+    "home.studioTitle": "Koleksioni i studios",
+    "home.studioSub": "Karriget dhe studimet e mobiljeve të studios.",
+    "home.lookbookTitle": "Lookbook i atelierit",
     "home.loading": "Duke ngarkuar dizajnet…",
     "home.empty": "Ende nuk ka dizajne. Po shfaqet katalogu demo.",
     "shop.title": "Dyqani i dizajneve",
@@ -173,18 +179,19 @@ const apiFetch = (input, init = {}) =>
 const FALLBACK_DESIGNS = [
   {
     _id: "demo-1",
-    title: "Monolith House",
-    bio: "Minimal geometry with strong daylight and clean volumes.",
-    category: "minimal",
-    imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80",
+    title: "Olive Lounge",
+    bio: "Mid-century lounge in olive velvet with a honey teak frame.",
+    category: "interior",
+    imageUrl: "designs/olive-lounge.webp",
     forSale: true,
-    price: 180,
+    featured: true,
+    price: 640,
     currency: "EUR",
-    priceLabel: "€180.00",
-    likeCount: 42,
-    saveCount: 18,
-    viewCount: 920,
-    shareCount: 6,
+    priceLabel: "€640.00",
+    likeCount: 91,
+    saveCount: 44,
+    viewCount: 2100,
+    shareCount: 19,
     user: { name: "ArchiMuse Studio" },
     source: "curated",
     isLiked: false,
@@ -192,14 +199,15 @@ const FALLBACK_DESIGNS = [
   },
   {
     _id: "demo-2",
-    title: "Cliff Pavilion",
-    bio: "Glass and stone blend into the horizon.",
-    category: "landscape",
-    imageUrl: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80",
+    title: "Jasmine Teak Chair",
+    bio: "Sculptural teak and walnut chair with a sweeping back leg.",
+    category: "modern",
+    imageUrl: "designs/jasmine-teak-chair.webp",
     forSale: true,
-    price: 240,
+    featured: true,
+    price: 420,
     currency: "EUR",
-    priceLabel: "€240.00",
+    priceLabel: "€420.00",
     likeCount: 67,
     saveCount: 29,
     viewCount: 1400,
@@ -211,14 +219,15 @@ const FALLBACK_DESIGNS = [
   },
   {
     _id: "demo-3",
-    title: "Urban Void",
-    bio: "Dark steel aesthetics with floating light corridors.",
-    category: "brutalist",
-    imageUrl: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=900&q=80",
+    title: "Void Origami Chair",
+    bio: "Bentwood lounge with mustard lining and built-in book pockets.",
+    category: "modern",
+    imageUrl: "designs/void-origami-chair.webp",
     forSale: true,
-    price: 210,
+    featured: true,
+    price: 380,
     currency: "EUR",
-    priceLabel: "€210.00",
+    priceLabel: "€380.00",
     likeCount: 55,
     saveCount: 21,
     viewCount: 1105,
@@ -230,71 +239,15 @@ const FALLBACK_DESIGNS = [
   },
   {
     _id: "demo-4",
-    title: "Cream Atrium",
-    bio: "Elegant interior layers with sculpted natural light.",
-    category: "interior",
-    imageUrl: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=900&q=80",
+    title: "Mobius Walnut Chair",
+    bio: "Solid walnut sculpture with a continuous seat-to-leg curve.",
+    category: "minimal",
+    imageUrl: "designs/mobius-walnut.webp",
     forSale: true,
-    price: 160,
+    featured: true,
+    price: 520,
     currency: "EUR",
-    priceLabel: "€160.00",
-    likeCount: 38,
-    saveCount: 14,
-    viewCount: 780,
-    shareCount: 4,
-    user: { name: "ArchiMuse Studio" },
-    source: "curated",
-    isLiked: false,
-    isSaved: false,
-  },
-  {
-    _id: "demo-5",
-    title: "Azure Villa",
-    bio: "Pool-centered villa with panoramic glass walls.",
-    category: "modern",
-    imageUrl: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=900&q=80",
-    forSale: true,
-    price: 320,
-    currency: "EUR",
-    priceLabel: "€320.00",
-    likeCount: 91,
-    saveCount: 44,
-    viewCount: 2100,
-    shareCount: 19,
-    user: { name: "ArchiMuse Studio" },
-    source: "curated",
-    isLiked: false,
-    isSaved: false,
-  },
-  {
-    _id: "demo-6",
-    title: "Glass Nest",
-    bio: "Transparent social spaces with a warm white palette.",
-    category: "modern",
-    imageUrl: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=900&q=80",
-    forSale: true,
-    price: 195,
-    currency: "EUR",
-    priceLabel: "€195.00",
-    likeCount: 48,
-    saveCount: 20,
-    viewCount: 990,
-    shareCount: 7,
-    user: { name: "ArchiMuse Studio" },
-    source: "curated",
-    isLiked: false,
-    isSaved: false,
-  },
-  {
-    _id: "demo-7",
-    title: "Forest Retreat",
-    bio: "Timber residence elevated among pine canopies.",
-    category: "landscape",
-    imageUrl: "https://images.unsplash.com/photo-1600047509807-ba8c97d814b1?auto=format&fit=crop&w=900&q=80",
-    forSale: true,
-    price: 275,
-    currency: "EUR",
-    priceLabel: "€275.00",
+    priceLabel: "€520.00",
     likeCount: 73,
     saveCount: 31,
     viewCount: 1560,
@@ -305,19 +258,120 @@ const FALLBACK_DESIGNS = [
     isSaved: false,
   },
   {
-    _id: "demo-8",
-    title: "Skyline Penthouse",
-    bio: "Luxury penthouse with a city panorama terrace.",
-    category: "futuristic",
-    imageUrl: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=900&q=80",
+    _id: "demo-5",
+    title: "MS22 Triplex",
+    bio: "Organic tripod chair in dark grain, carved as one volume.",
+    category: "minimal",
+    imageUrl: "designs/ms22-triplex.webp",
     forSale: true,
-    price: 410,
+    featured: true,
+    price: 490,
     currency: "EUR",
-    priceLabel: "€410.00",
+    priceLabel: "€490.00",
+    likeCount: 48,
+    saveCount: 20,
+    viewCount: 990,
+    shareCount: 7,
+    user: { name: "ArchiMuse Studio" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-6",
+    title: "Cream Walnut Lounge",
+    bio: "Fluid walnut frame with stacked cream cushions.",
+    category: "interior",
+    imageUrl: "designs/cream-walnut-lounge.webp",
+    forSale: true,
+    featured: true,
+    price: 450,
+    currency: "EUR",
+    priceLabel: "€450.00",
+    likeCount: 42,
+    saveCount: 18,
+    viewCount: 920,
+    shareCount: 6,
+    user: { name: "ArchiMuse Studio" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-7",
+    title: "Stacking Sculpture Chairs",
+    bio: "Japanese woodwork chairs that slide and stack as sculpture.",
+    category: "furniture",
+    imageUrl: "designs/stacking-chairs.webp",
+    forSale: true,
+    featured: true,
+    price: 560,
+    currency: "EUR",
+    priceLabel: "€560.00",
+    likeCount: 38,
+    saveCount: 14,
+    viewCount: 780,
+    shareCount: 4,
+    user: { name: "ArchiMuse Studio" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-8",
+    title: "Void Cone Chair",
+    bio: "Futuristic cone seat on architectural white supports.",
+    category: "futuristic",
+    imageUrl: "designs/void-cone.webp",
+    forSale: true,
+    featured: true,
+    price: 710,
+    currency: "EUR",
+    priceLabel: "€710.00",
     likeCount: 120,
     saveCount: 58,
     viewCount: 2800,
     shareCount: 25,
+    user: { name: "ArchiMuse Studio" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-9",
+    title: "Concept Sketch Set",
+    bio: "Five studio studies: office, lounge, table, faceted chair and daybed.",
+    category: "furniture",
+    imageUrl: "designs/concept-sketches.webp",
+    forSale: true,
+    featured: true,
+    price: 95,
+    currency: "EUR",
+    priceLabel: "€95.00",
+    likeCount: 34,
+    saveCount: 16,
+    viewCount: 640,
+    shareCount: 5,
+    user: { name: "ArchiMuse Studio" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-10",
+    title: "Chair Studies",
+    bio: "Technical sketches of swivel, cantilever and organic lounge chairs.",
+    category: "furniture",
+    imageUrl: "designs/chair-studies.webp",
+    forSale: true,
+    featured: true,
+    price: 85,
+    currency: "EUR",
+    priceLabel: "€85.00",
+    likeCount: 28,
+    saveCount: 12,
+    viewCount: 510,
+    shareCount: 3,
     user: { name: "ArchiMuse Studio" },
     source: "curated",
     isLiked: false,
@@ -357,6 +411,22 @@ const modeButtons = document.querySelectorAll(".mode-btn");
 const userBadge = document.getElementById("userBadge");
 const pinsGrid = document.getElementById("pinsGrid");
 const homeDecorGrid = document.getElementById("homeDecorGrid");
+const lookbookBento = document.getElementById("lookbookBento");
+const STUDIO_IMAGE = /designs\//i;
+
+const isStudioPin = (pin) => STUDIO_IMAGE.test(String(pin?.imageUrl || ""));
+
+const filterStudioCatalog = (pins = FALLBACK_DESIGNS) => {
+  const search = searchInput?.value?.trim().toLowerCase() || "";
+  const category = categoryFilter?.value || projectCategoryFilter?.value || "all";
+  return pins.filter((pin) => {
+    if (!isStudioPin(pin)) return false;
+    const matchCat = !category || category === "all" || pin.category === category;
+    const hay = `${pin.title || ""} ${pin.bio || ""}`.toLowerCase();
+    const matchSearch = !search || hay.includes(search);
+    return matchCat && matchSearch;
+  });
+};
 const projectsGrid = document.getElementById("projectsGrid");
 const featuredProjects = document.getElementById("featuredProjects");
 const projectCategoryFilter = document.getElementById("projectCategoryFilter");
@@ -751,6 +821,29 @@ const setupBurgerMenu = () => {
   });
 };
 
+const setupMobileDock = () => {
+  if (document.getElementById("mobileDock")) return;
+  const page = (location.pathname.split("/").pop() || "index.html").toLowerCase();
+  const items = [
+    { href: "index.html", key: "nav.home", icon: "⌂", match: ["index.html", "", ""] },
+    { href: "explore.html", key: "nav.shop", icon: "▣", match: ["explore.html"] },
+    { href: "projects.html", key: "nav.gallery", icon: "▦", match: ["projects.html"] },
+    { href: "saved.html", key: "nav.saved", icon: "★", match: ["saved.html"] },
+    { href: "profile.html", key: "nav.profile", icon: "◉", match: ["profile.html", "login.html"] },
+  ];
+  const dock = document.createElement("nav");
+  dock.id = "mobileDock";
+  dock.className = "mobile-dock";
+  dock.setAttribute("aria-label", "Mobile");
+  dock.innerHTML = items
+    .map((item) => {
+      const active = item.match.includes(page) || (page === "" && item.href === "index.html");
+      return `<a href="${item.href}" class="${active ? "active" : ""}"><span>${item.icon}</span><small data-i18n="${item.key}">${t(item.key)}</small></a>`;
+    })
+    .join("");
+  document.body.appendChild(dock);
+};
+
 const setupPageDecor = () => {
   // Keep pages clean — no floating decorative overlays.
 };
@@ -777,14 +870,16 @@ const categoryLabel = (category) => {
     interior: "Interior",
     landscape: "Landscape",
     futuristic: "Futuristic",
+    furniture: "Furniture",
     general: "General",
   };
   return labels[category] || category;
 };
 
 const sourceBadge = (pin) => {
-  if (pin.forSale !== false) return `<span class="pin-badge curated">${escapeHtml(t("forSale"))}</span>`;
-  return `<span class="pin-badge upload">Studio</span>`;
+  const featured = pin.featured ? `<span class="pin-badge featured">Studio</span>` : "";
+  if (pin.forSale !== false) return `${featured}<span class="pin-badge curated">${escapeHtml(t("forSale"))}</span>`;
+  return `${featured}<span class="pin-badge upload">Studio</span>`;
 };
 
 const priceBadge = (pin) => {
@@ -1022,6 +1117,39 @@ const renderHomeDecor = (pins, append = false) => {
   observeAnimatedCards();
 };
 
+const renderLookbook = (pins) => {
+  if (!lookbookBento) return;
+  const list = filterStudioCatalog(pins).slice(0, 10);
+  if (!list.length) {
+    lookbookBento.innerHTML = "";
+    return;
+  }
+  lookbookBento.innerHTML = list
+    .map(
+      (pin, i) => `
+    <article class="lookbook-tile lookbook-tile--${i + 1}" data-pin-id="${pin._id}" tabindex="0" role="button" aria-label="${escapeHtml(pin.title)}" style="--delay:${i * 0.08}s">
+      <img src="${pin.imageUrl}" alt="${escapeHtml(pin.title)}" loading="${i < 3 ? "eager" : "lazy"}" onerror="this.onerror=null;this.src='/' + this.getAttribute('src').replace(/^\\/+/, '')" />
+      <div class="lookbook-tile-meta">
+        <span>${escapeHtml(categoryLabel(pin.category))}</span>
+        <h3>${escapeHtml(pin.title)}</h3>
+        ${priceBadge(pin)}
+      </div>
+    </article>`
+    )
+    .join("");
+};
+
+const setupHeroSlideshow = () => {
+  const slides = document.querySelectorAll("#heroSlideshow img");
+  if (slides.length < 2) return;
+  let index = 0;
+  setInterval(() => {
+    slides[index].classList.remove("is-active");
+    index = (index + 1) % slides.length;
+    slides[index].classList.add("is-active");
+  }, 3400);
+};
+
 const renderProjects = (pins, append = false) => {
   if (!projectsGrid) return;
   if (!pins.length && !append) {
@@ -1067,30 +1195,21 @@ const loadProjects = async ({ append = false } = {}) => {
     const data = await response.json();
     let pins = data.pins || [];
 
-    if (!pins.length && !append) {
-      pins = FALLBACK_DESIGNS;
-      if (projectsTotalEl) projectsTotalEl.textContent = String(pins.length);
-      renderFeaturedProjects(pins);
-      renderProjects(pins, false);
-      projectsState.hasMore = false;
-    } else {
-      if (projectsTotalEl) projectsTotalEl.textContent = String(data.total || pins.length);
-      if (!append && featuredProjects) {
-        const featRes = await apiFetch("/api/projects?sort=most-viewed&limit=3");
-        const featData = await featRes.json();
-        renderFeaturedProjects(featData.pins || pins);
-      }
-      renderProjects(pins, append);
-      projectsState.hasMore = Boolean(data.hasMore);
-    }
+    pins = filterStudioCatalog(pins);
+    if (!pins.length && !append) pins = filterStudioCatalog(FALLBACK_DESIGNS);
+    if (projectsTotalEl) projectsTotalEl.textContent = String(pins.length);
+    if (!append) renderFeaturedProjects(pins);
+    renderProjects(pins, append);
+    projectsState.hasMore = false;
     if (projectsEndHint) {
       projectsEndHint.classList.toggle("hidden", !projectsState.hasMore);
     }
   } catch (_error) {
     if (!append) {
-      if (projectsTotalEl) projectsTotalEl.textContent = String(FALLBACK_DESIGNS.length);
-      renderFeaturedProjects(FALLBACK_DESIGNS);
-      renderProjects(FALLBACK_DESIGNS, false);
+      const studio = filterStudioCatalog(FALLBACK_DESIGNS);
+      if (projectsTotalEl) projectsTotalEl.textContent = String(studio.length);
+      renderFeaturedProjects(studio);
+      renderProjects(studio, false);
       projectsState.hasMore = false;
     }
   } finally {
@@ -1139,23 +1258,26 @@ const loadPins = async ({ append = false, limit, category, sort } = {}) => {
     const data = await response.json();
     let pins = data.pins || [];
 
-    if (!pins.length && !append) {
-      usingFallbackCatalog = true;
-      pins = FALLBACK_DESIGNS;
-      feedState.hasMore = false;
-    } else {
-      usingFallbackCatalog = false;
-      feedState.hasMore = Boolean(data.hasMore);
-    }
+    usingFallbackCatalog = true;
+    pins = filterStudioCatalog(pins.length ? pins : FALLBACK_DESIGNS);
+    if (!pins.length) pins = filterStudioCatalog(FALLBACK_DESIGNS);
+    feedState.hasMore = false;
 
     if (pinsGrid) renderPins(pins, append);
-    else if (homeDecorGrid) renderHomeDecor(pins, append);
+    else if (homeDecorGrid) {
+      renderLookbook(pins);
+      renderHomeDecor(pins, append);
+    }
   } catch (_error) {
     usingFallbackCatalog = true;
     feedState.hasMore = false;
+    const studio = filterStudioCatalog(FALLBACK_DESIGNS);
     if (!append && activeGrid) {
-      if (pinsGrid) renderPins(FALLBACK_DESIGNS, false);
-      else if (homeDecorGrid) renderHomeDecor(FALLBACK_DESIGNS, false);
+      if (pinsGrid) renderPins(studio, false);
+      else if (homeDecorGrid) {
+        renderLookbook(studio);
+        renderHomeDecor(studio, false);
+      }
     }
   } finally {
     hideSkeleton();
@@ -2198,7 +2320,20 @@ setupLanguage();
 setupVideoBackground();
 setupAccountDrawer();
 setupBurgerMenu();
+setupMobileDock();
+setupHeroSlideshow();
 setupPageDecor();
+{
+  const studio = filterStudioCatalog(FALLBACK_DESIGNS);
+  if (lookbookBento) renderLookbook(studio);
+  if (homeDecorGrid) renderHomeDecor(studio, false);
+  if (pinsGrid) renderPins(studio, false);
+  if (isProjectsPage) {
+    if (projectsTotalEl) projectsTotalEl.textContent = String(studio.length);
+    renderFeaturedProjects(studio);
+    renderProjects(studio, false);
+  }
+}
 setupSearch();
 setupProjectFilters();
 setupInfiniteScroll();

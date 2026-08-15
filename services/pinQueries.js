@@ -8,21 +8,28 @@ const trendingScoreExpr = () => ({
   ],
 });
 
+const studioOnlyMatch = () => ({
+  $or: [{ featured: true }, { imageUrl: { $regex: "designs/", $options: "i" } }],
+});
+
 const baseProjectMatch = (category) => {
-  const match = { source: { $in: ["pinterest", "curated"] } };
+  const match = { source: "curated", ...studioOnlyMatch() };
   if (category && category !== "all") match.category = category;
   return match;
 };
 
 const queryPins = async ({ search, category, sort, skip, limit }) => {
-  const match = {};
+  const clauses = [studioOnlyMatch()];
   if (search) {
-    match.$or = [
-      { title: { $regex: search, $options: "i" } },
-      { bio: { $regex: search, $options: "i" } },
-    ];
+    clauses.push({
+      $or: [
+        { title: { $regex: search, $options: "i" } },
+        { bio: { $regex: search, $options: "i" } },
+      ],
+    });
   }
-  if (category && category !== "all") match.category = category;
+  if (category && category !== "all") clauses.push({ category });
+  const match = clauses.length === 1 ? clauses[0] : { $and: clauses };
 
   let sortStage = { createdAt: -1 };
   if (sort === "most-viewed") sortStage = { views: -1, createdAt: -1 };
@@ -37,9 +44,10 @@ const queryPins = async ({ search, category, sort, skip, limit }) => {
         likeCount: { $size: { $ifNull: ["$likedBy", []] } },
         saveCount: { $size: { $ifNull: ["$savedBy", []] } },
         trendingScore: trendingScoreExpr(),
+        featuredRank: { $cond: [{ $eq: ["$featured", true] }, 1, 0] },
       },
     },
-    { $sort: sortStage },
+    { $sort: { featuredRank: -1, ...sortStage } },
     { $skip: skip },
     { $limit: limit },
     {
@@ -64,6 +72,7 @@ const queryPins = async ({ search, category, sort, skip, limit }) => {
         price: 1,
         currency: 1,
         forSale: 1,
+        featured: 1,
         likedBy: 1,
         savedBy: 1,
         createdAt: 1,
@@ -95,9 +104,10 @@ const queryProjects = async ({ category, sort, skip, limit }) => {
         likeCount: { $size: { $ifNull: ["$likedBy", []] } },
         saveCount: { $size: { $ifNull: ["$savedBy", []] } },
         trendingScore: trendingScoreExpr(),
+        featuredRank: { $cond: [{ $eq: ["$featured", true] }, 1, 0] },
       },
     },
-    { $sort: sortStage },
+    { $sort: { featuredRank: -1, ...sortStage } },
     { $skip: skip },
     { $limit: limit },
     {
@@ -122,6 +132,7 @@ const queryProjects = async ({ category, sort, skip, limit }) => {
         price: 1,
         currency: 1,
         forSale: 1,
+        featured: 1,
         likedBy: 1,
         savedBy: 1,
         createdAt: 1,

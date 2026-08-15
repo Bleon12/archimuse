@@ -205,6 +205,7 @@ const serializePin = (pin, currentUserId) => {
     currency,
     priceLabel: formatPrice(price, currency),
     forSale: doc.forSale !== false,
+    featured: Boolean(doc.featured),
     isLiked: Boolean(currentUserId && likedBy.some((id) => String(id) === String(currentUserId))),
     isSaved: Boolean(currentUserId && savedBy.some((id) => String(id) === String(currentUserId))),
   };
@@ -344,39 +345,37 @@ const seedCuratedPins = async () => {
     await admin.save();
   }
 
-  const catalog = [...CURATED_PINS, ...PINTEREST_PINS].map((pin) => ({
-    ...pin,
-    source: pin.source || "pinterest",
-    sourceUrl: pin.sourceUrl || "https://www.pinterest.com/search/pins/?q=architecture",
-    forSale: true,
-    price: pin.price != null ? pin.price : Math.floor(Math.random() * 400) + 80,
-    currency: pin.currency || "EUR",
-  }));
-
-  const existing = await Pin.find({}, "title").lean();
-  const existingTitles = new Set(existing.map((p) => String(p.title).trim().toLowerCase()));
-  const toAdd = catalog.filter((pin) => !existingTitles.has(pin.title.trim().toLowerCase()));
-
-  if (!toAdd.length) {
-    const unpaid = await Pin.find({ $or: [{ price: { $exists: false } }, { price: null }, { price: 0 }] }).select("_id");
-    for (const item of unpaid) {
-      await Pin.updateOne(
-        { _id: item._id },
-        { $set: { price: Math.floor(Math.random() * 400) + 80, currency: "EUR", forSale: true } }
-      );
-    }
-    if (unpaid.length) console.log(`Backfilled prices for ${unpaid.length} designs.`);
-    return;
+  for (const pin of CURATED_PINS) {
+    await Pin.findOneAndUpdate(
+      { title: pin.title },
+      {
+        $set: {
+          bio: pin.bio,
+          category: pin.category,
+          imageUrl: pin.imageUrl,
+          source: "curated",
+          forSale: true,
+          featured: true,
+          price: pin.price != null ? pin.price : 280,
+          currency: pin.currency || "EUR",
+        },
+        $setOnInsert: {
+          user: curator._id,
+          views: Math.floor(Math.random() * 400) + 500,
+        },
+      },
+      { upsert: true }
+    );
   }
 
-  await Pin.insertMany(
-    toAdd.map((pin) => ({
-      ...pin,
-      user: curator._id,
-      views: Math.floor(Math.random() * 800) + 120,
-    }))
+  const studioTitles = CURATED_PINS.map((pin) => pin.title);
+  const hidden = await Pin.updateMany(
+    { title: { $nin: studioTitles } },
+    { $set: { forSale: false, featured: false } }
   );
-  console.log(`Seeded ${toAdd.length} designs into MongoDB.`);
+  if (hidden.modifiedCount) {
+    console.log(`Hid ${hidden.modifiedCount} non-studio designs from the shop.`);
+  }
 };
 
 const migrateJsonIfEmpty = async () => {

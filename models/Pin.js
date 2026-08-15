@@ -16,6 +16,7 @@ const pinSchema = new mongoose.Schema(
     price: { type: Number, default: 0, min: 0 },
     currency: { type: String, default: "EUR", trim: true },
     forSale: { type: Boolean, default: true },
+    featured: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
