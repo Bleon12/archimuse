@@ -411,7 +411,6 @@ const modeButtons = document.querySelectorAll(".mode-btn");
 const userBadge = document.getElementById("userBadge");
 const pinsGrid = document.getElementById("pinsGrid");
 const homeDecorGrid = document.getElementById("homeDecorGrid");
-const lookbookBento = document.getElementById("lookbookBento");
 const STUDIO_IMAGE = /designs\//i;
 
 const isStudioPin = (pin) => STUDIO_IMAGE.test(String(pin?.imageUrl || ""));
@@ -745,7 +744,7 @@ const toggleVideoBackground = (enabled) => {
 const setupVideoBackground = () => {
   if (document.getElementById("siteVideoBg")) return;
 
-  const enabled = localStorage.getItem("archimuse-video-bg") !== "off";
+  const enabled = localStorage.getItem("archimuse-video-bg") === "on";
   const wrap = document.createElement("div");
   wrap.id = "siteVideoBg";
   wrap.className = `site-video-bg${enabled ? "" : " hidden"}`;
@@ -819,29 +818,6 @@ const setupBurgerMenu = () => {
   window.addEventListener("resize", () => {
     if (window.innerWidth > 1024) closeMenu();
   });
-};
-
-const setupMobileDock = () => {
-  if (document.getElementById("mobileDock")) return;
-  const page = (location.pathname.split("/").pop() || "index.html").toLowerCase();
-  const items = [
-    { href: "index.html", key: "nav.home", icon: "⌂", match: ["index.html", "", ""] },
-    { href: "explore.html", key: "nav.shop", icon: "▣", match: ["explore.html"] },
-    { href: "projects.html", key: "nav.gallery", icon: "▦", match: ["projects.html"] },
-    { href: "saved.html", key: "nav.saved", icon: "★", match: ["saved.html"] },
-    { href: "profile.html", key: "nav.profile", icon: "◉", match: ["profile.html", "login.html"] },
-  ];
-  const dock = document.createElement("nav");
-  dock.id = "mobileDock";
-  dock.className = "mobile-dock";
-  dock.setAttribute("aria-label", "Mobile");
-  dock.innerHTML = items
-    .map((item) => {
-      const active = item.match.includes(page) || (page === "" && item.href === "index.html");
-      return `<a href="${item.href}" class="${active ? "active" : ""}"><span>${item.icon}</span><small data-i18n="${item.key}">${t(item.key)}</small></a>`;
-    })
-    .join("");
-  document.body.appendChild(dock);
 };
 
 const setupPageDecor = () => {
@@ -1117,39 +1093,6 @@ const renderHomeDecor = (pins, append = false) => {
   observeAnimatedCards();
 };
 
-const renderLookbook = (pins) => {
-  if (!lookbookBento) return;
-  const list = filterStudioCatalog(pins).slice(0, 10);
-  if (!list.length) {
-    lookbookBento.innerHTML = "";
-    return;
-  }
-  lookbookBento.innerHTML = list
-    .map(
-      (pin, i) => `
-    <article class="lookbook-tile lookbook-tile--${i + 1}" data-pin-id="${pin._id}" tabindex="0" role="button" aria-label="${escapeHtml(pin.title)}" style="--delay:${i * 0.08}s">
-      <img src="${pin.imageUrl}" alt="${escapeHtml(pin.title)}" loading="${i < 3 ? "eager" : "lazy"}" onerror="this.onerror=null;this.src='/' + this.getAttribute('src').replace(/^\\/+/, '')" />
-      <div class="lookbook-tile-meta">
-        <span>${escapeHtml(categoryLabel(pin.category))}</span>
-        <h3>${escapeHtml(pin.title)}</h3>
-        ${priceBadge(pin)}
-      </div>
-    </article>`
-    )
-    .join("");
-};
-
-const setupHeroSlideshow = () => {
-  const slides = document.querySelectorAll("#heroSlideshow img");
-  if (slides.length < 2) return;
-  let index = 0;
-  setInterval(() => {
-    slides[index].classList.remove("is-active");
-    index = (index + 1) % slides.length;
-    slides[index].classList.add("is-active");
-  }, 3400);
-};
-
 const renderProjects = (pins, append = false) => {
   if (!projectsGrid) return;
   if (!pins.length && !append) {
@@ -1264,20 +1207,14 @@ const loadPins = async ({ append = false, limit, category, sort } = {}) => {
     feedState.hasMore = false;
 
     if (pinsGrid) renderPins(pins, append);
-    else if (homeDecorGrid) {
-      renderLookbook(pins);
-      renderHomeDecor(pins, append);
-    }
+    else if (homeDecorGrid) renderHomeDecor(pins, append);
   } catch (_error) {
     usingFallbackCatalog = true;
     feedState.hasMore = false;
     const studio = filterStudioCatalog(FALLBACK_DESIGNS);
     if (!append && activeGrid) {
       if (pinsGrid) renderPins(studio, false);
-      else if (homeDecorGrid) {
-        renderLookbook(studio);
-        renderHomeDecor(studio, false);
-      }
+      else if (homeDecorGrid) renderHomeDecor(studio, false);
     }
   } finally {
     hideSkeleton();
@@ -2320,12 +2257,9 @@ setupLanguage();
 setupVideoBackground();
 setupAccountDrawer();
 setupBurgerMenu();
-setupMobileDock();
-setupHeroSlideshow();
 setupPageDecor();
 {
   const studio = filterStudioCatalog(FALLBACK_DESIGNS);
-  if (lookbookBento) renderLookbook(studio);
   if (homeDecorGrid) renderHomeDecor(studio, false);
   if (pinsGrid) renderPins(studio, false);
   if (isProjectsPage) {
