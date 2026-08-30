@@ -20,6 +20,10 @@
         <a href="login.html" data-i18n="nav.login">Login</a>
       </nav>
       <div class="topbar-right">
+        <div class="mode-switch" aria-label="Theme">
+          <button type="button" class="mode-btn active" data-theme="cream" data-i18n="theme.cream">Cream</button>
+          <button type="button" class="mode-btn" data-theme="dark" data-i18n="theme.dark">Dark</button>
+        </div>
         <div class="lang-switch" aria-label="Language">
           <button type="button" class="lang-btn active" data-lang="en">EN</button>
           <button type="button" class="lang-btn" data-lang="sq">SQ</button>
@@ -51,9 +55,12 @@
             <option value="most-liked">Most liked</option>
             <option value="most-saved">Most saved</option>
             <option value="most-viewed">Most viewed</option>
+            <option value="price-asc" data-i18n="shop.priceLow">Price: low</option>
+            <option value="price-desc" data-i18n="shop.priceHigh">Price: high</option>
           </select>
           <button class="btn" type="submit" data-i18n="shop.filter">Filter</button>
         </form>
+        <div id="categoryChips" class="chip-row"></div>
       </section>
 
       <section id="pinsGrid" class="pins-grid shop-grid">

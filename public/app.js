@@ -15,6 +15,21 @@ const I18N = {
     "home.ctaGallery": "Gallery",
     "home.saleTitle": "Designs for sale",
     "home.saleSub": "Open any card to like, comment, share or buy.",
+    "home.search": "Search designs…",
+    "home.howTitle": "How it works",
+    "home.how1": "Browse",
+    "home.how1s": "Open the catalog and find a design you like.",
+    "home.how2": "Save",
+    "home.how2s": "Like or save pieces to review later.",
+    "home.how3": "Buy",
+    "home.how3s": "Send a request. It starts as pending.",
+    "theme.cream": "Cream",
+    "theme.dark": "Dark",
+    "ui.top": "Top",
+    "ui.all": "All",
+    "ui.results": "designs",
+    "shop.priceLow": "Price: low",
+    "shop.priceHigh": "Price: high",
     "home.studioTitle": "Studio collection",
     "home.studioSub": "Signature chairs and furniture studies from the studio.",
     "home.lookbookTitle": "Atelier lookbook",
@@ -98,6 +113,21 @@ const I18N = {
     "home.ctaGallery": "Galeria",
     "home.saleTitle": "Dizajne në shitje",
     "home.saleSub": "Hap çdo kartë për like, koment, share ose blerje.",
+    "home.search": "Kërko dizajne…",
+    "home.howTitle": "Si funksionon",
+    "home.how1": "Shiko",
+    "home.how1s": "Hap katalogun dhe zgjidh një dizajn.",
+    "home.how2": "Ruaj",
+    "home.how2s": "Pëlqe ose ruaj për t’i parë më vonë.",
+    "home.how3": "Blej",
+    "home.how3s": "Dërgo kërkesën. Fillon si në pritje.",
+    "theme.cream": "Cream",
+    "theme.dark": "Errët",
+    "ui.top": "Lart",
+    "ui.all": "Të gjitha",
+    "ui.results": "dizajne",
+    "shop.priceLow": "Çmimi: ulët",
+    "shop.priceHigh": "Çmimi: lartë",
     "home.studioTitle": "Koleksioni i studios",
     "home.studioSub": "Karriget dhe studimet e mobiljeve të studios.",
     "home.lookbookTitle": "Lookbook i atelierit",
@@ -407,7 +437,8 @@ const setupLanguage = () => {
   });
 };
 
-const modeButtons = document.querySelectorAll(".mode-btn");
+let modeButtons = document.querySelectorAll(".mode-btn");
+let activeCategory = "all";
 const userBadge = document.getElementById("userBadge");
 const pinsGrid = document.getElementById("pinsGrid");
 const homeDecorGrid = document.getElementById("homeDecorGrid");
@@ -416,15 +447,29 @@ const STUDIO_IMAGE = /designs\//i;
 const isStudioPin = (pin) => STUDIO_IMAGE.test(String(pin?.imageUrl || ""));
 
 const filterStudioCatalog = (pins = FALLBACK_DESIGNS) => {
-  const search = searchInput?.value?.trim().toLowerCase() || "";
-  const category = categoryFilter?.value || projectCategoryFilter?.value || "all";
-  return pins.filter((pin) => {
+  const homeSearch = document.getElementById("homeSearch");
+  const search = (searchInput?.value || homeSearch?.value || "").trim().toLowerCase();
+  const category = categoryFilter?.value || projectCategoryFilter?.value || activeCategory || "all";
+  const filtered = pins.filter((pin) => {
     if (!isStudioPin(pin)) return false;
     const matchCat = !category || category === "all" || pin.category === category;
     const hay = `${pin.title || ""} ${pin.bio || ""}`.toLowerCase();
     const matchSearch = !search || hay.includes(search);
     return matchCat && matchSearch;
   });
+  const sort = sortFilter?.value || "latest";
+  const list = [...filtered];
+  if (sort === "price-asc") list.sort((a, b) => (a.price || 0) - (b.price || 0));
+  else if (sort === "price-desc") list.sort((a, b) => (b.price || 0) - (a.price || 0));
+  else if (sort === "most-liked") list.sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0));
+  else if (sort === "most-saved") list.sort((a, b) => (b.saveCount || 0) - (a.saveCount || 0));
+  else if (sort === "most-viewed") list.sort((a, b) => (b.viewCount || 0) - (a.viewCount || 0));
+  return list;
+};
+
+const updateCatalogCount = (count) => {
+  const el = document.getElementById("catalogCount");
+  if (el) el.textContent = String(count);
 };
 const projectsGrid = document.getElementById("projectsGrid");
 const featuredProjects = document.getElementById("featuredProjects");
@@ -479,12 +524,24 @@ const projectsState = {
 const applyTheme = (theme) => {
   document.body.classList.remove("theme-light", "theme-cream", "theme-dark");
   document.body.classList.add(`theme-${theme}`);
-  modeButtons.forEach((button) => {
+  document.querySelectorAll(".mode-btn").forEach((button) => {
     button.classList.toggle("active", button.dataset.theme === theme);
   });
 };
 
 const initTheme = () => {
+  const topRight = document.querySelector(".topbar-right");
+  if (topRight && !document.querySelector(".mode-switch")) {
+    const wrap = document.createElement("div");
+    wrap.className = "mode-switch";
+    wrap.setAttribute("aria-label", "Theme");
+    wrap.innerHTML = `
+      <button type="button" class="mode-btn" data-theme="cream" data-i18n="theme.cream">${t("theme.cream")}</button>
+      <button type="button" class="mode-btn" data-theme="dark" data-i18n="theme.dark">${t("theme.dark")}</button>
+    `;
+    topRight.prepend(wrap);
+  }
+  modeButtons = document.querySelectorAll(".mode-btn");
   const savedTheme = localStorage.getItem(THEME_KEY) || "cream";
   applyTheme(savedTheme);
   modeButtons.forEach((button) => {
@@ -1067,6 +1124,7 @@ const renderPins = (pins, append = false) => {
   if (!pinsGrid) return;
   if (!pins.length && !append) {
     pinsGrid.innerHTML = "<p class='empty-state'>No designs found for this filter.</p>";
+    updateCatalogCount(0);
     return;
   }
   const markup = pins.map((pin) => pinCardMarkup(pin, { masonry: true })).join("");
@@ -1075,6 +1133,7 @@ const renderPins = (pins, append = false) => {
   } else {
     pinsGrid.innerHTML = markup;
   }
+  updateCatalogCount(pins.length);
   observeAnimatedCards();
 };
 
@@ -1090,6 +1149,7 @@ const renderHomeDecor = (pins, append = false) => {
   } else {
     homeDecorGrid.innerHTML = markup;
   }
+  updateCatalogCount(pins.length);
   observeAnimatedCards();
 };
 
@@ -1412,16 +1472,74 @@ const setupUploadTabs = () => {
   }
 };
 
+const refreshStudioView = () => {
+  const studio = filterStudioCatalog(FALLBACK_DESIGNS);
+  if (pinsGrid) renderPins(studio, false);
+  if (homeDecorGrid) renderHomeDecor(studio, false);
+};
+
+const setupCatalogTools = () => {
+  const chipHost = document.getElementById("categoryChips");
+  if (chipHost && !chipHost.dataset.ready) {
+    const cats = ["all", "modern", "minimal", "interior", "furniture", "futuristic"];
+    chipHost.dataset.ready = "1";
+    chipHost.innerHTML = cats
+      .map((cat) => {
+        const label = cat === "all" ? t("ui.all") : categoryLabel(cat);
+        return `<button type="button" class="filter-chip${cat === activeCategory ? " active" : ""}" data-chip-cat="${cat}">${label}</button>`;
+      })
+      .join("");
+    chipHost.addEventListener("click", (event) => {
+      const btn = event.target.closest("[data-chip-cat]");
+      if (!btn) return;
+      activeCategory = btn.dataset.chipCat;
+      if (categoryFilter) categoryFilter.value = activeCategory;
+      chipHost.querySelectorAll(".filter-chip").forEach((el) => {
+        el.classList.toggle("active", el.dataset.chipCat === activeCategory);
+      });
+      refreshStudioView();
+    });
+  }
+
+  const homeSearch = document.getElementById("homeSearch");
+  let timer = 0;
+  const onType = () => {
+    clearTimeout(timer);
+    timer = setTimeout(refreshStudioView, 180);
+  };
+  homeSearch?.addEventListener("input", onType);
+  searchInput?.addEventListener("input", onType);
+};
+
+const setupScrollTop = () => {
+  if (document.getElementById("scrollTopBtn")) return;
+  const btn = document.createElement("button");
+  btn.id = "scrollTopBtn";
+  btn.className = "scroll-top";
+  btn.type = "button";
+  btn.setAttribute("aria-label", t("ui.top"));
+  btn.textContent = "↑";
+  document.body.appendChild(btn);
+  const sync = () => btn.classList.toggle("show", window.scrollY > 420);
+  window.addEventListener("scroll", sync, { passive: true });
+  btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+};
+
 const setupSearch = () => {
-  if (!searchForm) return;
-  searchForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    feedState.page = 1;
-    feedState.hasMore = true;
-    await loadPins({ append: false });
-  });
+  if (searchForm) {
+    searchForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      feedState.page = 1;
+      feedState.hasMore = true;
+      await loadPins({ append: false });
+    });
+  }
 
   categoryFilter?.addEventListener("change", async () => {
+    activeCategory = categoryFilter.value || "all";
+    document.querySelectorAll("[data-chip-cat]").forEach((el) => {
+      el.classList.toggle("active", el.dataset.chipCat === activeCategory);
+    });
     feedState.page = 1;
     feedState.hasMore = true;
     await loadPins({ append: false });
@@ -2268,6 +2386,8 @@ setupPageDecor();
     renderProjects(studio, false);
   }
 }
+setupCatalogTools();
+setupScrollTop();
 setupSearch();
 setupProjectFilters();
 setupInfiniteScroll();
