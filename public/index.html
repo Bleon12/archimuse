@@ -33,9 +33,21 @@
     </header>
 
     <main class="hero-page">
-      <section class="hero hero--shop">
-        <div class="hero-media" aria-hidden="true">
-          <img src="designs/olive-lounge.webp" alt="" />
+      <section class="hero hero--shop hero--cinema">
+        <div class="hero-media" id="heroCinema" aria-hidden="true">
+          <div class="hero-slides">
+            <img class="is-on" src="designs/soft-living.jpg" alt="" />
+            <img src="designs/atrium-house.jpg" alt="" />
+            <img src="designs/oak-kitchen.jpg" alt="" />
+            <img src="designs/courtyard-villa.jpg" alt="" />
+            <img src="designs/linen-interior.jpg" alt="" />
+            <img src="designs/stone-facade.jpg" alt="" />
+          </div>
+          <video id="heroVideo" muted loop playsinline preload="metadata" poster="designs/soft-living.jpg">
+            <source src="https://videos.pexels.com/video-files/7578554/7578554-hd_1280_720_30fps.mp4" type="video/mp4" />
+            <source src="https://cdn.coverr.co/videos/coverr-modern-glass-building-4638/1080p.mp4" type="video/mp4" />
+          </video>
+          <div class="hero-veil"></div>
         </div>
         <div class="hero-content reveal">
           <p class="hero-eyebrow" data-i18n="home.eyebrow">Architecture & interiors</p>

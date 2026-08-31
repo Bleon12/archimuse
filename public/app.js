@@ -1823,6 +1823,39 @@ const setupScrollTop = () => {
   btn.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 };
 
+const setupHeroCinema = () => {
+  const root = document.getElementById("heroCinema");
+  if (!root) return;
+  const slides = [...root.querySelectorAll(".hero-slides img")];
+  const video = document.getElementById("heroVideo");
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let index = 0;
+
+  const nextSlide = () => {
+    if (!slides.length || reduced) return;
+    slides[index].classList.remove("is-on");
+    index = (index + 1) % slides.length;
+    slides[index].classList.add("is-on");
+  };
+
+  if (slides.length > 1 && !reduced) {
+    setInterval(nextSlide, 6200);
+  }
+
+  if (!video || reduced) {
+    video?.remove();
+    return;
+  }
+
+  const markPlaying = () => {
+    if (video.readyState >= 2 && video.videoWidth) root.classList.add("has-video");
+  };
+
+  video.addEventListener("playing", markPlaying);
+  video.addEventListener("error", () => root.classList.remove("has-video"));
+  video.play().then(markPlaying).catch(() => {});
+};
+
 const setupSearch = () => {
   if (searchForm) {
     searchForm.addEventListener("submit", async (event) => {
@@ -2674,6 +2707,7 @@ setupPageDecor();
 }
 setupCatalogTools();
 setupScrollTop();
+setupHeroCinema();
 setupSearch();
 setupProjectFilters();
 setupInfiniteScroll();
