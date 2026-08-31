@@ -56,8 +56,8 @@
             Studio projects, furniture studies and interiors — open a card to see the work.
           </p>
           <div class="hero-actions">
-            <a class="btn" href="projects.html" data-i18n="home.ctaGallery">View projects</a>
-            <a class="btn btn-outline" href="explore.html" data-i18n="home.ctaShop">Shop</a>
+            <a class="btn" href="#projectBrief" data-i18n="brief.cta">Start a brief</a>
+            <a class="btn btn-outline" href="projects.html" data-i18n="home.ctaGallery">View projects</a>
           </div>
         </div>
       </section>
@@ -77,10 +77,93 @@
           </article>
           <article class="how-card">
             <span>03</span>
-            <h3 data-i18n="home.how3">Connect</h3>
-            <p data-i18n="home.how3s">Reach the studio if you want a piece or a collaboration.</p>
+            <h3 data-i18n="home.how3">Brief</h3>
+            <p data-i18n="home.how3s">Tell us the basis. We prepare the final design.</p>
           </article>
         </div>
+      </section>
+
+      <section class="brief-section" id="projectBrief">
+        <div class="brief-intro">
+          <p class="hero-eyebrow" data-i18n="brief.eyebrow">Client brief</p>
+          <h2 data-i18n="brief.title">What should we prepare?</h2>
+          <p data-i18n="brief.lead">Choose the project type, write the basis, and we send you the final proposal.</p>
+        </div>
+        <form id="briefForm" class="brief-form">
+          <div class="brief-grid">
+            <label>
+              <span data-i18n="brief.name">Name</span>
+              <input name="name" type="text" required autocomplete="name" />
+            </label>
+            <label>
+              <span data-i18n="brief.email">Email</span>
+              <input name="email" type="email" required autocomplete="email" />
+            </label>
+            <label>
+              <span data-i18n="brief.phone">Phone</span>
+              <input name="phone" type="tel" autocomplete="tel" />
+            </label>
+            <label>
+              <span data-i18n="brief.city">City</span>
+              <input name="city" type="text" />
+            </label>
+          </div>
+
+          <fieldset class="brief-fieldset">
+            <legend data-i18n="brief.interest">Projects you are interested in</legend>
+            <div class="brief-chips">
+              <label class="option-chip"><input type="checkbox" name="interest" value="house" /><span data-i18n="brief.i.house">House</span></label>
+              <label class="option-chip"><input type="checkbox" name="interest" value="interior" /><span data-i18n="brief.i.interior">Interior</span></label>
+              <label class="option-chip"><input type="checkbox" name="interest" value="kitchen" /><span data-i18n="brief.i.kitchen">Kitchen</span></label>
+              <label class="option-chip"><input type="checkbox" name="interest" value="furniture" /><span data-i18n="brief.i.furniture">Furniture</span></label>
+              <label class="option-chip"><input type="checkbox" name="interest" value="office" /><span data-i18n="brief.i.office">Office</span></label>
+              <label class="option-chip"><input type="checkbox" name="interest" value="facade" /><span data-i18n="brief.i.facade">Facade</span></label>
+              <label class="option-chip"><input type="checkbox" name="interest" value="garden" /><span data-i18n="brief.i.garden">Garden</span></label>
+            </div>
+          </fieldset>
+
+          <div class="brief-grid">
+            <label>
+              <span data-i18n="brief.style">Style</span>
+              <select name="style">
+                <option value="modern" data-i18n="brief.s.modern">Modern</option>
+                <option value="minimal" data-i18n="brief.s.minimal">Minimal</option>
+                <option value="warm" data-i18n="brief.s.warm">Warm / wood</option>
+                <option value="dark" data-i18n="brief.s.dark">Dark / coffee</option>
+              </select>
+            </label>
+            <label>
+              <span data-i18n="brief.budget">Budget</span>
+              <select name="budget">
+                <option value="under-500" data-i18n="brief.b1">Under €500</option>
+                <option value="500-1500" data-i18n="brief.b2">€500 – €1,500</option>
+                <option value="1500-4000" data-i18n="brief.b3">€1,500 – €4,000</option>
+                <option value="over-4000" data-i18n="brief.b4">Over €4,000</option>
+              </select>
+            </label>
+            <label>
+              <span data-i18n="brief.when">When</span>
+              <select name="when">
+                <option value="asap" data-i18n="brief.w1">As soon as possible</option>
+                <option value="month" data-i18n="brief.w2">Within a month</option>
+                <option value="quarter" data-i18n="brief.w3">In 3 months</option>
+                <option value="flex" data-i18n="brief.w4">Flexible</option>
+              </select>
+            </label>
+            <label>
+              <span data-i18n="brief.rooms">Spaces / rooms</span>
+              <input name="rooms" type="text" data-i18n-placeholder="brief.roomsPh" placeholder="Living room, kitchen…" />
+            </label>
+          </div>
+
+          <label class="brief-full">
+            <span data-i18n="brief.basis">Project basis</span>
+            <textarea name="basis" rows="5" required data-i18n-placeholder="brief.basisPh" placeholder="Describe the space, materials, and what the final should include…"></textarea>
+          </label>
+
+          <button class="btn" type="submit" data-i18n="brief.send">Send brief — we prepare the final</button>
+          <p id="briefMessage" class="brief-message" role="status"></p>
+        </form>
       </section>
 
       <section class="section-header">

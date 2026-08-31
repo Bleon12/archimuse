@@ -42,8 +42,46 @@ const I18N = {
     "home.how1s": "Open the projects and find a space you like.",
     "home.how2": "Study",
     "home.how2s": "See interiors, furniture and architecture studies.",
-    "home.how3": "Connect",
-    "home.how3s": "Reach the studio if you want a piece or a collaboration.",
+    "home.how3": "Brief",
+    "home.how3s": "Tell us the basis. We prepare the final design.",
+    "brief.cta": "Start a brief",
+    "brief.eyebrow": "Client brief",
+    "brief.title": "What should we prepare?",
+    "brief.lead": "Choose the project type, write the basis, and we send you the final proposal.",
+    "brief.name": "Name",
+    "brief.email": "Email",
+    "brief.phone": "Phone",
+    "brief.city": "City",
+    "brief.interest": "Projects you are interested in",
+    "brief.i.house": "House",
+    "brief.i.interior": "Interior",
+    "brief.i.kitchen": "Kitchen",
+    "brief.i.furniture": "Furniture",
+    "brief.i.office": "Office",
+    "brief.i.facade": "Facade",
+    "brief.i.garden": "Garden",
+    "brief.style": "Style",
+    "brief.s.modern": "Modern",
+    "brief.s.minimal": "Minimal",
+    "brief.s.warm": "Warm / wood",
+    "brief.s.dark": "Dark / coffee",
+    "brief.budget": "Budget",
+    "brief.b1": "Under €500",
+    "brief.b2": "€500 – €1,500",
+    "brief.b3": "€1,500 – €4,000",
+    "brief.b4": "Over €4,000",
+    "brief.when": "When",
+    "brief.w1": "As soon as possible",
+    "brief.w2": "Within a month",
+    "brief.w3": "In 3 months",
+    "brief.w4": "Flexible",
+    "brief.rooms": "Spaces / rooms",
+    "brief.roomsPh": "Living room, kitchen…",
+    "brief.basis": "Project basis",
+    "brief.basisPh": "Describe the space, materials, and what the final should include…",
+    "brief.send": "Send brief — we prepare the final",
+    "brief.ok": "Received. We will prepare the proposal and send the final.",
+    "brief.needInterest": "Pick at least one project type.",
     "theme.cream": "Cream",
     "theme.dark": "Dark",
     "ui.top": "Top",
@@ -161,8 +199,46 @@ const I18N = {
     "home.how1s": "Hap projektet dhe zgjidh një hapësirë.",
     "home.how2": "Studio",
     "home.how2s": "Shiko interieret, mobiljet dhe studimet e arkitekturës.",
-    "home.how3": "Lidhu",
-    "home.how3s": "Kontakto studion për një dezajn ose bashkëpunim.",
+    "home.how3": "Brief",
+    "home.how3s": "Na trego bazën. Ne e përgatisim versionin final.",
+    "brief.cta": "Fillo një brief",
+    "brief.eyebrow": "Brief i klientit",
+    "brief.title": "Çfarë të përgatisim?",
+    "brief.lead": "Zgjidh llojin e projektit, shkruaj bazën, dhe ne të dërgojmë propozimin final.",
+    "brief.name": "Emri",
+    "brief.email": "Email",
+    "brief.phone": "Telefoni",
+    "brief.city": "Qyteti",
+    "brief.interest": "Projektet që të interesojnë",
+    "brief.i.house": "Shtëpi",
+    "brief.i.interior": "Interier",
+    "brief.i.kitchen": "Kuzhinë",
+    "brief.i.furniture": "Mobilje",
+    "brief.i.office": "Zyrë",
+    "brief.i.facade": "Fasadë",
+    "brief.i.garden": "Kopsht",
+    "brief.style": "Stili",
+    "brief.s.modern": "Modern",
+    "brief.s.minimal": "Minimal",
+    "brief.s.warm": "I ngrohtë / dru",
+    "brief.s.dark": "I errët / kafe",
+    "brief.budget": "Buxheti",
+    "brief.b1": "Nën €500",
+    "brief.b2": "€500 – €1,500",
+    "brief.b3": "€1,500 – €4,000",
+    "brief.b4": "Mbi €4,000",
+    "brief.when": "Kur",
+    "brief.w1": "Sa më shpejt",
+    "brief.w2": "Brenda një muaji",
+    "brief.w3": "Në 3 muaj",
+    "brief.w4": "Fleksibël",
+    "brief.rooms": "Hapësirat / dhomat",
+    "brief.roomsPh": "Dhoma e ndenjes, kuzhina…",
+    "brief.basis": "Baza e projektit",
+    "brief.basisPh": "Përshkruaj hapësirën, materialet dhe çfarë duhet të ketë finalja…",
+    "brief.send": "Dërgo brief-in — ne e përgatisim finalen",
+    "brief.ok": "U pranua. Do ta përgatisim propozimin dhe ta dërgojmë finalen.",
+    "brief.needInterest": "Zgjidh të paktën një lloj projekti.",
     "theme.cream": "Cream",
     "theme.dark": "Errët",
     "ui.top": "Lart",
@@ -1856,6 +1932,37 @@ const setupHeroCinema = () => {
   video.play().then(markPlaying).catch(() => {});
 };
 
+const setupBriefForm = () => {
+  const form = document.getElementById("briefForm");
+  if (!form) return;
+  const message = document.getElementById("briefMessage");
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const interests = [...form.querySelectorAll('input[name="interest"]:checked')].map((el) => el.value);
+    if (!interests.length) {
+      if (message) {
+        message.textContent = t("brief.needInterest");
+        message.dataset.state = "warn";
+      }
+      return;
+    }
+    const data = Object.fromEntries(new FormData(form).entries());
+    const brief = {
+      ...data,
+      interests,
+      createdAt: new Date().toISOString(),
+    };
+    const stored = JSON.parse(localStorage.getItem("archimuse-briefs") || "[]");
+    stored.unshift(brief);
+    localStorage.setItem("archimuse-briefs", JSON.stringify(stored.slice(0, 40)));
+    form.reset();
+    if (message) {
+      message.textContent = t("brief.ok");
+      message.dataset.state = "ok";
+    }
+  });
+};
+
 const setupSearch = () => {
   if (searchForm) {
     searchForm.addEventListener("submit", async (event) => {
@@ -2708,6 +2815,7 @@ setupPageDecor();
 setupCatalogTools();
 setupScrollTop();
 setupHeroCinema();
+setupBriefForm();
 setupSearch();
 setupProjectFilters();
 setupInfiniteScroll();
