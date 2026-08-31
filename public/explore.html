@@ -14,12 +14,13 @@
       <a class="brand" href="index.html">ArchiMuse</a>
       <nav class="main-nav" data-nav>
         <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="projects.html" data-i18n="nav.projects">Projects</a>
         <a href="explore.html" class="active" data-i18n="nav.shop">Shop</a>
-        <a href="projects.html" data-i18n="nav.gallery">Gallery</a>
-        <a href="saved.html" data-i18n="nav.saved">Saved</a>
-        <a href="login.html" data-i18n="nav.login">Login</a>
       </nav>
       <div class="topbar-right">
+        <a href="cv.html" class="cv-icon" aria-label="CV" title="CV">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.1"/><path d="M5.2 19.2c1.5-3.2 3.9-5 6.8-5s5.3 1.8 6.8 5"/></svg>
+        </a>
         <div class="mode-switch" aria-label="Theme">
           <button type="button" class="mode-btn active" data-theme="cream" data-i18n="theme.cream">Cream</button>
           <button type="button" class="mode-btn" data-theme="dark" data-i18n="theme.dark">Dark</button>
@@ -28,13 +29,12 @@
           <button type="button" class="lang-btn active" data-lang="en">EN</button>
           <button type="button" class="lang-btn" data-lang="sq">SQ</button>
         </div>
-        <a href="profile.html" id="userBadge" class="user-badge">Guest</a>
       </div>
     </header>
 
     <main class="page-wrap">
-      <h1 data-i18n="shop.title">Design shop</h1>
-      <p class="page-subtitle" data-i18n="shop.sub">Browse, like, save, share and buy studio designs.</p>
+      <h1 data-i18n="shop.title">Shop</h1>
+      <p class="page-subtitle" data-i18n="shop.sub">Studio pieces available as design studies.</p>
 
       <section class="search-panel reveal">
         <form id="searchForm" class="search-form">
@@ -48,6 +48,7 @@
             <option value="landscape">Landscape</option>
             <option value="futuristic">Futuristic</option>
             <option value="furniture">Furniture</option>
+            <option value="architecture">Architecture</option>
           </select>
           <select id="sortFilter" name="sort">
             <option value="latest">Latest</option>

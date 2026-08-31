@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Verda Mjekiqi | CV</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="cv-page">
+    <header class="topbar">
+      <a class="brand" href="index.html">ArchiMuse</a>
+      <nav class="main-nav" data-nav>
+        <a href="index.html" data-i18n="nav.home">Home</a>
+        <a href="projects.html" data-i18n="nav.projects">Projects</a>
+        <a href="explore.html" data-i18n="nav.shop">Shop</a>
+      </nav>
+      <div class="topbar-right">
+        <a href="cv.html" class="cv-icon active" aria-label="CV" title="CV">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.1"/><path d="M5.2 19.2c1.5-3.2 3.9-5 6.8-5s5.3 1.8 6.8 5"/></svg>
+        </a>
+        <div class="mode-switch" aria-label="Theme">
+          <button type="button" class="mode-btn active" data-theme="cream" data-i18n="theme.cream">Cream</button>
+          <button type="button" class="mode-btn" data-theme="dark" data-i18n="theme.dark">Dark</button>
+        </div>
+        <div class="lang-switch" aria-label="Language">
+          <button type="button" class="lang-btn active" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="sq">SQ</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="cv-wrap">
+      <aside class="cv-side">
+        <img class="cv-photo" src="profile/verda.jpg" alt="Verda Mjekiqi" />
+        <p class="cv-status" data-i18n="cv.open">Open to work</p>
+        <h1>Verda Mjekiqi</h1>
+        <p class="cv-role" data-i18n="cv.role">Architecture student · 20</p>
+        <p class="cv-place">Prishtinë, Kosovë</p>
+        <ul class="cv-links">
+          <li><a href="https://www.instagram.com/verdamjekiqi/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://www.linkedin.com/in/verda-mjekiqi-813731222" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="projects.html" data-i18n="cv.portfolio">Portfolio</a></li>
+        </ul>
+      </aside>
+
+      <section class="cv-main">
+        <article class="cv-block">
+          <h2 data-i18n="cv.about">About</h2>
+          <p data-i18n="cv.aboutText">
+            Architecture student at UBT, focused on space, material and quiet interiors. I also work with web, UI and analysis — looking for a first studio or design role.
+          </p>
+        </article>
+
+        <article class="cv-block">
+          <h2 data-i18n="cv.education">Education</h2>
+          <div class="cv-item">
+            <strong data-i18n="cv.eduTitle">Bachelor of Architecture — BArch</strong>
+            <span>UBT — University for Business and Technology, Prishtinë</span>
+            <p data-i18n="cv.eduText">Studios in concept design, interiors, furniture studies and spatial analysis.</p>
+          </div>
+        </article>
+
+        <article class="cv-block">
+          <h2 data-i18n="cv.skills">Skills</h2>
+          <ul class="cv-skills">
+            <li data-i18n="cv.sk1">Architectural design</li>
+            <li data-i18n="cv.sk2">Interior & furniture</li>
+            <li data-i18n="cv.sk3">Spatial analysis</li>
+            <li data-i18n="cv.sk4">Web coding</li>
+            <li data-i18n="cv.sk5">UI / UX & Figma</li>
+            <li data-i18n="cv.sk6">Concept sketches</li>
+          </ul>
+        </article>
+
+        <article class="cv-block">
+          <h2 data-i18n="cv.tools">Tools</h2>
+          <p>AutoCAD · SketchUp · Figma · HTML / CSS / JavaScript · Photoshop · Illustrator</p>
+        </article>
+
+        <article class="cv-block">
+          <h2 data-i18n="cv.langs">Languages</h2>
+          <p data-i18n="cv.langsText">Albanian — native · English — professional</p>
+        </article>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

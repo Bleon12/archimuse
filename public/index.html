@@ -14,12 +14,13 @@
       <a class="brand" href="index.html">ArchiMuse</a>
       <nav class="main-nav" data-nav>
         <a href="index.html" class="active" data-i18n="nav.home">Home</a>
+        <a href="projects.html" data-i18n="nav.projects">Projects</a>
         <a href="explore.html" data-i18n="nav.shop">Shop</a>
-        <a href="projects.html" data-i18n="nav.gallery">Gallery</a>
-        <a href="saved.html" data-i18n="nav.saved">Saved</a>
-        <a href="login.html" data-i18n="nav.login">Login</a>
       </nav>
       <div class="topbar-right">
+        <a href="cv.html" class="cv-icon" aria-label="CV" title="CV">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.1"/><path d="M5.2 19.2c1.5-3.2 3.9-5 6.8-5s5.3 1.8 6.8 5"/></svg>
+        </a>
         <div class="mode-switch" aria-label="Theme">
           <button type="button" class="mode-btn active" data-theme="cream" data-i18n="theme.cream">Cream</button>
           <button type="button" class="mode-btn" data-theme="dark" data-i18n="theme.dark">Dark</button>
@@ -28,7 +29,6 @@
           <button type="button" class="lang-btn active" data-lang="en">EN</button>
           <button type="button" class="lang-btn" data-lang="sq">SQ</button>
         </div>
-        <a href="profile.html" id="userBadge" class="user-badge">Guest</a>
       </div>
     </header>
 
@@ -38,14 +38,14 @@
           <img src="designs/olive-lounge.webp" alt="" />
         </div>
         <div class="hero-content reveal">
-          <p class="hero-eyebrow" data-i18n="home.eyebrow">Design studio & sales</p>
+          <p class="hero-eyebrow" data-i18n="home.eyebrow">Architecture & interiors</p>
           <h1>ArchiMuse</h1>
           <p data-i18n="home.lead">
-            Browse our designs, like, save, share and buy. Apply for online or cash payment — requests start as pending.
+            Studio projects, furniture studies and interiors — open a card to see the work.
           </p>
           <div class="hero-actions">
-            <a class="btn" href="explore.html" data-i18n="home.ctaShop">View shop</a>
-            <a class="btn btn-outline" href="projects.html" data-i18n="home.ctaGallery">Gallery</a>
+            <a class="btn" href="projects.html" data-i18n="home.ctaGallery">View projects</a>
+            <a class="btn btn-outline" href="explore.html" data-i18n="home.ctaShop">Shop</a>
           </div>
         </div>
       </section>
@@ -56,30 +56,36 @@
           <article class="how-card">
             <span>01</span>
             <h3 data-i18n="home.how1">Browse</h3>
-            <p data-i18n="home.how1s">Open the catalog and find a design you like.</p>
+            <p data-i18n="home.how1s">Open the projects and find a space you like.</p>
           </article>
           <article class="how-card">
             <span>02</span>
-            <h3 data-i18n="home.how2">Save</h3>
-            <p data-i18n="home.how2s">Like or save pieces to review later.</p>
+            <h3 data-i18n="home.how2">Study</h3>
+            <p data-i18n="home.how2s">See interiors, furniture and architecture studies.</p>
           </article>
           <article class="how-card">
             <span>03</span>
-            <h3 data-i18n="home.how3">Buy</h3>
-            <p data-i18n="home.how3s">Send a request. It starts as pending.</p>
+            <h3 data-i18n="home.how3">Connect</h3>
+            <p data-i18n="home.how3s">Reach the studio if you want a piece or a collaboration.</p>
           </article>
         </div>
       </section>
 
+      <section class="section-header">
+        <h2 data-i18n="home.featuredTitle">Selected projects</h2>
+        <p data-i18n="home.featuredSub">A short path into the studio — then the full set below.</p>
+      </section>
+      <section id="homeFeatured" class="featured-row"></section>
+
       <section class="section-header catalog-toolbar">
         <div>
-          <h2 data-i18n="home.saleTitle">Designs for sale</h2>
-          <p data-i18n="home.saleSub">Open any card to like, comment, share or buy.</p>
+          <h2 data-i18n="home.saleTitle">All projects</h2>
+          <p data-i18n="home.saleSub">Filter by type or search a title.</p>
         </div>
         <input id="homeSearch" class="home-search" type="search" data-i18n-placeholder="home.search" placeholder="Search designs…" />
       </section>
       <div id="categoryChips" class="chip-row"></div>
-      <p class="catalog-count"><span id="catalogCount">10</span> <span data-i18n="ui.results">designs</span></p>
+      <p class="catalog-count"><span id="catalogCount">22</span> <span data-i18n="ui.results">designs</span></p>
 
       <section id="homeDecorGrid" class="pins-grid shop-grid">
         <p class="empty-state" data-i18n="home.loading">Loading designs…</p>

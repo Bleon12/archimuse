@@ -2,52 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ArchiMuse | Login</title>
-    <link rel="stylesheet" href="styles.css" />
+    <meta http-equiv="refresh" content="0; url=index.html" />
+    <title>ArchiMuse</title>
+    <script>location.replace("index.html");</script>
   </head>
-  <body>
-    <header class="topbar">
-      <a class="brand" href="index.html">ArchiMuse</a>
-      <nav class="main-nav" data-nav>
-        <a href="index.html" data-i18n="nav.home">Home</a>
-        <a href="explore.html" data-i18n="nav.shop">Shop</a>
-        <a href="projects.html" data-i18n="nav.gallery">Gallery</a>
-        <a href="saved.html" data-i18n="nav.saved">Saved</a>
-        <a href="login.html" class="active" data-i18n="nav.login">Login</a>
-      </nav>
-      <div class="topbar-right">
-        <div class="lang-switch" aria-label="Language">
-          <button type="button" class="lang-btn active" data-lang="en">EN</button>
-          <button type="button" class="lang-btn" data-lang="sq">SQ</button>
-        </div>
-        <a href="profile.html" id="userBadge" class="user-badge">Guest</a>
-      </div>
-    </header>
-
-    <main class="login-wrap">
-      <section class="login-card reveal">
-        <h1 data-i18n="login.title">Account</h1>
-        <p data-i18n="login.sub">Login or register to save designs and place orders.</p>
-        <div class="auth-tabs">
-          <button id="loginTab" class="tab-btn active" type="button" data-i18n="login.tabLogin">Login</button>
-          <button id="registerTab" class="tab-btn" type="button" data-i18n="login.tabRegister">Register</button>
-        </div>
-        <form id="loginForm">
-          <div id="nameFieldWrap" class="hidden">
-            <label for="name" data-i18n="login.name">Name</label>
-            <input id="name" name="name" type="text" placeholder="Your name" />
-          </div>
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" placeholder="you@example.com" required />
-          <label for="password" data-i18n="login.password">Password</label>
-          <input id="password" name="password" type="password" placeholder="********" required />
-          <button id="authSubmitBtn" type="submit" class="btn" data-i18n="login.tabLogin">Login</button>
-          <p id="loginMessage" class="message"></p>
-        </form>
-      </section>
-    </main>
-
-    <script src="app.js"></script>
-  </body>
+  <body></body>
 </html>

@@ -5,24 +5,45 @@ const I18N = {
   en: {
     "nav.home": "Home",
     "nav.shop": "Shop",
-    "nav.gallery": "Gallery",
+    "nav.gallery": "Projects",
+    "nav.projects": "Projects",
     "nav.saved": "Saved",
     "nav.login": "Login",
     "nav.profile": "Profile",
-    "home.eyebrow": "Design studio & sales",
-    "home.lead": "Browse our designs, like, save, share and buy. Apply for online or cash payment — requests start as pending.",
-    "home.ctaShop": "View shop",
-    "home.ctaGallery": "Gallery",
-    "home.saleTitle": "Designs for sale",
-    "home.saleSub": "Open any card to like, comment, share or buy.",
+    "home.eyebrow": "Architecture & interiors",
+    "home.lead": "Studio projects, furniture studies and interiors — open a card to see the work.",
+    "home.ctaShop": "Shop",
+    "home.ctaGallery": "View projects",
+    "home.saleTitle": "All projects",
+    "home.saleSub": "Filter by type or search a title.",
+    "home.featuredTitle": "Selected projects",
+    "home.featuredSub": "A short path into the studio — then the full set below.",
+    "cv.open": "Open to work",
+    "cv.role": "Architecture student · 20",
+    "cv.portfolio": "Portfolio",
+    "cv.about": "About",
+    "cv.aboutText": "Architecture student at UBT, focused on space, material and quiet interiors. I also work with web, UI and analysis — looking for a first studio or design role.",
+    "cv.education": "Education",
+    "cv.eduTitle": "Bachelor of Architecture — BArch",
+    "cv.eduText": "Studios in concept design, interiors, furniture studies and spatial analysis.",
+    "cv.skills": "Skills",
+    "cv.sk1": "Architectural design",
+    "cv.sk2": "Interior & furniture",
+    "cv.sk3": "Spatial analysis",
+    "cv.sk4": "Web coding",
+    "cv.sk5": "UI / UX & Figma",
+    "cv.sk6": "Concept sketches",
+    "cv.tools": "Tools",
+    "cv.langs": "Languages",
+    "cv.langsText": "Albanian — native · English — professional",
     "home.search": "Search designs…",
     "home.howTitle": "How it works",
     "home.how1": "Browse",
-    "home.how1s": "Open the catalog and find a design you like.",
-    "home.how2": "Save",
-    "home.how2s": "Like or save pieces to review later.",
-    "home.how3": "Buy",
-    "home.how3s": "Send a request. It starts as pending.",
+    "home.how1s": "Open the projects and find a space you like.",
+    "home.how2": "Study",
+    "home.how2s": "See interiors, furniture and architecture studies.",
+    "home.how3": "Connect",
+    "home.how3s": "Reach the studio if you want a piece or a collaboration.",
     "theme.cream": "Cream",
     "theme.dark": "Dark",
     "ui.top": "Top",
@@ -35,13 +56,13 @@ const I18N = {
     "home.lookbookTitle": "Atelier lookbook",
     "home.loading": "Loading designs…",
     "home.empty": "No designs yet. Showing demo catalog.",
-    "shop.title": "Design shop",
-    "shop.sub": "Browse, like, save, share and buy studio designs.",
+    "shop.title": "Shop",
+    "shop.sub": "Studio pieces available as design studies.",
     "shop.search": "Search by title or bio…",
     "shop.filter": "Filter",
-    "gallery.eyebrow": "Curated collection",
-    "gallery.title": "Architecture gallery",
-    "gallery.lead": "Featured studio designs ranked by views, likes and trend.",
+    "gallery.eyebrow": "Studio work",
+    "gallery.title": "Projects",
+    "gallery.lead": "Interiors, furniture and architecture — click a card to open it.",
     "gallery.designs": "designs",
     "gallery.end": "End of gallery",
     "saved.title": "Saved designs",
@@ -103,24 +124,45 @@ const I18N = {
   sq: {
     "nav.home": "Ballina",
     "nav.shop": "Dyqani",
-    "nav.gallery": "Galeria",
+    "nav.gallery": "Projektet",
+    "nav.projects": "Projektet",
     "nav.saved": "Të ruajtura",
     "nav.login": "Hyr",
     "nav.profile": "Profili",
-    "home.eyebrow": "Studio dizajni & shitje",
-    "home.lead": "Shiko dizajnet, pëlqe, ruaj, ndaj dhe blej. Apliko për pagesë online ose cash — kërkesa fillon si në pritje.",
-    "home.ctaShop": "Shiko dyqanin",
-    "home.ctaGallery": "Galeria",
-    "home.saleTitle": "Dizajne në shitje",
-    "home.saleSub": "Hap çdo kartë për like, koment, share ose blerje.",
+    "home.eyebrow": "Arkitekturë & interier",
+    "home.lead": "Projekte studio, studime mobiljesh dhe interiere — hap kartën për t’i parë.",
+    "home.ctaShop": "Dyqani",
+    "home.ctaGallery": "Shiko projektet",
+    "home.saleTitle": "Të gjitha projektet",
+    "home.saleSub": "Filtro sipas llojit ose kërko titullin.",
+    "home.featuredTitle": "Projekte të zgjedhura",
+    "home.featuredSub": "Një rrugë e shkurtër te studioja — pastaj të gjitha poshtë.",
+    "cv.open": "Në kërkim pune",
+    "cv.role": "Studente arkitekture · 20 vjeç",
+    "cv.portfolio": "Portofoli",
+    "cv.about": "Rreth meje",
+    "cv.aboutText": "Studente arkitekture në UBT. Punoj me hapësirë, material dhe interier të qetë. Kam edhe kodim web, UI dhe analizë — kërkoj një rol të parë në studio ose dizajn.",
+    "cv.education": "Shkollimi",
+    "cv.eduTitle": "Bachelor i Arkitekturës — BArch",
+    "cv.eduText": "Studio në koncepte, interier, mobilje dhe analizë hapësinore.",
+    "cv.skills": "Aftësitë",
+    "cv.sk1": "Dizajn arkitektonik",
+    "cv.sk2": "Interier & mobilje",
+    "cv.sk3": "Analizë hapësinore",
+    "cv.sk4": "Kodim web",
+    "cv.sk5": "UI / UX & Figma",
+    "cv.sk6": "Skica koncepti",
+    "cv.tools": "Mjetet",
+    "cv.langs": "Gjuhët",
+    "cv.langsText": "Shqip — amtare · Anglisht — profesionale",
     "home.search": "Kërko dizajne…",
     "home.howTitle": "Si funksionon",
     "home.how1": "Shiko",
-    "home.how1s": "Hap katalogun dhe zgjidh një dizajn.",
-    "home.how2": "Ruaj",
-    "home.how2s": "Pëlqe ose ruaj për t’i parë më vonë.",
-    "home.how3": "Blej",
-    "home.how3s": "Dërgo kërkesën. Fillon si në pritje.",
+    "home.how1s": "Hap projektet dhe zgjidh një hapësirë.",
+    "home.how2": "Studio",
+    "home.how2s": "Shiko interieret, mobiljet dhe studimet e arkitekturës.",
+    "home.how3": "Lidhu",
+    "home.how3s": "Kontakto studion për një dezajn ose bashkëpunim.",
     "theme.cream": "Cream",
     "theme.dark": "Errët",
     "ui.top": "Lart",
@@ -133,13 +175,13 @@ const I18N = {
     "home.lookbookTitle": "Lookbook i atelierit",
     "home.loading": "Duke ngarkuar dizajnet…",
     "home.empty": "Ende nuk ka dizajne. Po shfaqet katalogu demo.",
-    "shop.title": "Dyqani i dizajneve",
-    "shop.sub": "Shiko, pëlqe, ruaj, ndaj dhe blej dizajnet e studios.",
+    "shop.title": "Dyqani",
+    "shop.sub": "Pjesët e studios si studime dizajni.",
     "shop.search": "Kërko sipas titullit ose bio-s…",
     "shop.filter": "Filtro",
-    "gallery.eyebrow": "Koleksion i kuruar",
-    "gallery.title": "Galeria e arkitekturës",
-    "gallery.lead": "Dizajnet e studios sipas shikimeve, pëlqimeve dhe trendit.",
+    "gallery.eyebrow": "Puna e studios",
+    "gallery.title": "Projektet",
+    "gallery.lead": "Interier, mobilje dhe arkitekturë — hap kartën.",
     "gallery.designs": "dizajne",
     "gallery.end": "Fundi i galerisë",
     "saved.title": "Dizajne të ruajtura",
@@ -407,6 +449,246 @@ const FALLBACK_DESIGNS = [
     isLiked: false,
     isSaved: false,
   },
+  {
+    _id: "demo-11",
+    title: "Atrium House",
+    bio: "A calm modern house with a central light well and long garden views.",
+    category: "architecture",
+    imageUrl: "designs/atrium-house.jpg",
+    forSale: true,
+    featured: true,
+    price: 890,
+    currency: "EUR",
+    priceLabel: "€890.00",
+    likeCount: 64,
+    saveCount: 27,
+    viewCount: 1680,
+    shareCount: 9,
+    user: { name: "Verda Mjekiqi" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-12",
+    title: "Soft Living Room",
+    bio: "Layered cream seating, timber floors and a quiet reading corner.",
+    category: "interior",
+    imageUrl: "designs/soft-living.jpg",
+    forSale: true,
+    featured: true,
+    price: 540,
+    currency: "EUR",
+    priceLabel: "€540.00",
+    likeCount: 51,
+    saveCount: 22,
+    viewCount: 1320,
+    shareCount: 8,
+    user: { name: "Verda Mjekiqi" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-13",
+    title: "Linen Interior",
+    bio: "Neutral textile room with sculptural lighting and soft shadows.",
+    category: "interior",
+    imageUrl: "designs/linen-interior.jpg",
+    forSale: true,
+    featured: true,
+    price: 470,
+    currency: "EUR",
+    priceLabel: "€470.00",
+    likeCount: 44,
+    saveCount: 19,
+    viewCount: 980,
+    shareCount: 6,
+    user: { name: "Verda Mjekiqi" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-14",
+    title: "Gallery Hall",
+    bio: "A long hall treated as a gallery — stone, art and measured light.",
+    category: "interior",
+    imageUrl: "designs/gallery-hall.jpg",
+    forSale: true,
+    featured: false,
+    price: 610,
+    currency: "EUR",
+    priceLabel: "€610.00",
+    likeCount: 39,
+    saveCount: 15,
+    viewCount: 870,
+    shareCount: 5,
+    user: { name: "Verda Mjekiqi" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-15",
+    title: "Stone Facade",
+    bio: "Civic architecture study: stone, rhythm and deep window recesses.",
+    category: "architecture",
+    imageUrl: "designs/stone-facade.jpg",
+    forSale: true,
+    featured: true,
+    price: 760,
+    currency: "EUR",
+    priceLabel: "€760.00",
+    likeCount: 72,
+    saveCount: 30,
+    viewCount: 1900,
+    shareCount: 11,
+    user: { name: "Verda Mjekiqi" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-16",
+    title: "City Pavilion",
+    bio: "Compact public pavilion with a clear roof line and open corners.",
+    category: "architecture",
+    imageUrl: "designs/city-pavilion.jpg",
+    forSale: true,
+    featured: false,
+    price: 680,
+    currency: "EUR",
+    priceLabel: "€680.00",
+    likeCount: 36,
+    saveCount: 14,
+    viewCount: 740,
+    shareCount: 4,
+    user: { name: "Verda Mjekiqi" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-17",
+    title: "Oak Kitchen",
+    bio: "Warm oak kitchen with a long island and morning light.",
+    category: "interior",
+    imageUrl: "designs/oak-kitchen.jpg",
+    forSale: true,
+    featured: true,
+    price: 520,
+    currency: "EUR",
+    priceLabel: "€520.00",
+    likeCount: 58,
+    saveCount: 25,
+    viewCount: 1410,
+    shareCount: 7,
+    user: { name: "Verda Mjekiqi" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-18",
+    title: "Quiet Bedroom",
+    bio: "A rest room in linen, wood and a single bedside lamp.",
+    category: "interior",
+    imageUrl: "designs/quiet-bedroom.jpg",
+    forSale: true,
+    featured: false,
+    price: 390,
+    currency: "EUR",
+    priceLabel: "€390.00",
+    likeCount: 33,
+    saveCount: 13,
+    viewCount: 690,
+    shareCount: 3,
+    user: { name: "Verda Mjekiqi" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-19",
+    title: "Studio Office",
+    bio: "Open workplace with timber, glass and a long work table.",
+    category: "interior",
+    imageUrl: "designs/studio-office.jpg",
+    forSale: true,
+    featured: false,
+    price: 430,
+    currency: "EUR",
+    priceLabel: "€430.00",
+    likeCount: 29,
+    saveCount: 11,
+    viewCount: 620,
+    shareCount: 3,
+    user: { name: "Verda Mjekiqi" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-20",
+    title: "Courtyard Villa",
+    bio: "House organised around a planted courtyard and a pool edge.",
+    category: "architecture",
+    imageUrl: "designs/courtyard-villa.jpg",
+    forSale: true,
+    featured: true,
+    price: 940,
+    currency: "EUR",
+    priceLabel: "€940.00",
+    likeCount: 81,
+    saveCount: 36,
+    viewCount: 2100,
+    shareCount: 14,
+    user: { name: "Verda Mjekiqi" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-21",
+    title: "Dining Alcove",
+    bio: "An intimate dining niche with a round table and low pendant.",
+    category: "interior",
+    imageUrl: "designs/dining-alcove.jpg",
+    forSale: true,
+    featured: false,
+    price: 360,
+    currency: "EUR",
+    priceLabel: "€360.00",
+    likeCount: 27,
+    saveCount: 10,
+    viewCount: 540,
+    shareCount: 2,
+    user: { name: "Verda Mjekiqi" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
+  {
+    _id: "demo-22",
+    title: "Sculptural Seat",
+    bio: "A single lounge chair study — form, comfort and material.",
+    category: "furniture",
+    imageUrl: "designs/sculptural-seat.jpg",
+    forSale: true,
+    featured: true,
+    price: 310,
+    currency: "EUR",
+    priceLabel: "€310.00",
+    likeCount: 46,
+    saveCount: 18,
+    viewCount: 880,
+    shareCount: 5,
+    user: { name: "Verda Mjekiqi" },
+    source: "curated",
+    isLiked: false,
+    isSaved: false,
+  },
 ];
 
 let currentLang = localStorage.getItem(LANG_KEY) || "en";
@@ -579,7 +861,24 @@ const logoutUser = async () => {
   window.location.href = "index.html";
 };
 
+const setupPublicChrome = () => {
+  document.querySelectorAll('nav a[href="login.html"], nav a[href="saved.html"], nav a[href="profile.html"], #userBadge, #accountMenuBtn').forEach((el) => {
+    el.classList.add("hidden");
+  });
+  const right = document.querySelector(".topbar-right");
+  if (right && !document.querySelector(".cv-icon")) {
+    const icon = document.createElement("a");
+    icon.href = "cv.html";
+    icon.className = "cv-icon";
+    icon.setAttribute("aria-label", "CV");
+    icon.title = "CV";
+    icon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.1"/><path d="M5.2 19.2c1.5-3.2 3.9-5 6.8-5s5.3 1.8 6.8 5"/></svg>';
+    right.prepend(icon);
+  }
+};
+
 const updateNavAuth = () => {
+  setupPublicChrome();
   const loginLink = document.querySelector('nav a[href="login.html"], nav a[href="profile.html"][data-i18n="nav.login"], nav a[data-nav-auth]');
   const nav = document.querySelector("nav.main-nav, nav[data-nav], nav");
 
@@ -638,21 +937,7 @@ const updateNavAuth = () => {
   if (document.body.classList.contains("admin-page")) setupAdminPanel();
 };
 
-const ensureAccountMenuButton = () => {
-  const right = document.querySelector(".topbar-right");
-  if (!right) return;
-  let btn = document.getElementById("accountMenuBtn");
-  if (!btn) {
-    btn = document.createElement("button");
-    btn.id = "accountMenuBtn";
-    btn.type = "button";
-    btn.className = "account-menu-btn";
-    btn.setAttribute("aria-label", "Account menu");
-    btn.textContent = "☰";
-    right.insertBefore(btn, right.firstChild);
-  }
-  btn.classList.toggle("hidden", !currentUser);
-};
+const ensureAccountMenuButton = () => {};
 
 let accountDrawerBound = false;
 
@@ -904,6 +1189,7 @@ const categoryLabel = (category) => {
     landscape: "Landscape",
     futuristic: "Futuristic",
     furniture: "Furniture",
+    architecture: "Architecture",
     general: "General",
   };
   return labels[category] || category;
@@ -1104,7 +1390,7 @@ const featuredCardMarkup = (pin, rank) => `
     <span class="featured-rank">#${rank + 1}</span>
     <img src="${pin.imageUrl}" alt="${escapeHtml(pin.title)}" loading="lazy" />
     <div class="featured-overlay">
-      <span class="pin-badge pinterest">Pinterest</span>
+      <span class="pin-badge featured">Studio</span>
       <h3>${escapeHtml(pin.title)}</h3>
       <p>👁 ${formatViews(pin.viewCount)} · ♥ ${pin.likeCount || 0}</p>
     </div>
@@ -1198,8 +1484,7 @@ const loadProjects = async ({ append = false } = {}) => {
     const data = await response.json();
     let pins = data.pins || [];
 
-    pins = filterStudioCatalog(pins);
-    if (!pins.length && !append) pins = filterStudioCatalog(FALLBACK_DESIGNS);
+    pins = filterStudioCatalog(FALLBACK_DESIGNS);
     if (projectsTotalEl) projectsTotalEl.textContent = String(pins.length);
     if (!append) renderFeaturedProjects(pins);
     renderProjects(pins, append);
@@ -1262,8 +1547,7 @@ const loadPins = async ({ append = false, limit, category, sort } = {}) => {
     let pins = data.pins || [];
 
     usingFallbackCatalog = true;
-    pins = filterStudioCatalog(pins.length ? pins : FALLBACK_DESIGNS);
-    if (!pins.length) pins = filterStudioCatalog(FALLBACK_DESIGNS);
+    pins = filterStudioCatalog(FALLBACK_DESIGNS);
     feedState.hasMore = false;
 
     if (pinsGrid) renderPins(pins, append);
@@ -1472,16 +1756,30 @@ const setupUploadTabs = () => {
   }
 };
 
+const pickFeatured = (studio) => {
+  const prefer = studio.filter((p) => p.featured && /architecture|interior/.test(p.category));
+  const rest = studio.filter((p) => !prefer.includes(p));
+  return [...prefer, ...rest].slice(0, 4);
+};
+
+const renderHomeFeatured = (studio) => {
+  const homeFeatured = document.getElementById("homeFeatured");
+  if (!homeFeatured) return;
+  const cards = pickFeatured(studio);
+  homeFeatured.innerHTML = cards.map((pin, i) => featuredCardMarkup(pin, i)).join("");
+};
+
 const refreshStudioView = () => {
   const studio = filterStudioCatalog(FALLBACK_DESIGNS);
   if (pinsGrid) renderPins(studio, false);
   if (homeDecorGrid) renderHomeDecor(studio, false);
+  renderHomeFeatured(studio);
 };
 
 const setupCatalogTools = () => {
   const chipHost = document.getElementById("categoryChips");
   if (chipHost && !chipHost.dataset.ready) {
-    const cats = ["all", "modern", "minimal", "interior", "furniture", "futuristic"];
+    const cats = ["all", "architecture", "interior", "furniture", "modern", "minimal"];
     chipHost.dataset.ready = "1";
     chipHost.innerHTML = cats
       .map((cat) => {
@@ -1786,11 +2084,6 @@ const ensureOrderModal = () => {
 };
 
 const openOrderModal = (pinId, title, priceLabel) => {
-  if (!currentUser) {
-    alert(t("buy.needLogin"));
-    window.location.href = "login.html";
-    return;
-  }
   ensureOrderModal();
   const modal = document.getElementById("orderModal");
   const pinInput = document.getElementById("orderPinId");
@@ -1801,8 +2094,8 @@ const openOrderModal = (pinId, title, priceLabel) => {
   if (pinInput) pinInput.value = pinId;
   if (label) label.textContent = `${decodeURIComponent(title || "")}${priceLabel ? ` · ${priceLabel}` : ""}`;
   if (message) message.textContent = "";
-  if (fullName) fullName.value = currentUser.name || "";
-  if (email) email.value = currentUser.email || "";
+  if (fullName) fullName.value = currentUser?.name || "";
+  if (email) email.value = currentUser?.email || "";
   modal.classList.remove("hidden");
 };
 
@@ -2016,11 +2309,6 @@ const setupPinActions = () => {
 
       try {
         if (action === "buy") {
-          if (!currentUser) {
-            alert(t("buy.needLogin"));
-            window.location.href = "login.html";
-            return;
-          }
           if (String(pinId).startsWith("demo-")) {
             alert(
               currentLang === "sq"
@@ -2045,11 +2333,7 @@ const setupPinActions = () => {
         }
 
         if ((action === "like" || action === "save") && String(pinId).startsWith("demo-")) {
-          alert(
-            currentLang === "sq"
-              ? "Like/Save aktivizohen kur katalogu lidhet me serverin."
-              : "Like/Save activate when the shop is connected to the server."
-          );
+          button.classList.toggle("active");
           return;
         }
 
@@ -2377,7 +2661,9 @@ setupAccountDrawer();
 setupBurgerMenu();
 setupPageDecor();
 {
+  setupPublicChrome();
   const studio = filterStudioCatalog(FALLBACK_DESIGNS);
+  renderHomeFeatured(studio);
   if (homeDecorGrid) renderHomeDecor(studio, false);
   if (pinsGrid) renderPins(studio, false);
   if (isProjectsPage) {
