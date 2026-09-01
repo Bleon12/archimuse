@@ -47,7 +47,19 @@ const I18N = {
     "brief.cta": "Start a brief",
     "brief.eyebrow": "Client brief",
     "brief.title": "What should we prepare?",
-    "brief.lead": "Choose the project type, write the basis, and we send you the final proposal.",
+    "brief.lead": "Four short steps. You write the basis — we send the final design.",
+    "brief.step1": "Interest",
+    "brief.step2": "Direction",
+    "brief.step3": "Design",
+    "brief.step4": "Contact",
+    "brief.interestHint": "Pick one or more. We use this to prepare the first concept.",
+    "brief.dirTitle": "How should it feel?",
+    "brief.basisHint": "This is the space for design: light, materials, references, what the final must include.",
+    "brief.contactTitle": "Where should we send the final?",
+    "brief.back": "Back",
+    "brief.next": "Continue",
+    "brief.needBasis": "Write a few lines about the space.",
+    "brief.needContact": "Add your name and a valid email.",
     "brief.name": "Name",
     "brief.email": "Email",
     "brief.phone": "Phone",
@@ -204,7 +216,19 @@ const I18N = {
     "brief.cta": "Fillo një brief",
     "brief.eyebrow": "Brief i klientit",
     "brief.title": "Çfarë të përgatisim?",
-    "brief.lead": "Zgjidh llojin e projektit, shkruaj bazën, dhe ne të dërgojmë propozimin final.",
+    "brief.lead": "Katër hapa të shkurtër. Ti shkruan bazën — ne dërgojmë dizajnin final.",
+    "brief.step1": "Interesi",
+    "brief.step2": "Drejtimi",
+    "brief.step3": "Dizajni",
+    "brief.step4": "Kontakti",
+    "brief.interestHint": "Zgjidh një ose më shumë. I përdorim për konceptin e parë.",
+    "brief.dirTitle": "Si duhet të ndihet?",
+    "brief.basisHint": "Këtu është hapësira për dizajn: drita, materialet, referencat, çfarë duhet të ketë finalja.",
+    "brief.contactTitle": "Ku ta dërgojmë finalen?",
+    "brief.back": "Mbrapa",
+    "brief.next": "Vazhdo",
+    "brief.needBasis": "Shkruaj disa rreshta për hapësirën.",
+    "brief.needContact": "Shto emrin dhe një email të vlefshëm.",
     "brief.name": "Emri",
     "brief.email": "Email",
     "brief.phone": "Telefoni",
@@ -1932,20 +1956,101 @@ const setupHeroCinema = () => {
   video.play().then(markPlaying).catch(() => {});
 };
 
+const setupHomeShell = () => {
+  if (!document.body.classList.contains("home-shell")) return;
+  const bar = document.querySelector(".topbar");
+  if (!bar) return;
+  const update = () => {
+    const y = window.scrollY;
+    bar.classList.toggle("is-scrolled", y > 20);
+    bar.classList.toggle("is-past-hero", y > window.innerHeight * 0.68);
+  };
+  window.addEventListener("scroll", update, { passive: true });
+  update();
+};
+
 const setupBriefForm = () => {
   const form = document.getElementById("briefForm");
   if (!form) return;
   const message = document.getElementById("briefMessage");
+  const steps = [...form.querySelectorAll(".brief-step")];
+  const dots = [...form.querySelectorAll(".brief-progress [data-goto]")];
+  const backBtn = document.getElementById("briefBack");
+  const nextBtn = document.getElementById("briefNext");
+  const sendBtn = document.getElementById("briefSend");
+  let step = 1;
+  const total = steps.length || 4;
+
+  const setMessage = (text, state = "") => {
+    if (!message) return;
+    message.textContent = text || "";
+    message.dataset.state = state;
+  };
+
+  const showStep = (n) => {
+    step = Math.min(total, Math.max(1, n));
+    steps.forEach((el) => el.classList.toggle("is-on", Number(el.dataset.step) === step));
+    dots.forEach((el) => {
+      const i = Number(el.dataset.goto);
+      el.classList.toggle("is-on", i === step);
+      el.classList.toggle("is-done", i < step);
+    });
+    backBtn?.classList.toggle("hidden", step === 1);
+    nextBtn?.classList.toggle("hidden", step === total);
+    sendBtn?.classList.toggle("hidden", step !== total);
+    setMessage("");
+  };
+
+  const validateStep = (n = step) => {
+    if (n === 1) {
+      const picked = form.querySelectorAll('input[name="interest"]:checked').length;
+      if (!picked) {
+        setMessage(t("brief.needInterest"), "warn");
+        return false;
+      }
+    }
+    if (n === 3) {
+      const basis = String(form.elements.basis?.value || "").trim();
+      if (basis.length < 8) {
+        setMessage(t("brief.needBasis"), "warn");
+        form.elements.basis?.focus();
+        return false;
+      }
+    }
+    if (n === 4) {
+      const name = String(form.elements.name?.value || "").trim();
+      const email = String(form.elements.email?.value || "").trim();
+      const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      if (!name || !emailOk) {
+        setMessage(t("brief.needContact"), "warn");
+        (name ? form.elements.email : form.elements.name)?.focus();
+        return false;
+      }
+    }
+    return true;
+  };
+
+  nextBtn?.addEventListener("click", () => {
+    if (validateStep()) showStep(step + 1);
+  });
+  backBtn?.addEventListener("click", () => showStep(step - 1));
+  dots.forEach((el) => {
+    el.addEventListener("click", () => {
+      const target = Number(el.dataset.goto);
+      if (target < step) showStep(target);
+      else if (target === step + 1 && validateStep()) showStep(target);
+    });
+  });
+
   form.addEventListener("submit", (event) => {
     event.preventDefault();
-    const interests = [...form.querySelectorAll('input[name="interest"]:checked')].map((el) => el.value);
-    if (!interests.length) {
-      if (message) {
-        message.textContent = t("brief.needInterest");
-        message.dataset.state = "warn";
-      }
+    if (!validateStep(1) || !validateStep(3) || !validateStep(4)) {
+      if (!validateStep(1)) showStep(1);
+      else if (!validateStep(3)) showStep(3);
+      else showStep(4);
       return;
     }
+    const interests = [...form.querySelectorAll('input[name="interest"]:checked')].map((el) => el.value);
     const data = Object.fromEntries(new FormData(form).entries());
     const brief = {
       ...data,
@@ -1956,11 +2061,11 @@ const setupBriefForm = () => {
     stored.unshift(brief);
     localStorage.setItem("archimuse-briefs", JSON.stringify(stored.slice(0, 40)));
     form.reset();
-    if (message) {
-      message.textContent = t("brief.ok");
-      message.dataset.state = "ok";
-    }
+    showStep(1);
+    setMessage(t("brief.ok"), "ok");
   });
+
+  showStep(1);
 };
 
 const setupSearch = () => {
@@ -2815,6 +2920,7 @@ setupPageDecor();
 setupCatalogTools();
 setupScrollTop();
 setupHeroCinema();
+setupHomeShell();
 setupBriefForm();
 setupSearch();
 setupProjectFilters();

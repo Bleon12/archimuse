@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
+  <body class="home-shell">
     <header class="topbar">
       <a class="brand" href="index.html">ArchiMuse</a>
       <nav class="main-nav" data-nav>
@@ -85,32 +85,21 @@
 
       <section class="brief-section" id="projectBrief">
         <div class="brief-intro">
-          <p class="hero-eyebrow" data-i18n="brief.eyebrow">Client brief</p>
+          <p class="brief-kicker" data-i18n="brief.eyebrow">Client brief</p>
           <h2 data-i18n="brief.title">What should we prepare?</h2>
-          <p data-i18n="brief.lead">Choose the project type, write the basis, and we send you the final proposal.</p>
+          <p data-i18n="brief.lead">Four short steps. You write the basis — we send the final design.</p>
         </div>
-        <form id="briefForm" class="brief-form">
-          <div class="brief-grid">
-            <label>
-              <span data-i18n="brief.name">Name</span>
-              <input name="name" type="text" required autocomplete="name" />
-            </label>
-            <label>
-              <span data-i18n="brief.email">Email</span>
-              <input name="email" type="email" required autocomplete="email" />
-            </label>
-            <label>
-              <span data-i18n="brief.phone">Phone</span>
-              <input name="phone" type="tel" autocomplete="tel" />
-            </label>
-            <label>
-              <span data-i18n="brief.city">City</span>
-              <input name="city" type="text" />
-            </label>
-          </div>
+        <form id="briefForm" class="brief-form brief-wizard" novalidate>
+          <ol class="brief-progress" aria-label="Steps">
+            <li class="is-on" data-goto="1"><span>01</span><em data-i18n="brief.step1">Interest</em></li>
+            <li data-goto="2"><span>02</span><em data-i18n="brief.step2">Direction</em></li>
+            <li data-goto="3"><span>03</span><em data-i18n="brief.step3">Design</em></li>
+            <li data-goto="4"><span>04</span><em data-i18n="brief.step4">Contact</em></li>
+          </ol>
 
-          <fieldset class="brief-fieldset">
-            <legend data-i18n="brief.interest">Projects you are interested in</legend>
+          <div class="brief-step is-on" data-step="1">
+            <h3 data-i18n="brief.interest">Projects you are interested in</h3>
+            <p class="brief-hint" data-i18n="brief.interestHint">Pick one or more. We use this to prepare the first concept.</p>
             <div class="brief-chips">
               <label class="option-chip"><input type="checkbox" name="interest" value="house" /><span data-i18n="brief.i.house">House</span></label>
               <label class="option-chip"><input type="checkbox" name="interest" value="interior" /><span data-i18n="brief.i.interior">Interior</span></label>
@@ -120,48 +109,80 @@
               <label class="option-chip"><input type="checkbox" name="interest" value="facade" /><span data-i18n="brief.i.facade">Facade</span></label>
               <label class="option-chip"><input type="checkbox" name="interest" value="garden" /><span data-i18n="brief.i.garden">Garden</span></label>
             </div>
-          </fieldset>
-
-          <div class="brief-grid">
-            <label>
-              <span data-i18n="brief.style">Style</span>
-              <select name="style">
-                <option value="modern" data-i18n="brief.s.modern">Modern</option>
-                <option value="minimal" data-i18n="brief.s.minimal">Minimal</option>
-                <option value="warm" data-i18n="brief.s.warm">Warm / wood</option>
-                <option value="dark" data-i18n="brief.s.dark">Dark / coffee</option>
-              </select>
-            </label>
-            <label>
-              <span data-i18n="brief.budget">Budget</span>
-              <select name="budget">
-                <option value="under-500" data-i18n="brief.b1">Under €500</option>
-                <option value="500-1500" data-i18n="brief.b2">€500 – €1,500</option>
-                <option value="1500-4000" data-i18n="brief.b3">€1,500 – €4,000</option>
-                <option value="over-4000" data-i18n="brief.b4">Over €4,000</option>
-              </select>
-            </label>
-            <label>
-              <span data-i18n="brief.when">When</span>
-              <select name="when">
-                <option value="asap" data-i18n="brief.w1">As soon as possible</option>
-                <option value="month" data-i18n="brief.w2">Within a month</option>
-                <option value="quarter" data-i18n="brief.w3">In 3 months</option>
-                <option value="flex" data-i18n="brief.w4">Flexible</option>
-              </select>
-            </label>
-            <label>
+            <label class="brief-full">
               <span data-i18n="brief.rooms">Spaces / rooms</span>
               <input name="rooms" type="text" data-i18n-placeholder="brief.roomsPh" placeholder="Living room, kitchen…" />
             </label>
           </div>
 
-          <label class="brief-full">
-            <span data-i18n="brief.basis">Project basis</span>
-            <textarea name="basis" rows="5" required data-i18n-placeholder="brief.basisPh" placeholder="Describe the space, materials, and what the final should include…"></textarea>
-          </label>
+          <div class="brief-step" data-step="2">
+            <h3 data-i18n="brief.dirTitle">How should it feel?</h3>
+            <div class="brief-grid">
+              <label>
+                <span data-i18n="brief.style">Style</span>
+                <select name="style">
+                  <option value="modern" data-i18n="brief.s.modern">Modern</option>
+                  <option value="minimal" data-i18n="brief.s.minimal">Minimal</option>
+                  <option value="warm" data-i18n="brief.s.warm">Warm / wood</option>
+                  <option value="dark" data-i18n="brief.s.dark">Dark / coffee</option>
+                </select>
+              </label>
+              <label>
+                <span data-i18n="brief.budget">Budget</span>
+                <select name="budget">
+                  <option value="under-500" data-i18n="brief.b1">Under €500</option>
+                  <option value="500-1500" data-i18n="brief.b2">€500 – €1,500</option>
+                  <option value="1500-4000" data-i18n="brief.b3">€1,500 – €4,000</option>
+                  <option value="over-4000" data-i18n="brief.b4">Over €4,000</option>
+                </select>
+              </label>
+              <label>
+                <span data-i18n="brief.when">When</span>
+                <select name="when">
+                  <option value="asap" data-i18n="brief.w1">As soon as possible</option>
+                  <option value="month" data-i18n="brief.w2">Within a month</option>
+                  <option value="quarter" data-i18n="brief.w3">In 3 months</option>
+                  <option value="flex" data-i18n="brief.w4">Flexible</option>
+                </select>
+              </label>
+            </div>
+          </div>
 
-          <button class="btn" type="submit" data-i18n="brief.send">Send brief — we prepare the final</button>
+          <div class="brief-step" data-step="3">
+            <h3 data-i18n="brief.basis">Project basis</h3>
+            <p class="brief-hint" data-i18n="brief.basisHint">This is the space for design: light, materials, references, what the final must include.</p>
+            <label class="brief-full">
+              <textarea name="basis" rows="10" data-i18n-placeholder="brief.basisPh" placeholder="Describe the space, materials, and what the final should include…"></textarea>
+            </label>
+          </div>
+
+          <div class="brief-step" data-step="4">
+            <h3 data-i18n="brief.contactTitle">Where should we send the final?</h3>
+            <div class="brief-grid">
+              <label>
+                <span data-i18n="brief.name">Name</span>
+                <input name="name" type="text" autocomplete="name" />
+              </label>
+              <label>
+                <span data-i18n="brief.email">Email</span>
+                <input name="email" type="email" autocomplete="email" />
+              </label>
+              <label>
+                <span data-i18n="brief.phone">Phone</span>
+                <input name="phone" type="tel" autocomplete="tel" />
+              </label>
+              <label>
+                <span data-i18n="brief.city">City</span>
+                <input name="city" type="text" />
+              </label>
+            </div>
+          </div>
+
+          <div class="brief-nav">
+            <button class="btn btn-outline hidden" type="button" id="briefBack" data-i18n="brief.back">Back</button>
+            <button class="btn" type="button" id="briefNext" data-i18n="brief.next">Continue</button>
+            <button class="btn hidden" type="submit" id="briefSend" data-i18n="brief.send">Send brief — we prepare the final</button>
+          </div>
           <p id="briefMessage" class="brief-message" role="status"></p>
         </form>
       </section>
