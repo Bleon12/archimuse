@@ -133,10 +133,21 @@ const I18N = {
     "shop.search": "Search by title or bio…",
     "shop.filter": "Filter",
     "gallery.eyebrow": "Studio work",
-    "gallery.title": "Projects",
-    "gallery.lead": "Interiors, furniture and architecture — click a card to open it.",
+    "gallery.title": "Find a space",
+    "gallery.lead": "Pick a type. The photos open. If one feels right, start a brief.",
     "gallery.designs": "designs",
     "gallery.end": "End of gallery",
+    "gallery.pick": "What are you looking for?",
+    "gallery.all": "All",
+    "gallery.house": "House",
+    "gallery.rooms": "Rooms",
+    "gallery.kitchen": "Kitchen",
+    "gallery.furniture": "Furniture",
+    "gallery.surprise": "Surprise me",
+    "gallery.brief": "Start a brief",
+    "gallery.hookKicker": "For clients",
+    "gallery.hook": "Like a room? We prepare the final from your brief.",
+    "gallery.open": "Open",
     "saved.title": "Saved designs",
     "saved.sub": "Your bookmarked studio designs.",
     "saved.empty": "No saved designs yet.",
@@ -324,10 +335,21 @@ const I18N = {
     "shop.search": "Kërko sipas titullit ose bio-s…",
     "shop.filter": "Filtro",
     "gallery.eyebrow": "Puna e studios",
-    "gallery.title": "Projektet",
-    "gallery.lead": "Interier, mobilje dhe arkitekturë — hap kartën.",
+    "gallery.title": "Gjej një hapësirë",
+    "gallery.lead": "Zgjidh llojin. Fotot hapen. Nëse njëra të pëlqen, fillo një brief.",
     "gallery.designs": "dizajne",
     "gallery.end": "Fundi i galerisë",
+    "gallery.pick": "Çfarë po kërkon?",
+    "gallery.all": "Të gjitha",
+    "gallery.house": "Shtëpi",
+    "gallery.rooms": "Dhoma",
+    "gallery.kitchen": "Kuzhinë",
+    "gallery.furniture": "Mobilje",
+    "gallery.surprise": "Më befaso",
+    "gallery.brief": "Fillo një brief",
+    "gallery.hookKicker": "Për klientët",
+    "gallery.hook": "Të pëlqen një dhomë? Ne e përgatisim finalen nga brief-i yt.",
+    "gallery.open": "Hape",
     "saved.title": "Dizajne të ruajtura",
     "saved.sub": "Dizajnet që ke ruajtur.",
     "saved.empty": "Nuk ke ende dizajne të ruajtura.",
@@ -872,12 +894,27 @@ const STUDIO_IMAGE = /designs\//i;
 
 const isStudioPin = (pin) => STUDIO_IMAGE.test(String(pin?.imageUrl || ""));
 
+let roomFilter = "all";
+
+const matchRoom = (pin, room = "all") => {
+  if (!room || room === "all") return true;
+  const hay = `${pin.title || ""} ${pin.bio || ""} ${pin.category || ""}`.toLowerCase();
+  if (room === "house") return pin.category === "architecture";
+  if (room === "rooms") return pin.category === "interior" && !/kitchen|kuzhin/.test(hay);
+  if (room === "kitchen") return /kitchen|kuzhin/.test(hay);
+  if (room === "furniture") return ["furniture", "modern", "minimal", "futuristic"].includes(pin.category);
+  return pin.category === room;
+};
+
 const filterStudioCatalog = (pins = FALLBACK_DESIGNS) => {
   const homeSearch = document.getElementById("homeSearch");
   const search = (searchInput?.value || homeSearch?.value || "").trim().toLowerCase();
-  const category = categoryFilter?.value || projectCategoryFilter?.value || activeCategory || "all";
+  const category = isProjectsPage
+    ? "all"
+    : categoryFilter?.value || projectCategoryFilter?.value || activeCategory || "all";
   const filtered = pins.filter((pin) => {
     if (!isStudioPin(pin)) return false;
+    if (isProjectsPage && !matchRoom(pin, roomFilter)) return false;
     const matchCat = !category || category === "all" || pin.category === category;
     const hay = `${pin.title || ""} ${pin.bio || ""}`.toLowerCase();
     const matchSearch = !search || hay.includes(search);
@@ -1499,35 +1536,21 @@ const formatViews = (count) => {
   return String(n);
 };
 
-const projectCardMarkup = (pin, index = 0) => {
-  const delay = Math.min(index * 0.06, 0.6);
-  const isHot = (pin.viewCount || 0) > 600;
+const lookCardMarkup = (pin, index = 0) => {
+  const wide = index === 0 ? " is-wide" : "";
   return `
-    <article class="project-card animate-card" data-pin-id="${pin._id}" tabindex="0" role="button" style="--delay:${delay}s">
-      <div class="project-image">
-        <img src="${pin.imageUrl}" alt="${escapeHtml(pin.title)}" loading="lazy" />
-        <div class="project-shine"></div>
-        ${isHot ? '<span class="project-hot">Trending</span>' : ""}
-        <div class="project-float-stats">
-          <span>👁 ${formatViews(pin.viewCount)}</span>
-          <span>♥ ${pin.likeCount || 0}</span>
-        </div>
-      </div>
-      <div class="project-body">
-        <div class="project-meta-row">
-          ${sourceBadge(pin)}
-          <span class="project-category">${escapeHtml(categoryLabel(pin.category))}</span>
-        </div>
+    <article class="look-card${wide} animate-card" data-pin-id="${pin._id}" tabindex="0" role="button" aria-label="${escapeHtml(pin.title)}" style="--delay:${Math.min(index * 0.05, 0.45)}s">
+      <img src="${pin.imageUrl}" alt="${escapeHtml(pin.title)}" loading="lazy" />
+      <div class="look-card-veil">
         <h3>${escapeHtml(pin.title)}</h3>
-        <p>${escapeHtml(truncate(pin.bio || "Architecture concept with refined spatial composition.", 110))}</p>
-        <div class="project-footer">
-          <span class="project-views">${formatViews(pin.viewCount)} shikime</span>
-          ${pin.sourceUrl ? `<a class="project-pinterest" href="${escapeHtml(pin.sourceUrl)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Pinterest →</a>` : ""}
-        </div>
+        <p>${escapeHtml(truncate(pin.bio || "", 90))}</p>
+        <span>${escapeHtml(t("gallery.open"))}</span>
       </div>
     </article>
   `;
 };
+
+const projectCardMarkup = (pin, index = 0) => lookCardMarkup(pin, index);
 
 const featuredCardMarkup = (pin, rank) => `
   <article class="featured-card animate-card" data-pin-id="${pin._id}" tabindex="0" role="button" style="--delay:${rank * 0.1}s">
@@ -1589,8 +1612,8 @@ const renderProjects = (pins, append = false) => {
     projectsGrid.innerHTML = "<p class='empty-state'>Nuk u gjetën projekte.</p>";
     return;
   }
-  const startIndex = append ? projectsGrid.querySelectorAll(".project-card").length : 0;
-  const markup = pins.map((pin, i) => projectCardMarkup(pin, startIndex + i)).join("");
+  const startIndex = append ? projectsGrid.querySelectorAll(".look-card").length : 0;
+  const markup = pins.map((pin, i) => lookCardMarkup(pin, startIndex + i)).join("");
   if (append) {
     projectsGrid.insertAdjacentHTML("beforeend", markup);
   } else {
@@ -2157,25 +2180,30 @@ const setupInfiniteScroll = () => {
   });
 };
 
+const refreshLookWall = () => {
+  const studio = filterStudioCatalog(FALLBACK_DESIGNS);
+  if (projectsTotalEl) projectsTotalEl.textContent = String(studio.length);
+  renderProjects(studio, false);
+};
+
 const setupProjectFilters = () => {
   if (!isProjectsPage) return;
 
-  document.querySelectorAll("[data-project-sort]").forEach((chip) => {
-    chip.addEventListener("click", async () => {
-      document.querySelectorAll("[data-project-sort]").forEach((btn) => btn.classList.remove("active"));
-      chip.classList.add("active");
-      projectsState.sort = chip.dataset.projectSort;
-      projectsState.page = 1;
-      projectsState.hasMore = true;
-      await loadProjects({ append: false });
+  document.querySelectorAll("[data-room]").forEach((door) => {
+    door.addEventListener("click", () => {
+      roomFilter = door.dataset.room || "all";
+      document.querySelectorAll("[data-room]").forEach((el) => {
+        el.classList.toggle("is-on", el === door);
+      });
+      refreshLookWall();
     });
   });
 
-  projectCategoryFilter?.addEventListener("change", async () => {
-    projectsState.category = projectCategoryFilter.value;
-    projectsState.page = 1;
-    projectsState.hasMore = true;
-    await loadProjects({ append: false });
+  document.getElementById("lookSurprise")?.addEventListener("click", () => {
+    const list = filterStudioCatalog(FALLBACK_DESIGNS);
+    if (!list.length) return;
+    const pick = list[Math.floor(Math.random() * list.length)];
+    openPinDetail(pick._id);
   });
 };
 

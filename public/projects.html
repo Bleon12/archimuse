@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ArchiMuse | Gallery</title>
+    <title>ArchiMuse | Projects</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -32,41 +32,52 @@
       </div>
     </header>
 
-    <main class="projects-main">
-      <section class="projects-hero reveal">
-        <div class="projects-hero-glow"></div>
+    <main class="look-main">
+      <section class="look-intro">
         <p class="hero-eyebrow" data-i18n="gallery.eyebrow">Studio work</p>
-        <h1 data-i18n="gallery.title">Projects</h1>
-        <p class="projects-hero-text" data-i18n="gallery.lead">
-          Interiors, furniture and architecture — click a card to open it.
-        </p>
-        <div class="projects-stats">
-          <div class="stat-pill"><span id="projectsTotal">—</span> <span data-i18n="gallery.designs">designs</span></div>
+        <h1 data-i18n="gallery.title">Find a space</h1>
+        <p data-i18n="gallery.lead">Pick a type. The photos open. If one feels right, start a brief.</p>
+      </section>
+
+      <p class="look-doors-label" data-i18n="gallery.pick">What are you looking for?</p>
+      <section class="look-doors" id="lookDoors">
+        <button type="button" class="look-door is-on" data-room="all">
+          <img src="designs/courtyard-villa.jpg" alt="" />
+          <span data-i18n="gallery.all">All</span>
+        </button>
+        <button type="button" class="look-door" data-room="house">
+          <img src="designs/atrium-house.jpg" alt="" />
+          <span data-i18n="gallery.house">House</span>
+        </button>
+        <button type="button" class="look-door" data-room="rooms">
+          <img src="designs/soft-living.jpg" alt="" />
+          <span data-i18n="gallery.rooms">Rooms</span>
+        </button>
+        <button type="button" class="look-door" data-room="kitchen">
+          <img src="designs/oak-kitchen.jpg" alt="" />
+          <span data-i18n="gallery.kitchen">Kitchen</span>
+        </button>
+        <button type="button" class="look-door" data-room="furniture">
+          <img src="designs/olive-lounge.webp" alt="" />
+          <span data-i18n="gallery.furniture">Furniture</span>
+        </button>
+      </section>
+
+      <section class="look-hook">
+        <div>
+          <p class="look-hook-kicker" data-i18n="gallery.hookKicker">For clients</p>
+          <h2 data-i18n="gallery.hook">Like a room? We prepare the final from your brief.</h2>
+        </div>
+        <div class="look-hook-actions">
+          <button type="button" class="btn" id="lookSurprise" data-i18n="gallery.surprise">Surprise me</button>
+          <a class="btn btn-outline" href="index.html#projectBrief" data-i18n="gallery.brief">Start a brief</a>
         </div>
       </section>
 
-      <section class="projects-toolbar reveal">
-        <div class="projects-filters">
-          <select id="projectCategoryFilter">
-            <option value="all">All</option>
-            <option value="modern">Modern</option>
-            <option value="minimal">Minimal</option>
-            <option value="brutalist">Brutalist</option>
-            <option value="interior">Interior</option>
-            <option value="landscape">Landscape</option>
-            <option value="futuristic">Futuristic</option>
-            <option value="furniture">Furniture</option>
-            <option value="architecture">Architecture</option>
-          </select>
-        </div>
-      </section>
-
-      <section id="featuredProjects" class="featured-row"></section>
-      <section id="projectsGrid" class="projects-grid">
+      <p class="look-count"><span id="projectsTotal">22</span> <span data-i18n="gallery.designs">designs</span></p>
+      <section id="projectsGrid" class="look-wall">
         <p class="empty-state" data-i18n="home.loading">Loading designs…</p>
       </section>
-      <p id="projectsEndHint" class="empty-state hidden" data-i18n="gallery.end">End of gallery</p>
-      <section id="feedSkeleton" class="pins-grid shop-grid skeleton-grid hidden"></section>
     </main>
 
     <div id="pinDetailModal" class="modal hidden">
